@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VSD Synergy Limited - Professional Transport & Logistics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Brand Typography - from branding.md */
+    :root {
+      --font-roboto: 'Roboto', sans-serif;
+      --font-lato: 'Lato', sans-serif;
+
+      /* Brand Color - #3080E8 with shades */
+      --brand-primary: #3080E8;
+      --brand-primary-light: #5a9aef;
+      --brand-primary-lighter: #84b5f6;
+      --brand-primary-dark: #1e5fb8;
+      --brand-primary-darker: #0f4080;
+
+      /* Extended palette for visual interest */
+      --accent-coral: #FF6B35;
+      --accent-coral-light: #FF8557;
+      --accent-coral-dark: #E55A2B;
+
+      /* Neutrals */
+      --neutral-50: #F8FAFC;
+      --neutral-100: #F1F5F9;
+      --neutral-200: #E2E8F0;
+      --neutral-300: #CBD5E1;
+      --neutral-400: #94A3B8;
+      --neutral-500: #64748B;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1E293B;
+      --neutral-900: #0F172A;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+      /* Spacing */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 12px;
+      --spacing-lg: 16px;
+      --spacing-xl: 24px;
+      --spacing-2xl: 32px;
+      --spacing-3xl: 48px;
+      --spacing-4xl: 64px;
+
+      /* Radius */
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+    }
+
+    /* Typography Styles */
+    .type-h1 {
+      font-family: var(--font-roboto);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 500;
+      line-height: 1.21;
+      letter-spacing: -0.02em;
+    }
+
+    .type-h2 {
+      font-family: var(--font-lato);
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.22;
+    }
+
+    .type-h3 {
+      font-family: var(--font-lato);
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .type-body {
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    .type-small-body {
+      font-family: var(--font-lato);
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    /* Custom Utilities */
+    .gradient-primary {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    }
+
+    .gradient-accent {
+      background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);
+    }
+
+    /* Hero Section with Background and Animation */
+    .gradient-hero {
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Static background with overlay - behind everything */
+    .gradient-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 58, 95, 0.80) 100%),
+                  url('van.png');
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+    }
+
+    /* Animated image layer - subtle zoom effect */
+    .hero-bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('van.png');
+      background-size: cover;
+      background-position: center;
+      animation: kenBurnsZoom 20s ease-in-out infinite alternate;
+      opacity: 0.15;
+      z-index: -1;
+    }
+
+    @keyframes kenBurnsZoom {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.05);
+      }
+    }
+
+    .hero-content-overlay {
+      position: relative;
+      z-index: 1;
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .text-accent {
+      color: var(--accent-coral);
+    }
+
+    .stars-orange {
+      color: var(--accent-coral);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .animate-slide-in-left {
+      animation: slideInLeft 0.6s ease-out forwards;
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+
+    /* Card hover effects */
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-2xl);
+    }
+
+    /* Button styles */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(48, 128, 232, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(48, 128, 232, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+      background: white;
+      border: 2px solid var(--brand-primary);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--brand-primary);
+      color: white;
+    }
+
+    /* Learn More Button - Hero Section */
+    .btn-learn-more {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+      background: white;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-learn-more:hover {
+      background: var(--brand-primary-light);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-learn-more:active {
+      transform: translateY(0);
+    }
+
+    .btn-accent {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(255, 107, 53, 0.4);
+    }
+
+    .btn-accent:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    }
+
+    /* Form styles */
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      color: var(--neutral-800);
+      background: white;
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15);
+    }
+
+    .form-input::placeholder {
+      color: var(--neutral-400);
+    }
+
+    /* Navigation */
+    .nav-link {
+      position: relative;
+      color: var(--neutral-600);
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 400;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--brand-primary);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--brand-primary);
+      transition: width 0.2s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Feature icon container */
+    .icon-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, rgba(48, 128, 232, 0.1) 0%, rgba(48, 128, 232, 0.15) 100%);
+      transition: all 0.3s ease;
+    }
+
+    .card-hover:hover .icon-circle {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+    }
+
+    .card-hover:hover .icon-circle svg {
+      color: white;
+    }
+
+    /* Step connector */
+    .step-connector {
+      position: relative;
+    }
+
+    .step-connector::after {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      width: calc(100% - 80px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-primary-lighter) 100%);
+      transform: translateX(-50%);
+    }
+
+    @media (max-width: 768px) {
+      .step-connector::after {
+        display: none;
+      }
+    }
+
+    /* Testimonial card */
+    .testimonial-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+      box-shadow: var(--shadow-xl);
+    }
+
+    .stars-orange {
+      color: var(--accent-gold);
+    }
+
+    /* Stat counter */
+    .stat-number {
+      font-family: var(--font-roboto);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      color: var(--brand-primary);
+      line-height: 1;
+    }
+
+    /* Fleet card */
+    .fleet-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+
+    .fleet-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+      z-index: 1;
+    }
+
+    .fleet-info {
+      position: relative;
+      z-index: 2;
+      color: white;
+      padding: 1.5rem;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-xl);
+      padding: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .mobile-menu.active {
+      display: block;
+    }
+
+    /* Trust badges */
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+
+    .trust-badge:hover {
+      box-shadow: var(--shadow-md);
+      transform: scale(1.05);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+    }
+
+    .cta-section::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0) 70%);
+      border-radius: 50%;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-xl);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-2xl);
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-100);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+
+    .modal-close:hover {
+      background: var(--neutral-200);
+      transform: rotate(90deg);
+    }
+
+    /* Service Selection Cards */
+    .service-select-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .service-card {
+      position: relative;
+      background: linear-gradient(135deg, var(--neutral-50) 0%, white 100%);
+      border: 2px solid var(--neutral-200);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .service-card:hover {
+      border-color: var(--brand-primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .service-card-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .service-card:hover .service-card-icon {
+      transform: scale(1.1);
+    }
+
+    .service-card-icon svg {
+      width: 40px;
+      height: 40px;
+      color: white;
+    }
+
+    .service-card-title {
+      font-family: var(--font-roboto);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+      margin-bottom: 0.5rem;
+    }
+
+    .service-card-desc {
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-500);
+      line-height: 1.5;
+    }
+
+    /* Multi-step Form */
+    .quote-form-container {
+      position: relative;
+    }
+
+    .quote-form-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--neutral-200);
+      background: var(--neutral-50);
+    }
+
+    .quote-form-body {
+      padding: 2rem;
+    }
+
+    /* Progress Indicator */
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-300);
+      transition: all 0.3s ease;
+    }
+
+    .progress-dot.active {
+      background: var(--brand-primary);
+      width: 28px;
+      border-radius: 5px;
+    }
+
+    .progress-dot.completed {
+      background: var(--brand-primary);
+    }
+
+    /* Form Step */
+    .form-step {
+      display: none;
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .form-step.active {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .form-step.exiting {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    .step-title {
+      font-family: var(--font-roboto);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--neutral-800);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-subtitle {
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-500);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-lato);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input-wrapper {
+      position: relative;
+    }
+
+    .form-input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neutral-400);
+      pointer-events: none;
+    }
+
+    .form-input.with-icon {
+      padding-left: 2.75rem;
+    }
+
+    /* Button Group */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .button-group-item {
+      flex: 1;
+      min-width: 120px;
+      padding: 1rem 1.25rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      background: white;
+      border: 2px solid var(--neutral-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .button-group-item:hover {
+      border-color: var(--brand-primary-light);
+      background: rgba(48, 128, 232, 0.05);
+    }
+
+    .button-group-item.selected {
+      border-color: var(--brand-primary);
+      background: var(--brand-primary);
+      color: white;
+    }
+
+    .button-group-item input[type="radio"],
+    .button-group-item input[type="checkbox"] {
+      display: none;
+    }
+
+    /* Checkbox Group */
+    .checkbox-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .checkbox-item {
+      flex: 1;
+      padding: 1rem 1.25rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      background: white;
+      border: 2px solid var(--neutral-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .checkbox-item:hover {
+      border-color: var(--brand-primary-light);
+    }
+
+    .checkbox-item.selected {
+      border-color: var(--brand-primary);
+      background: rgba(48, 128, 232, 0.1);
+      color: var(--brand-primary);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      display: none;
+    }
+
+    /* Floor Select */
+    .floor-select-wrapper {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--neutral-50);
+      border-radius: var(--radius-md);
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 200px;
+      }
+    }
+
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--neutral-200);
+      margin-top: 1.5rem;
+    }
+
+    .btn-back {
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--neutral-600);
+      background: var(--neutral-100);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-back:hover {
+      background: var(--neutral-200);
+    }
+
+    .btn-next, .btn-submit {
+      padding: 0.75rem 2rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(48, 128, 232, 0.4);
+    }
+
+    .btn-next:hover, .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(48, 128, 232, 0.5);
+    }
+
+    .btn-next:disabled, .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Summary */
+    .summary-section {
+      background: var(--neutral-50);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--neutral-200);
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      font-family: var(--font-lato);
+      font-size: 0.875rem;
+      color: var(--neutral-600);
+    }
+
+    .summary-value {
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--neutral-800);
+    }
+
+    /* Error State */
+    .form-input.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    .error-message {
+      display: none;
+      font-family: var(--font-lato);
+      font-size: 0.75rem;
+      color: #ef4444;
+      margin-top: 0.25rem;
+    }
+
+    .form-input.error + .error-message {
+      display: block;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 640px) {
+      .service-select-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .button-group-item {
+        min-width: 100%;
+      }
+
+      .checkbox-group {
+        flex-direction: column;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+      }
+
+      .btn-back, .btn-next, .btn-submit {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .quote-form-body {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Coming Soon Page */
+    .coming-soon-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      padding: 2rem;
+    }
+
+    .coming-soon-content {
+      text-align: center;
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 4rem 2rem;
+      box-shadow: var(--shadow-2xl);
+      max-width: 500px;
+    }
+
+    .coming-soon-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 2rem;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .coming-soon-icon svg {
+      width: 50px;
+      height: 50px;
+      color: white;
+    }
+
+    .coming-soon-title {
+      font-family: var(--font-roboto);
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--neutral-800);
+      margin-bottom: 1rem;
+    }
+
+    .coming-soon-text {
+      font-family: var(--font-lato);
+      font-size: 1.125rem;
+      color: var(--neutral-600);
+      margin-bottom: 2rem;
+    }
+
+    .coming-soon-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--brand-primary);
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .coming-soon-link:hover {
+      color: var(--brand-primary-dark);
+    }
+  </style>
+</head>
+<body class="bg-white">
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo -->
+        <div class="flex items-center space-x-4">
+          <img src="brand_assets/bp.jpeg" alt="VSD Synergy Limited Logo" class="h-14 w-auto">
+          <span class="type-h3 text-gray-800">VSD SYNERGY LIMITED</span>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#services" class="nav-link">Services</a>
+          <a href="#how-it-works" class="nav-link">How It Works</a>
+          <a href="#why-choose-us" class="nav-link">Why Choose Us</a>
+          <a href="#reviews" class="nav-link">Reviews</a>
+          <a href="#contact" class="nav-link">Contact</a>
+          <a href="#quote" class="btn-primary">Get a Quote</a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <div id="mobileMenu" class="mobile-menu md:hidden">
+        <a href="#services" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Services</a>
+        <a href="#how-it-works" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">How It Works</a>
+        <a href="#why-choose-us" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Why Choose Us</a>
+        <a href="#reviews" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Reviews</a>
+        <a href="#contact" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Contact</a>
+        <a href="#quote" class="block py-2 px-4 mt-2 btn-primary text-center">Get a Quote</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="gradient-hero min-h-screen flex items-center pt-20 relative overflow-hidden">
+    <!-- Animated Background Layer -->
+    <div class="hero-bg-image"></div>
+    <!-- Content Overlay -->
+    <div class="hero-content-overlay relative z-10 w-full">
+      <div id="quote" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <!-- Hero Content -->
+          <div class="text-white animate-fade-in-up">
+            <h1 class="type-h1 mb-6 leading-tight" style="text-shadow: 0 2px 20px rgba(0,0,0,0.3);">
+              Professional Removal &<br/>
+              <span class="text-orange-500">Cleaning Services</span> You Can Trust
+            </h1>
+            <p class="type-body text-lg mb-8 text-white max-w-lg" style="opacity: 0.95;">
+              Expert house/office removals and professional cleaning services across England.
+              Get instant quotes and book with confidence.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a href="#quote-modal" class="btn-accent" id="openQuoteModal">
+                Get Instant Quote
+                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+              </a>
+              <a href="#how-it-works" class="btn-learn-more">
+                Learn More
+              </a>
+            </div>
+
+          <!-- Trust indicators -->
+          <div class="mt-12 flex items-center space-x-8">
+            <div class="flex items-center space-x-2">
+              <svg class="w-6 h-6 text-orange-400" fill="currentColor" viewBox="0 0 20 20" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+              <span class="font-semibold text-white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.4);">4.9/5 Rating</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+              <span class="font-semibold text-white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.4);">Fully Insured</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <svg class="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span class="font-semibold text-white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.4);">24/7 Support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-16 bg-white border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="stat-number" data-target="500" data-suffix="+">0</div>
+          <div class="type-body text-gray-600 mt-2">Happy Clients</div>
+        </div>
+        <div class="text-center">
+          <div class="stat-number" data-target="1200" data-suffix="+">0</div>
+          <div class="type-body text-gray-600 mt-2">Trips Completed</div>
+        </div>
+        <div class="text-center">
+          <div class="stat-number" data-target="50" data-suffix="+">0</div>
+          <div class="type-body text-gray-600 mt-2">Vehicles</div>
+        </div>
+        <div class="text-center">
+          <div class="stat-number" data-target="99" data-suffix="%">0</div>
+          <div class="type-body text-gray-600 mt-2">On-Time Rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="py-24 bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="type-h2 text-gray-800 mb-4">Our Services</h2>
+        <p class="type-body text-gray-600 text-lg">
+          Comprehensive transport solutions tailored to meet your personal and business needs
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Service 1: House/Office Removal -->
+        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg">
+          <div class="icon-circle mb-6">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-3">House/Office Removal</h3>
+          <p class="type-body text-gray-600 mb-4">
+            Professional moving services for homes and offices.
+            Trained helpers, careful handling, and efficient loading for a stress-free move.
+          </p>
+          <a href="/quote/removal" class="type-link-16 text-blue-600 font-semibold hover:text-blue-700 inline-flex items-center">
+            Get a quote
+            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Service 2: Cleaning Services -->
+        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg">
+          <div class="icon-circle mb-6" style="background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+            </svg>
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-3">Cleaning Services</h3>
+          <p class="type-body text-gray-600 mb-4">
+            Professional cleaning for residential and commercial spaces.
+            End of tenancy cleaning and routine house cleaning with attention to detail.
+          </p>
+          <a href="/quote/cleaning" class="type-link-16 text-blue-600 font-semibold hover:text-blue-700 inline-flex items-center">
+            Get a quote
+            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="type-h2 text-gray-800 mb-4">How It Works</h2>
+        <p class="type-body text-gray-600 text-lg">
+          Booking your transport has never been easier. Three simple steps to get you moving.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 relative">
+        <!-- Step 1 -->
+        <div class="text-center step-connector">
+          <div class="w-20 h-20 mx-auto mb-6 rounded-full gradient-primary flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+            1
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-3">Request a Quote</h3>
+          <p class="type-body text-gray-600 max-w-xs mx-auto">
+            Fill in our quick form with your removal or cleaning requirements
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="text-center step-connector">
+          <div class="w-20 h-20 mx-auto mb-6 rounded-full gradient-primary flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+            2
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-3">Confirm Booking</h3>
+          <p class="type-body text-gray-600 max-w-xs mx-auto">
+            Review your quote, confirm your booking, and receive instant confirmation
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-6 rounded-full gradient-primary flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+            3
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-3">Checkout and Pay</h3>
+          <p class="type-body text-gray-600 max-w-xs mx-auto">
+            Review your quote, complete checkout, and confirm your booking securely
+          </p>
+        </div>
+      </div>
+
+      <!-- CTA removed - only one primary CTA in hero section -->
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+  <section id="why-choose-us" class="py-24 bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="type-h2 text-gray-800 mb-4">Why Choose VSD Synergy?</h2>
+        <p class="type-body text-gray-600 text-lg">
+          We're committed to providing exceptional service that exceeds your expectations.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-2">Fully Insured</h3>
+          <p class="type-body text-gray-600">Complete peace of mind with comprehensive insurance coverage</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-2">Professional Team</h3>
+          <p class="type-body text-gray-600">Trained, background-checked professionals at your service</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center">
+            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-2">Reliable Service</h3>
+          <p class="type-body text-gray-600">Punctual arrivals and dependable service every time</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </div>
+          <h3 class="type-h3 text-gray-800 mb-2">England Wide</h3>
+          <p class="type-body text-gray-600">Coverage across all of England with local teams</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+  <section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <h2 class="type-h2 text-gray-800 mb-6">Why Choose VSD Synergy?</h2>
+          <p class="type-body text-gray-600 mb-8 text-lg">
+            We're committed to providing exceptional service that exceeds your expectations.
+            Here's what sets us apart from the competition.
+          </p>
+
+          <div class="space-y-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="type-h3 text-gray-800 mb-1">Professional Drivers</h3>
+                <p class="type-body text-gray-600">All our drivers are fully licensed, background-checked, and trained in customer service excellence.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="type-h3 text-gray-800 mb-1">Fully Insured & Compliant</h3>
+                <p class="type-body text-gray-600">Complete peace of mind with comprehensive insurance coverage and full regulatory compliance.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="type-h3 text-gray-800 mb-1">Always On Time</h3>
+                <p class="type-body text-gray-600">Our 99% on-time rate speaks for itself. We value your time and never keep you waiting.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="type-h3 text-gray-800 mb-1">24/7 Customer Support</h3>
+                <p class="type-body text-gray-600">Round-the-clock support team ready to assist with bookings, changes, and any queries.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl">
+            <img src="https://placehold.co/600x600/3080E8/ffffff?text=VSD+Synergy+Team" alt="VSD Synergy Team" class="w-full h-full object-cover">
+          </div>
+          <div class="absolute -bottom-8 -left-8 bg-white rounded-2xl shadow-xl p-6 max-w-xs">
+            <div class="flex items-center space-x-2 mb-2">
+              <div class="stars-orange">★★★★★</div>
+            </div>
+            <p class="type-body text-gray-700 italic">"Exceptional service from start to finish. Professional, punctual, and friendly."</p>
+            <p class="type-small-body text-gray-500 mt-3">— Sarah M., Corporate Client</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews Section -->
+  <section id="reviews" class="py-24 bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="type-h2 text-gray-800 mb-4">What Our Customers Say</h2>
+        <p class="type-body text-gray-600 text-lg">
+          Don't just take our word for it. Here's what our valued customers have to say.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Review 1 -->
+        <div class="testimonial-card">
+          <div class="stars-orange mb-4">★★★★★</div>
+          <p class="type-body text-gray-700 mb-6">
+            "Used VSD Synergy for our company event transport. Professional service, clean vehicles,
+            and drivers who were punctual and courteous. Highly recommend!"
+          </p>
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+              JM
+            </div>
+            <div>
+              <p class="font-semibold text-gray-800">James Mitchell</p>
+              <p class="type-small-body text-gray-500">Business Client</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="testimonial-card">
+          <div class="stars-orange mb-4">★★★★★</div>
+          <p class="type-body text-gray-700 mb-6">
+            "Booked an airport transfer for my family. The driver was waiting for us at arrivals,
+            helped with luggage, and got us home safely. Will definitely use again."
+          </p>
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold">
+              EP
+            </div>
+            <div>
+              <p class="font-semibold text-gray-800">Emma Parker</p>
+              <p class="type-small-body text-gray-500">Personal Client</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="testimonial-card">
+          <div class="stars-orange mb-4">★★★★★</div>
+          <p class="type-body text-gray-700 mb-6">
+            "Excellent logistics service for our office move. They handled everything with care
+            and completed the move ahead of schedule. Outstanding team!"
+          </p>
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+              RT
+            </div>
+            <div>
+              <p class="font-semibold text-gray-800">Robert Thompson</p>
+              <p class="type-small-body text-gray-500">Business Client</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <h2 class="type-h2 text-white mb-6">Ready to Get Started?</h2>
+      <p class="type-body text-white text-lg mb-8 max-w-2xl mx-auto">
+        Experience the VSD Synergy difference today.
+        Fast, reliable, and professional transport services at your fingertips.
+      </p>
+      <a href="#contact" class="btn-secondary" style="color: white; border-color: white; background: rgba(255,255,255,0.15); backdrop-filter: blur(4px); font-weight: 700;">
+        Contact Us
+      </a>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-16">
+        <div>
+          <h2 class="type-h2 text-gray-800 mb-6">Get in Touch</h2>
+          <p class="type-body text-gray-600 mb-8 text-lg">
+            Have questions? We're here to help. Reach out to us and we'll respond as soon as possible.
+          </p>
+
+          <div class="space-y-6">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="type-small-body text-gray-500">Phone</p>
+                <p class="font-semibold text-gray-800">+44 20 1234 5678</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="type-small-body text-gray-500">Email</p>
+                <p class="font-semibold text-gray-800">info@vsdsynergy.com</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="type-small-body text-gray-500">Address</p>
+                <p class="font-semibold text-gray-800">123 Transport Way, London, UK</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="type-small-body text-gray-500">Hours</p>
+                <p class="font-semibold text-gray-800">Mon - Sun: 24 Hours</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Links -->
+          <div class="mt-8">
+            <p class="type-small-body text-gray-500 mb-4">Follow Us</p>
+            <div class="flex space-x-4">
+              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-400 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+              </a>
+              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              </a>
+              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-700 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div>
+          <div class="bg-gray-50 rounded-2xl p-8">
+            <h3 class="type-h3 text-gray-800 mb-6">Send Us a Message</h3>
+            <form class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                  <input type="text" class="form-input" placeholder="John">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <input type="text" class="form-input" placeholder="Doe">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" class="form-input" placeholder="john@example.com">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input type="tel" class="form-input" placeholder="+44 20 1234 5678">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                <select class="form-input">
+                  <option value="">Select a subject</option>
+                  <option value="quote">Request a Quote</option>
+                  <option value="booking">Existing Booking</option>
+                  <option value="corporate">Corporate Enquiry</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <textarea class="form-input" rows="4" placeholder="How can we help you?"></textarea>
+              </div>
+
+              <button type="submit" class="btn-primary w-full">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Service Selection Modal -->
+  <div id="serviceModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content" style="position: relative; max-width: 700px;">
+      <button class="modal-close" id="closeServiceModal" aria-label="Close modal">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="quote-form-header">
+        <h2 class="step-title">Choose a Service</h2>
+        <p class="step-subtitle">Select the type of service you need</p>
+      </div>
+      <div class="service-select-grid">
+        <a href="/quote/removal" class="service-card" data-service="removal">
+          <div class="service-card-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+          </div>
+          <h3 class="service-card-title">House/Office Removal</h3>
+          <p class="service-card-desc">Professional moving services for homes and offices with trained helpers</p>
+        </a>
+        <a href="/quote/cleaning" class="service-card" data-service="cleaning">
+          <div class="service-card-icon" style="background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+            </svg>
+          </div>
+          <h3 class="service-card-title">Cleaning Services</h3>
+          <p class="service-card-desc">Professional cleaning for residential and commercial spaces</p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <!-- Brand -->
+        <div class="col-span-1">
+          <div class="flex items-center space-x-3 mb-4">
+            <img src="brand_assets/bp.jpeg" alt="VSD Synergy Limited Logo" class="h-12 w-auto">
+            <span class="type-h3">VSD SYNERGY LIMITED</span>
+          </div>
+          <p class="type-small-body text-gray-400 mb-4">
+            Professional removal and cleaning services you can trust.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="font-semibold mb-4">Quick Links</h4>
+          <ul class="space-y-2 type-small-body text-gray-400">
+            <li><a href="#services" class="hover:text-white transition-colors">Services</a></li>
+            <li><a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a></li>
+            <li><a href="#why-choose-us" class="hover:text-white transition-colors">Why Choose Us</a></li>
+            <li><a href="#reviews" class="hover:text-white transition-colors">Reviews</a></li>
+            <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <h4 class="font-semibold mb-4">Services</h4>
+          <ul class="space-y-2 type-small-body text-gray-400">
+            <li><a href="/quote/removal" class="hover:text-white transition-colors">House/Office Removal</a></li>
+            <li><a href="/quote/cleaning" class="hover:text-white transition-colors">Cleaning Services</a></li>
+            <li><a href="/quote/removal" class="hover:text-white transition-colors">End of Tenancy Cleaning</a></li>
+            <li><a href="/quote/cleaning" class="hover:text-white transition-colors">Routine Cleaning</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <h4 class="font-semibold mb-4">Contact</h4>
+          <ul class="space-y-2 type-small-body text-gray-400">
+            <li>+44 20 1234 5678</li>
+            <li>info@vsdsynergy.com</li>
+            <li>123 Transport Way, London</li>
+            <li>Mon - Sun: 24 Hours</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="type-small-body text-gray-500">
+          &copy; 2026 VSD Synergy Limited. All rights reserved.
+        </p>
+        <div class="flex space-x-6 mt-4 md:mt-0">
+          <a href="#" class="type-small-body text-gray-500 hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#" class="type-small-body text-gray-500 hover:text-white transition-colors">Terms of Service</a>
+          <a href="#" class="type-small-body text-gray-500 hover:text-white transition-colors">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking a link
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+      });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Form submission handlers
+    document.getElementById('quoteForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you for your quote request! We will get back to you shortly.');
+    });
+
+    // Navbar scroll effect
+    let lastScroll = 0;
+    const navbar = document.querySelector('nav');
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+
+      if (currentScroll > 100) {
+        navbar.classList.add('shadow-lg');
+      } else {
+        navbar.classList.remove('shadow-lg');
+      }
+
+      lastScroll = currentScroll;
+    });
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-in-up');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.card-hover, .testimonial-card').forEach(el => {
+      el.style.opacity = '0';
+      observer.observe(el);
+    });
+
+    // Stats Counter Animation
+    function animateCounter(el) {
+      const target = parseInt(el.dataset.target, 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 2000;
+      const startTime = performance.now();
+
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+        el.textContent = current.toLocaleString() + suffix;
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          el.textContent = target.toLocaleString() + suffix;
+        }
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-number').forEach(el => {
+      statsObserver.observe(el);
+    });
+
+    // Service Modal
+    const openQuoteModal = document.getElementById('openQuoteModal');
+    const serviceModal = document.getElementById('serviceModal');
+    const closeServiceModal = document.getElementById('closeServiceModal');
+
+    if (openQuoteModal) {
+      openQuoteModal.addEventListener('click', (e) => {
+        e.preventDefault();
+        serviceModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    if (closeServiceModal) {
+      closeServiceModal.addEventListener('click', () => {
+        serviceModal.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    }
+
+    serviceModal.addEventListener('click', (e) => {
+      if (e.target === serviceModal) {
+        serviceModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Handle service card clicks - prevent default navigation for now
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const service = card.dataset.service;
+        if (service === 'cleaning') {
+          e.preventDefault();
+          window.location.href = '/quote/cleaning';
+        }
+        // removal will navigate normally
+      });
+    });
+
+    // Keyboard navigation for modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && serviceModal.classList.contains('active')) {
+        serviceModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
+</body>
+</html>

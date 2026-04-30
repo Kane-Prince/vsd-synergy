@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cleaning Services Quote - VSD Synergy Limited</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Flatpickr for Date/Time -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-roboto: 'Roboto', sans-serif;
+      --font-lato: 'Lato', sans-serif;
+      --brand-primary: #3080E8;
+      --brand-primary-light: #5a9aef;
+      --brand-primary-lighter: #84b5f6;
+      --brand-primary-dark: #1e5fb8;
+      --brand-primary-darker: #0f4080;
+      --accent-coral: #FF6B35;
+      --accent-coral-light: #FF8557;
+      --accent-coral-dark: #E55A2B;
+      --neutral-50: #F8FAFC;
+      --neutral-100: #F1F5F9;
+      --neutral-200: #E2E8F0;
+      --neutral-300: #CBD5E1;
+      --neutral-400: #94A3B8;
+      --neutral-500: #64748B;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1E293B;
+      --neutral-900: #0F172A;
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-lato);
+      background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .form-container {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-2xl);
+    }
+
+    .form-body {
+      padding: 2rem;
+      overflow: visible;
+    }
+
+    .form-header {
+      padding: 2rem;
+      background: var(--neutral-50);
+      border-bottom: 1px solid var(--neutral-200);
+    }
+
+    .form-title {
+      font-family: var(--font-roboto);
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: var(--neutral-800);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-500);
+    }
+
+    .form-body {
+      padding: 2rem;
+    }
+
+    /* Progress Dots */
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background: var(--neutral-300);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .progress-dot.active {
+      background: var(--accent-coral);
+      width: 32px;
+      border-radius: 5px;
+    }
+
+    .progress-dot.completed {
+      background: var(--accent-coral);
+    }
+
+    /* Form Steps */
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+      animation: stepEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes stepEnter {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .form-step.exiting {
+      animation: stepExit 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes stepExit {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+    }
+
+    .step-title {
+      font-family: var(--font-roboto);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--neutral-800);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-description {
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-500);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-lato);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      color: var(--neutral-800);
+      background: white;
+      border: 2px solid var(--neutral-200);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-coral);
+      box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.15);
+    }
+
+    .form-input::placeholder {
+      color: var(--neutral-400);
+    }
+
+    .form-input.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+    }
+
+    .error-message {
+      display: none;
+      font-family: var(--font-lato);
+      font-size: 0.75rem;
+      color: #ef4444;
+      margin-top: 0.25rem;
+    }
+
+    .form-input.error + .error-message {
+      display: block;
+    }
+
+    /* Input with icon */
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neutral-400);
+      pointer-events: none;
+    }
+
+    .form-input.with-icon {
+      padding-left: 2.75rem;
+    }
+
+    /* Button Group */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .button-option {
+      flex: 1;
+      min-width: 140px;
+      padding: 1rem 1.25rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      background: white;
+      border: 2px solid var(--neutral-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      position: relative;
+    }
+
+    .button-option:hover {
+      border-color: var(--accent-coral-light);
+      background: rgba(255, 107, 53, 0.05);
+    }
+
+    .button-option.selected {
+      border-color: var(--accent-coral);
+      background: var(--accent-coral);
+      color: white;
+    }
+
+    .button-option input[type="radio"],
+    .button-option input[type="checkbox"] {
+      display: none;
+    }
+
+    /* Conditional Field */
+    .conditional-field {
+      margin-top: 1rem;
+      padding: 1.25rem;
+      background: var(--neutral-50);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--neutral-200);
+      display: none;
+      animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .conditional-field.visible {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 500px;
+      }
+    }
+
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--neutral-200);
+      margin-top: 1.5rem;
+    }
+
+    .btn-back {
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--neutral-600);
+      background: var(--neutral-100);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-back:hover {
+      background: var(--neutral-200);
+    }
+
+    .btn-next, .btn-submit {
+      padding: 0.75rem 2rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(255, 107, 53, 0.4);
+    }
+
+    .btn-next:hover, .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    }
+
+    .btn-next:disabled, .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Summary */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-item {
+      background: var(--neutral-50);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .summary-label {
+      font-family: var(--font-lato);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--neutral-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .summary-value {
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--neutral-800);
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.9);
+      font-family: var(--font-lato);
+      font-size: 0.875rem;
+      text-decoration: none;
+      margin: 1rem;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: white;
+    }
+
+    /* Geoapify Autocomplete */
+    .geoapify-autocomplete-wrapper {
+      position: relative;
+    }
+
+    .geoapify-autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid var(--neutral-200);
+      border-top: none;
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .geoapify-autocomplete-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--neutral-100);
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-700);
+      transition: background 0.2s ease;
+    }
+
+    .geoapify-autocomplete-item:hover {
+      background: var(--neutral-50);
+    }
+
+    .geoapify-autocomplete-item.selected {
+      background: rgba(255, 107, 53, 0.1);
+    }
+
+    .geoapify-autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Time Slot Selector */
+    .time-slot-container {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 2px solid var(--neutral-200);
+      border-radius: var(--radius-md);
+      padding: 0.5rem;
+    }
+
+    .time-slot-group {
+      margin-bottom: 1rem;
+    }
+
+    .time-slot-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .time-slot-group-title {
+      font-family: var(--font-lato);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--neutral-500);
+      padding: 0.5rem 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .time-slot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .time-slot-button {
+      padding: 0.625rem 0.5rem;
+      font-family: var(--font-lato);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      background: white;
+      border: 2px solid var(--neutral-200);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .time-slot-button:hover {
+      border-color: var(--accent-coral-light);
+      background: rgba(255, 107, 53, 0.05);
+    }
+
+    .time-slot-button.selected {
+      border-color: var(--accent-coral);
+      background: var(--accent-coral);
+      color: white;
+    }
+
+    .time-slot-button.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: var(--neutral-100);
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      body {
+        padding: 0.5rem;
+      }
+
+      .form-container {
+        margin: 1rem auto;
+      }
+
+      .form-header, .form-body {
+        padding: 1.25rem;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .button-option {
+        min-width: 100%;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+      }
+
+      .btn-back, .btn-next, .btn-submit {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="/" class="back-link">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back to Home
+  </a>
+
+  <div class="form-container">
+    <div class="form-header">
+      <h1 class="form-title">Cleaning Services Quote</h1>
+      <p class="form-subtitle">Tell us about your cleaning needs and get an instant quote</p>
+    </div>
+
+    <div class="form-body">
+      <!-- Progress Dots -->
+      <div class="progress-dots" id="progressDots"></div>
+
+      <form id="cleaningQuoteForm">
+        <!-- Step 1: Type of Cleaning Service -->
+        <div class="form-step active" data-step="1">
+          <h2 class="step-title">Type of Cleaning Service</h2>
+          <p class="step-description">What type of cleaning service do you need?</p>
+
+          <div class="form-group">
+            <label class="form-label">Select a service type</label>
+            <div class="button-group" id="cleaningTypeGroup">
+              <label class="button-option">
+                <input type="radio" name="cleaningType" value="end-of-tenancy">
+                End of Tenancy Cleaning
+              </label>
+              <label class="button-option">
+                <input type="radio" name="cleaningType" value="routine">
+                Routine House Cleaning
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <div></div>
+            <button type="button" class="btn-next" onclick="nextStep()">
+              Continue
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: House Address -->
+        <div class="form-step" data-step="2">
+          <h2 class="step-title">Property Address</h2>
+          <p class="step-description">Where do you need the cleaning service?</p>
+
+          <div class="form-group">
+            <label class="form-label" for="houseAddress">House Address / Postcode</label>
+            <div class="geoapify-autocomplete-wrapper">
+              <div class="input-wrapper">
+                <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <input type="text" class="form-input with-icon" id="houseAddress" name="houseAddress" placeholder="Enter property address or postcode" required autocomplete="off">
+              </div>
+              <div class="geoapify-autocomplete-dropdown" id="houseAddressDropdown" style="display: none;"></div>
+            </div>
+            <span class="error-message">Please enter a valid address</span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <button type="button" class="btn-next" onclick="nextStep()">
+              Continue
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Date -->
+        <div class="form-step" data-step="3">
+          <h2 class="step-title">Cleaning Date</h2>
+          <p class="step-description">When do you need the cleaning service?</p>
+
+          <div class="form-group">
+            <label class="form-label" for="cleaningDate">Date</label>
+            <div class="input-wrapper">
+              <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <input type="text" class="form-input with-icon" id="cleaningDate" name="cleaningDate" placeholder="Select a date" required readonly>
+              <input type="hidden" id="cleaningDateValue" name="cleaningDateValue">
+            </div>
+            <span class="error-message" id="cleaningDateError">Please select a future date</span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="button" class="btn-next" onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Time -->
+        <div class="form-step" data-step="4">
+          <h2 class="step-title">Cleaning Time</h2>
+          <p class="step-description">What time works best for you?</p>
+
+          <div class="form-group">
+            <label class="form-label">Select a time slot</label>
+            <div class="time-slot-container" id="timeSlotContainer">
+              <!-- Time slots will be generated by JavaScript -->
+            </div>
+            <input type="hidden" id="selectedTimeSlot" name="selectedTimeSlot" required>
+            <span class="error-message" id="timeSlotError" style="margin-top: 0.5rem;">Please select a time slot</span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="button" class="btn-next" onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 5: Type of Flat -->
+        <div class="form-step" data-step="5">
+          <h2 class="step-title">Property Type</h2>
+          <p class="step-description">What type of property do you have?</p>
+
+          <div class="form-group">
+            <label class="form-label">Select property type</label>
+            <div class="button-group" id="flatTypeGroup">
+              <label class="button-option">
+                <input type="radio" name="flatType" value="studio">
+                Studio Flat
+              </label>
+              <label class="button-option">
+                <input type="radio" name="flatType" value="1-bed">
+                1 Bedroom Flat
+              </label>
+              <label class="button-option">
+                <input type="radio" name="flatType" value="2-bed">
+                2 Bedroom Flat
+              </label>
+              <label class="button-option">
+                <input type="radio" name="flatType" value="3-bed">
+                3 Bedroom Flat
+              </label>
+              <label class="button-option">
+                <input type="radio" name="flatType" value="other">
+                Other
+              </label>
+            </div>
+          </div>
+
+          <div class="conditional-field" id="customBedroomSection">
+            <label class="form-label" for="customBedroomCount">Number of Bedrooms</label>
+            <input type="number" class="form-input" id="customBedroomCount" name="customBedroomCount" placeholder="Enter number of bedrooms" min="4">
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="button" class="btn-next" onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 6: Contact Info -->
+        <div class="form-step" data-step="6">
+          <h2 class="step-title">Contact Information</h2>
+          <p class="step-description">How can we reach you?</p>
+
+          <div class="form-group">
+            <label class="form-label" for="fullName">Full Name</label>
+            <input type="text" class="form-input" id="fullName" name="fullName" placeholder="Enter your full name" required>
+            <span class="error-message">Please enter your name</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" class="form-input" id="email" name="email" placeholder="Enter your email" required>
+            <span class="error-message">Please enter a valid email</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input type="tel" class="form-input" id="phone" name="phone" placeholder="Enter your phone number" required>
+            <span class="error-message">Please enter a valid phone number</span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="button" class="btn-next" onclick="nextStep()">Review Quote</button>
+          </div>
+        </div>
+
+        <!-- Step 7: Summary -->
+        <div class="form-step" data-step="7">
+          <h2 class="step-title">Review Your Quote</h2>
+          <p class="step-description">Please review your details before submitting</p>
+
+          <div class="summary-grid" id="summaryGrid"></div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="submit" class="btn-submit">Submit Quote Request</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Geoapify API Key - Replace with your actual key from geoapify.com
+    const GEOAPIFY_API_KEY = '0ba8014cf5934da590805884dc8f2a52';
+
+    const STORAGE_KEY = 'vsd_cleaning_quote';
+    const TOTAL_STEPS = 7;
+    let currentStep = 1;
+    let houseAddressDebounce = null;
+    let flatpickrInstance = null;
+    let selectedTimeValue = null;
+
+    // Initialize form
+    document.addEventListener('DOMContentLoaded', () => {
+      initProgressDots();
+      loadFromStorage();
+      initFlatpickr();
+      initButtonGroups();
+      initGeoapifyAutocomplete();
+      initTimeSlotSelector();
+      initFormValidation();
+    });
+
+    // Progress Dots
+    function initProgressDots() {
+      const container = document.getElementById('progressDots');
+      container.innerHTML = '';
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot' + (i === 1 ? ' active' : '');
+        container.appendChild(dot);
+      }
+    }
+
+    function updateProgressDots() {
+      const dots = document.querySelectorAll('.progress-dot');
+      dots.forEach((dot, index) => {
+        const stepNum = index + 1;
+        dot.classList.remove('active', 'completed');
+        if (stepNum < currentStep) {
+          dot.classList.add('completed');
+        } else if (stepNum === currentStep) {
+          dot.classList.add('active');
+        }
+      });
+    }
+
+    // Flatpickr Date Picker
+    function initFlatpickr() {
+      const dateInput = document.getElementById('cleaningDate');
+      flatpickrInstance = flatpickr(dateInput, {
+        minDate: 'today',
+        dateFormat: 'Y-m-d',
+        disableMobile: false,
+        onChange: function(selectedDates, dateStr) {
+          document.getElementById('cleaningDateValue').value = dateStr;
+          validateDateSelection(dateStr);
+        },
+        onOpen: function() {
+          // Re-render time slots when date picker opens
+          renderTimeSlots();
+        }
+      });
+    }
+
+    function validateDateSelection(dateStr) {
+      if (!dateStr) return false;
+
+      const selectedDate = new Date(dateStr + 'T00:00:00');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const errorEl = document.getElementById('cleaningDateError');
+      const dateInput = document.getElementById('cleaningDate');
+
+      console.log('Validating date:', dateStr, 'Selected:', selectedDate, 'Today:', today, 'Is valid:', selectedDate >= today);
+
+      if (selectedDate < today) {
+        errorEl.style.display = 'block';
+        dateInput.classList.add('error');
+        return false;
+      } else {
+        errorEl.style.display = 'none';
+        dateInput.classList.remove('error');
+        return true;
+      }
+    }
+
+    // Geoapify Autocomplete
+    function initGeoapifyAutocomplete() {
+      const input = document.getElementById('houseAddress');
+      const dropdown = document.getElementById('houseAddressDropdown');
+
+      if (!input || !dropdown) return;
+
+      input.addEventListener('input', function(e) {
+        const query = e.target.value.trim();
+
+        if (houseAddressDebounce) {
+          clearTimeout(houseAddressDebounce);
+        }
+
+        if (query.length < 3) {
+          dropdown.style.display = 'none';
+          return;
+        }
+
+        houseAddressDebounce = setTimeout(() => {
+          fetchAddressSuggestions(query);
+        }, 300);
+      });
+
+      // Close dropdown on outside click
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.geoapify-autocomplete-wrapper')) {
+          dropdown.style.display = 'none';
+        }
+      });
+
+      // Handle keyboard navigation
+      input.addEventListener('keydown', function(e) {
+        const items = dropdown.querySelectorAll('.geoapify-autocomplete-item');
+        const selected = dropdown.querySelector('.geoapify-autocomplete-item.selected');
+        let selectedIndex = Array.from(items).findIndex(item => item === selected);
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (selectedIndex < items.length - 1) {
+            items.forEach(item => item.classList.remove('selected'));
+            items[selectedIndex + 1].classList.add('selected');
+            items[selectedIndex + 1].scrollIntoView({ block: 'nearest' });
+          }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (selectedIndex > 0) {
+            items.forEach(item => item.classList.remove('selected'));
+            items[selectedIndex - 1].classList.add('selected');
+            items[selectedIndex - 1].scrollIntoView({ block: 'nearest' });
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (selected) {
+            selected.click();
+          }
+        } else if (e.key === 'Escape') {
+          dropdown.style.display = 'none';
+        }
+      });
+    }
+
+    function isEnglandLocation(result) {
+      const props = result.properties || {};
+      const state = (props.state || '').toLowerCase();
+      const stateCode = (props.state_code || '').toLowerCase();
+
+      // Reliable check using Geoapify's state field
+      if (state === 'england' || stateCode === 'eng') return true;
+      if (state === 'scotland' || stateCode === 'sct') return false;
+      if (state === 'wales' || stateCode === 'wls') return false;
+      if (state === 'northern ireland' || stateCode === 'nir') return false;
+
+      // Fallback for edge cases where state might be missing
+      const formatted = (props.formatted || '').toLowerCase();
+      if (formatted.includes('scotland') || formatted.includes('wales') || formatted.includes('northern ireland')) {
+        return false;
+      }
+
+      return true;
+    }
+
+    async function fetchAddressSuggestions(query) {
+      const dropdown = document.getElementById('houseAddressDropdown');
+      const input = document.getElementById('houseAddress');
+
+      try {
+        const response = await fetch(
+          `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(query)}&apiKey=${GEOAPIFY_API_KEY}&limit=10&filter=countrycode:gb`
+        );
+        const data = await response.json();
+
+        // Geoapify returns GeoJSON FeatureCollection with features[]
+        const features = data.features || [];
+
+        if (features.length > 0) {
+          // Filter for England only
+          const englandResults = features.filter(result => isEnglandLocation(result));
+
+          if (englandResults.length === 0) {
+            dropdown.innerHTML = `
+              <div class="geoapify-autocomplete-item" style="color: #ef4444; cursor: default;">
+                Please enter a location in England only
+              </div>
+            `;
+            dropdown.style.display = 'block';
+            return;
+          }
+
+          dropdown.innerHTML = englandResults.slice(0, 5).map(result => {
+            const props = result.properties || {};
+            return `
+              <div class="geoapify-autocomplete-item" data-address="${escapeHtml(props.formatted)}" data-lat="${props.lat}" data-lon="${props.lon}">
+                ${escapeHtml(props.formatted)}
+              </div>
+            `;
+          }).join('');
+
+          dropdown.style.display = 'block';
+
+          console.log('Address suggestions:', englandResults.slice(0, 5).map(r => r.properties?.formatted));
+
+          // Add click handlers
+          dropdown.querySelectorAll('.geoapify-autocomplete-item').forEach(item => {
+            item.addEventListener('click', function() {
+              if (this.textContent.includes('Please enter a location in England only')) return;
+              input.value = this.dataset.address;
+              // Store lat/lon for pricing
+              input.dataset.lat = this.dataset.lat;
+              input.dataset.lon = this.dataset.lon;
+              console.log('Selected address:', this.dataset.address, 'Lat:', this.dataset.lat, 'Lon:', this.dataset.lon);
+              dropdown.style.display = 'none';
+            });
+          });
+        } else {
+          dropdown.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Geoapify API error:', error);
+        dropdown.style.display = 'none';
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Time Slot Selector
+    function initTimeSlotSelector() {
+      renderTimeSlots();
+    }
+
+    function renderTimeSlots() {
+      const container = document.getElementById('timeSlotContainer');
+      if (!container) return;
+
+      const selectedDate = document.getElementById('cleaningDateValue').value;
+      const selectedDateObj = selectedDate ? new Date(selectedDate) : new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const isToday = selectedDate && new Date(selectedDate).toDateString() === today.toDateString();
+
+      let html = '';
+      const timeSlots = generateTimeSlots();
+
+      timeSlots.forEach(({ period, slots }) => {
+        html += `
+          <div class="time-slot-group">
+            <div class="time-slot-group-title">${period}</div>
+            <div class="time-slot-grid">
+              ${slots.map(slot => {
+                const slotTime = slot.time;
+                const [hours, minutes] = slotTime.split(':').map(Number);
+                const slotDate = new Date();
+                slotDate.setHours(hours, minutes, 0, 0);
+
+                let isDisabled = false;
+                if (isToday) {
+                  const now = new Date();
+                  now.setMinutes(now.getMinutes() + 30); // 30 min buffer
+                  isDisabled = slotDate <= now;
+                }
+
+                const isSelected = selectedTimeValue === slotTime;
+                return `
+                  <button
+                    type="button"
+                    class="time-slot-button${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}"
+                    data-time="${slotTime}"
+                    ${isDisabled ? 'disabled tabindex="-1"' : ''}
+                  >
+                    ${slot.display}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+
+      // Add click handlers
+      container.querySelectorAll('.time-slot-button:not(.disabled)').forEach(button => {
+        button.addEventListener('click', function() {
+          container.querySelectorAll('.time-slot-button').forEach(btn => btn.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedTimeValue = this.dataset.time;
+          document.getElementById('selectedTimeSlot').value = selectedTimeValue;
+          document.getElementById('timeSlotError').style.display = 'none';
+        });
+      });
+    }
+
+    function generateTimeSlots() {
+      const slots = {
+        morning: [],
+        afternoon: [],
+        evening: []
+      };
+
+      for (let hour = 8; hour < 12; hour++) {
+        for (let minute = 0; minute < 60; minute += 5) {
+          const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+          const display = `${hour}:${minute.toString().padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
+          slots.morning.push({ time, display });
+        }
+      }
+
+      for (let hour = 12; hour < 18; hour++) {
+        for (let minute = 0; minute < 60; minute += 5) {
+          const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+          const displayHour = hour === 12 ? 12 : hour - 12;
+          const display = `${displayHour}:${minute.toString().padStart(2, '0')} PM`;
+          slots.afternoon.push({ time, display });
+        }
+      }
+
+      for (let hour = 18; hour <= 20; hour++) {
+        const endHour = hour === 20 ? 0 : hour;
+        for (let minute = 0; minute < (hour === 20 ? 1 : 60); minute += 5) {
+          if (hour === 20 && minute > 0) break;
+          const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+          const display = `8:00 PM`;
+          slots.evening.push({ time, display: hour === 18 ? '6:00 PM' : hour === 19 ? '7:00 PM' : '8:00 PM' });
+        }
+      }
+
+      // Remove duplicate 8:00 PM
+      const eveningUnique = slots.evening.filter((slot, index, self) =>
+        index === self.findIndex(s => s.time === slot.time)
+      );
+
+      return [
+        { period: 'Morning', slots: slots.morning },
+        { period: 'Afternoon', slots: slots.afternoon },
+        { period: 'Evening', slots: eveningUnique }
+      ];
+    }
+
+    // Button Groups Selection
+    function initButtonGroups() {
+      // Cleaning type buttons
+      document.querySelectorAll('#cleaningTypeGroup .button-option input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const group = e.target.closest('.button-group');
+          group.querySelectorAll('.button-option').forEach(opt => opt.classList.remove('selected'));
+          e.target.closest('.button-option').classList.add('selected');
+        });
+      });
+
+      // Flat type buttons
+      document.querySelectorAll('#flatTypeGroup .button-option input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const group = e.target.closest('.button-group');
+          group.querySelectorAll('.button-option').forEach(opt => opt.classList.remove('selected'));
+          e.target.closest('.button-option').classList.add('selected');
+
+          // Handle custom bedroom count
+          if (e.target.name === 'flatType' && e.target.value === 'other') {
+            document.getElementById('customBedroomSection').classList.add('visible');
+          } else {
+            document.getElementById('customBedroomSection').classList.remove('visible');
+          }
+        });
+      });
+    }
+
+    // Form Validation
+    function initFormValidation() {
+      document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('blur', () => validateField(input));
+      });
+
+      document.getElementById('cleaningQuoteForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitQuote();
+      });
+    }
+
+    function validateField(input) {
+      const value = input.value.trim();
+      let isValid = true;
+
+      if (input.required && !value) {
+        isValid = false;
+      } else if (input.type === 'email' && value) {
+        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      } else if (input.type === 'tel' && value) {
+        isValid = /^[\d\s\+\-\(\)]{10,}$/.test(value);
+      }
+
+      input.classList.toggle('error', !isValid);
+      return isValid;
+    }
+
+    function validateCurrentStep() {
+      const step = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+
+      // Special validation for date step (step 3)
+      if (currentStep === 3) {
+        const dateValue = document.getElementById('cleaningDateValue').value;
+        const dateInput = document.getElementById('cleaningDate');
+        const errorEl = document.getElementById('cleaningDateError');
+
+        console.log('Step 3 validation - dateValue:', dateValue);
+
+        if (!dateValue) {
+          errorEl.style.display = 'block';
+          dateInput.classList.add('error');
+          return false;
+        }
+
+        // Check if date is in the past
+        const selectedDate = new Date(dateValue + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+          errorEl.style.display = 'block';
+          dateInput.classList.add('error');
+          return false;
+        }
+
+        errorEl.style.display = 'none';
+        dateInput.classList.remove('error');
+        return true;
+      }
+
+      // Special validation for time slot step (step 4)
+      if (currentStep === 4) {
+        console.log('Step 4 validation - selectedTimeValue:', selectedTimeValue);
+        if (!selectedTimeValue) {
+          document.getElementById('timeSlotError').style.display = 'block';
+          return false;
+        }
+        document.getElementById('timeSlotError').style.display = 'none';
+        return true;
+      }
+
+      // For steps with special validation (date/time), skip general validation
+      if (currentStep === 3 || currentStep === 4) {
+        return true;
+      }
+
+      // Validation for other steps
+      const inputs = step.querySelectorAll('.form-input[required]');
+      const radios = step.querySelectorAll('input[type="radio"]');
+      let isValid = true;
+
+      inputs.forEach(input => {
+        if (input.required && !input.value.trim()) {
+          input.classList.add('error');
+          isValid = false;
+        }
+      });
+
+      if (radios.length > 0) {
+        const groupName = radios[0].name;
+        const checked = step.querySelector(`input[name="${groupName}"]:checked`);
+        if (!checked) {
+          isValid = false;
+        }
+      }
+
+      return isValid;
+    }
+
+    // Navigation
+    function nextStep() {
+      console.log('nextStep called, currentStep:', currentStep, 'isValid:', validateCurrentStep());
+
+      if (!validateCurrentStep()) {
+        console.log('Validation failed');
+        return;
+      }
+
+      const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      console.log('Current step element:', currentStepEl);
+
+      if (!currentStepEl) {
+        console.error('Could not find current step element');
+        return;
+      }
+
+      currentStepEl.classList.add('exiting');
+
+      setTimeout(() => {
+        currentStepEl.classList.remove('active', 'exiting');
+        currentStep++;
+        const nextStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+        console.log('Next step element:', nextStepEl, 'new currentStep:', currentStep);
+
+        if (!nextStepEl) {
+          console.error('Could not find next step element');
+          return;
+        }
+
+        nextStepEl.classList.add('active');
+        updateProgressDots();
+        saveToStorage();
+
+        if (currentStep === 7) {
+          renderSummary();
+        }
+
+        // Re-render time slots when entering step 4
+        if (currentStep === 4) {
+          setTimeout(() => renderTimeSlots(), 100);
+        }
+      }, 300);
+    }
+
+    function prevStep() {
+      const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      currentStepEl.classList.add('exiting');
+
+      setTimeout(() => {
+        currentStepEl.classList.remove('active', 'exiting');
+        currentStep--;
+        const prevStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+        prevStepEl.classList.add('active');
+        updateProgressDots();
+        saveToStorage();
+      }, 300);
+    }
+
+    // Storage
+    function saveToStorage() {
+      const formData = getFormData();
+      formData.currentStep = currentStep;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    }
+
+    function loadFromStorage() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          Object.keys(data).forEach(key => {
+            if (key === 'currentStep') {
+              currentStep = data[key];
+              updateProgressDots();
+              document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+                if (parseInt(step.dataset.step) === currentStep) {
+                  step.classList.add('active');
+                }
+              });
+            } else {
+              const input = document.querySelector(`[name="${key}"]`);
+              if (input) {
+                input.value = data[key];
+                if (input.type === 'radio' && input.checked) {
+                  input.closest('.button-group')?.querySelectorAll('.button-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                  });
+                  input.closest('.button-option')?.classList.add('selected');
+                }
+              }
+              if (key === 'flatType' && data[key] === 'other') {
+                document.getElementById('customBedroomSection').classList.add('visible');
+              }
+              if (key === 'selectedTimeSlot') {
+                selectedTimeValue = data[key];
+              }
+            }
+          });
+        } catch (e) {
+          console.error('Failed to load saved data:', e);
+        }
+      }
+    }
+
+    function getFormData() {
+      const form = document.getElementById('cleaningQuoteForm');
+      const formData = new FormData(form);
+      const data = { serviceType: 'cleaning' };
+
+      for (const [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+
+      // Add selected time slot
+      if (selectedTimeValue) {
+        data.selectedTimeSlot = selectedTimeValue;
+      }
+
+      return data;
+    }
+
+    // Summary
+    function renderSummary() {
+      const data = getFormData();
+      const grid = document.getElementById('summaryGrid');
+
+      const formatLabel = (key) => {
+        const labels = {
+          cleaningType: 'Service Type',
+          houseAddress: 'Property Address',
+          cleaningDate: 'Date',
+          selectedTimeSlot: 'Time',
+          flatType: 'Property Type',
+          fullName: 'Name',
+          email: 'Email',
+          phone: 'Phone'
+        };
+        return labels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      };
+
+      const formatTimeSlot = (timeStr) => {
+        if (!timeStr || !timeStr.includes(':')) return timeStr;
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHour = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+        return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+      };
+
+      const formatValue = (key, value) => {
+        switch (key) {
+          case 'cleaningType': return value === 'end-of-tenancy' ? 'End of Tenancy Cleaning' : 'Routine House Cleaning';
+          case 'houseAddress': return value;
+          case 'cleaningDate': return new Date(value + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+          case 'selectedTimeSlot': return formatTimeSlot(value);
+          case 'flatType': return value === 'studio' ? 'Studio Flat' : value === '1-bed' ? '1 Bedroom Flat' : value === '2-bed' ? '2 Bedroom Flat' : value === '3-bed' ? '3 Bedroom Flat' : `${data.customBedroomCount || ''} Bedrooms`;
+          case 'fullName': return value;
+          case 'email': return value;
+          case 'phone': return value;
+          default: return value;
+        }
+      };
+
+      let html = '';
+      const skipKeys = ['serviceType', 'customBedroomCount', 'currentStep', 'cleaningDateValue'];
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (skipKeys.includes(key) || !value) return;
+
+        html += `
+          <div class="summary-item">
+            <span class="summary-label">${formatLabel(key)}</span>
+            <span class="summary-value">${formatValue(key, value)}</span>
+          </div>
+        `;
+      });
+
+      grid.innerHTML = html;
+    }
+
+    // Submit
+    function submitQuote() {
+      const quoteData = getFormData();
+      console.log('=== CLEANING QUOTE SUBMITTED ===');
+      console.log(quoteData);
+      console.log('==============================');
+
+      localStorage.removeItem(STORAGE_KEY);
+
+      alert('Thank you for your quote request! We will contact you shortly.');
+
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>

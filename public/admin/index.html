@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - VSD Synergy Limited</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-primary: #3080E8;
+      --brand-primary-dark: #1e5fb8;
+      --brand-primary-light: #5a9aef;
+      --accent-coral: #FF6B35;
+      --neutral-50: #F8FAFC;
+      --neutral-100: #F1F5F9;
+      --neutral-200: #E2E8F0;
+      --neutral-300: #CBD5E1;
+      --neutral-400: #94A3B8;
+      --neutral-500: #64748B;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1E293B;
+      --neutral-900: #0F172A;
+    }
+    body { font-family: 'Lato', sans-serif; background: var(--neutral-50); }
+    .font-roboto { font-family: 'Roboto', sans-serif; }
+    .bg-brand { background-color: var(--brand-primary); }
+    .bg-brand-dark { background-color: var(--brand-primary-dark); }
+    .text-brand { color: var(--brand-primary); }
+    .border-brand { border-color: var(--brand-primary); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .input-field {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--neutral-300);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15);
+    }
+    .card {
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+    }
+    .toast {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 500;
+      z-index: 50;
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.success { background: #10B981; }
+    .toast.error { background: #EF4444; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+    <div class="card w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="flex items-center justify-center space-x-3 mb-4">
+          <img src="/brand_assets/bp.jpeg" alt="VSD Synergy" class="h-12 w-auto rounded">
+          <span class="font-roboto text-xl font-bold text-gray-800">VSD SYNERGY</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+        <p class="text-gray-500 text-sm">Sign in to manage pricing and view quotes</p>
+      </div>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <input type="text" id="username" class="input-field" required autofocus>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" id="password" class="input-field" required>
+        </div>
+        <button type="submit" class="btn-primary w-full">Sign In</button>
+      </form>
+      <p id="loginError" class="text-red-500 text-sm text-center mt-3 hidden"></p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-3">
+            <img src="/brand_assets/bp.jpeg" alt="VSD Synergy" class="h-10 w-auto rounded">
+            <span class="font-roboto text-lg font-bold text-gray-800">VSD SYNERGY</span>
+            <span class="text-gray-300">|</span>
+            <span class="text-sm text-gray-500">Admin Dashboard</span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span id="adminName" class="text-sm text-gray-600"></span>
+            <button onclick="logout()" class="text-sm text-red-600 hover:text-red-800 font-medium">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Van Size Options</p>
+          <p id="statVanCount" class="text-3xl font-bold text-brand">0</p>
+        </div>
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Helper Options</p>
+          <p id="statHelperCount" class="text-3xl font-bold text-brand">0</p>
+        </div>
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Distance Base Rate</p>
+          <p id="statDistanceRate" class="text-3xl font-bold text-brand">£0</p>
+        </div>
+      </div>
+
+      <!-- Pricing Editor -->
+      <div class="card mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">Pricing Configuration</h2>
+            <p class="text-sm text-gray-500 mt-1">Set prices for removal quote options. Changes apply immediately to new quotes.</p>
+          </div>
+          <button onclick="savePricing()" class="btn-primary">Save Changes</button>
+        </div>
+
+        <div id="pricingEditor" class="space-y-8">
+          <!-- Van Size -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Van Size</h3>
+            <div id="vanSizeGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+          </div>
+
+          <!-- Helpers -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Helpers</h3>
+            <div id="helpersGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+          </div>
+
+          <!-- Stairs -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Stairs / Floor Range</h3>
+            <div id="stairsGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+          </div>
+
+          <!-- Distance -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Distance Base Rate</h3>
+            <div id="distanceGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quotes List -->
+      <div class="card">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Quotes</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200">
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">ID</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Customer</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Service</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Price</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Distance</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Status</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Date</th>
+              </tr>
+            </thead>
+            <tbody id="quotesTableBody">
+              <tr><td colspan="7" class="py-8 text-center text-gray-400">Loading quotes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    let currentPricing = [];
+    let isLoggedIn = false;
+
+    // Check auth on load
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
+        if (data.authenticated) {
+          isLoggedIn = true;
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('dashboard').classList.remove('hidden');
+          document.getElementById('adminName').textContent = data.username;
+          await loadPricing();
+          await loadQuotes();
+        }
+      } catch (err) {
+        console.error('Auth check failed:', err);
+      }
+    }
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('loginError');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          isLoggedIn = true;
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('dashboard').classList.remove('hidden');
+          document.getElementById('adminName').textContent = data.username;
+          await loadPricing();
+          await loadQuotes();
+        } else {
+          errorEl.textContent = data.error || 'Login failed';
+          errorEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorEl.textContent = 'Network error. Please try again.';
+        errorEl.classList.remove('hidden');
+      }
+    });
+
+    // Logout
+    async function logout() {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      isLoggedIn = false;
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    // Load pricing
+    async function loadPricing() {
+      try {
+        const res = await fetch('/api/pricing');
+        currentPricing = await res.json();
+        renderPricingEditor();
+        updateStats();
+      } catch (err) {
+        showToast('Failed to load pricing', 'error');
+      }
+    }
+
+    // Render pricing editor
+    function renderPricingEditor() {
+      const groups = {
+        van_size: document.getElementById('vanSizeGroup'),
+        helpers: document.getElementById('helpersGroup'),
+        stairs: document.getElementById('stairsGroup'),
+        distance: document.getElementById('distanceGroup')
+      };
+
+      for (const key in groups) {
+        groups[key].innerHTML = '';
+      }
+
+      for (const item of currentPricing) {
+        const group = groups[item.category];
+        if (!group) continue;
+
+        const div = document.createElement('div');
+        div.className = 'bg-gray-50 rounded-lg p-4 border border-gray-200';
+        div.innerHTML = `
+          <label class="block text-sm font-medium text-gray-700 mb-1">${item.label}</label>
+          <div class="flex items-center">
+            <span class="text-gray-500 mr-2">£</span>
+            <input type="number" min="0" step="0.01" data-id="${item.id}" value="${item.price}" class="input-field flex-1 pricing-input">
+          </div>
+        `;
+        group.appendChild(div);
+      }
+    }
+
+    // Update stats
+    function updateStats() {
+      const vanItems = currentPricing.filter(p => p.category === 'van_size');
+      const helperItems = currentPricing.filter(p => p.category === 'helpers');
+      const distItem = currentPricing.find(p => p.category === 'distance');
+
+      document.getElementById('statVanCount').textContent = vanItems.length;
+      document.getElementById('statHelperCount').textContent = helperItems.length;
+      document.getElementById('statDistanceRate').textContent = distItem ? `£${distItem.price}` : '£0';
+    }
+
+    // Save pricing
+    async function savePricing() {
+      const inputs = document.querySelectorAll('.pricing-input');
+      const updates = Array.from(inputs).map(input => ({
+        id: parseInt(input.dataset.id),
+        price: parseFloat(input.value) || 0
+      }));
+
+      try {
+        const res = await fetch('/api/pricing', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates)
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          currentPricing = data.pricing;
+          updateStats();
+          showToast('Pricing saved successfully', 'success');
+        } else {
+          showToast(data.error || 'Failed to save', 'error');
+        }
+      } catch (err) {
+        showToast('Network error while saving', 'error');
+      }
+    }
+
+    // Load quotes
+    async function loadQuotes() {
+      try {
+        const res = await fetch('/api/quotes');
+        const quotes = await res.json();
+        renderQuotes(quotes);
+      } catch (err) {
+        document.getElementById('quotesTableBody').innerHTML =
+          '<tr><td colspan="7" class="py-8 text-center text-gray-400">Failed to load quotes</td></tr>';
+      }
+    }
+
+    // Render quotes table
+    function renderQuotes(quotes) {
+      const tbody = document.getElementById('quotesTableBody');
+      if (!quotes || quotes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-400">No quotes yet</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = quotes.map(q => `
+        <tr class="border-b border-gray-100 hover:bg-gray-50">
+          <td class="py-3 px-2 font-mono text-xs text-gray-500">#${q.id}</td>
+          <td class="py-3 px-2">
+            <div class="font-medium text-gray-800">${q.customer_name || 'N/A'}</div>
+            <div class="text-xs text-gray-400">${q.customer_email || ''}</div>
+          </td>
+          <td class="py-3 px-2 capitalize text-gray-600">${q.service_type}</td>
+          <td class="py-3 px-2 font-semibold text-brand">£${q.calculated_price?.toFixed(2) || '0.00'}</td>
+          <td class="py-3 px-2 text-gray-600">${q.distance_miles ? q.distance_miles.toFixed(1) + ' mi' : 'N/A'}</td>
+          <td class="py-3 px-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 capitalize">${q.status}</span>
+          </td>
+          <td class="py-3 px-2 text-gray-500">${new Date(q.created_at).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Init
+    checkAuth();
+  </script>
+</body>
+</html>

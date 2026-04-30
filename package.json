@@ -1,0 +1,21 @@
+{
+  "name": "vsd-synergy",
+  "version": "1.0.0",
+  "description": "VSD Synergy Limited - Professional Transport & Logistics",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.1.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "puppeteer": "^24.42.0"
+  }
+}
