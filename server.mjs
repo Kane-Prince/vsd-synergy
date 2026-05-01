@@ -10,7 +10,7 @@ import {
   getPricingMap,
   updatePricing,
   createQuote,
-  getAllQuotes
+  getQuotesPaginated
 } from './database.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -311,10 +311,12 @@ app.post('/api/quote', async (req, res) => {
   }
 });
 
-// Admin-only: list all quotes
+// Admin-only: list quotes with pagination
 app.get('/api/quotes', requireAuth, (req, res) => {
-  const quotes = getAllQuotes();
-  res.json(quotes);
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 50;
+  const result = getQuotesPaginated(page, limit);
+  res.json(result);
 });
 
 // Start server

@@ -154,4 +154,11 @@ export function getAllQuotes() {
   return db.prepare('SELECT * FROM quotes ORDER BY created_at DESC').all();
 }
 
+export function getQuotesPaginated(page = 1, limit = 50) {
+  const offset = (page - 1) * limit;
+  const quotes = db.prepare('SELECT * FROM quotes ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
+  const countResult = db.prepare('SELECT COUNT(*) as total FROM quotes').get();
+  return { quotes, total: countResult.total, page, limit };
+}
+
 export default db;

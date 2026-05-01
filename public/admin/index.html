@@ -219,6 +219,16 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+          <div class="text-sm text-gray-500" id="paginationInfo">Showing 0 quotes</div>
+          <div class="flex items-center space-x-2" id="paginationControls">
+            <button onclick="prevPage()" id="prevBtn" class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+            <span id="pageNumbers" class="text-sm text-gray-600"></span>
+            <button onclick="nextPage()" id="nextBtn" class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -229,6 +239,9 @@
   <script>
     let currentPricing = [];
     let isLoggedIn = false;
+    let currentPage = 1;
+    let totalPages = 1;
+    const QUOTES_PER_PAGE = 50;
 
     // Check auth on load
     async function checkAuth() {
@@ -375,11 +388,14 @@
     }
 
     // Load quotes
-    async function loadQuotes() {
+    async function loadQuotes(page = 1) {
       try {
-        const res = await fetch('/api/quotes');
-        const quotes = await res.json();
-        renderQuotes(quotes);
+        const res = await fetch(`/api/quotes?page=${page}&limit=${QUOTES_PER_PAGE}`);
+        const data = await res.json();
+        currentPage = data.page;
+        totalPages = Math.ceil(data.total / data.limit);
+        renderQuotes(data.quotes);
+        renderPagination(data);
       } catch (err) {
         document.getElementById('quotesTableBody').innerHTML =
           '<tr><td colspan="7" class="py-8 text-center text-gray-400">Failed to load quotes</td></tr>';
@@ -410,6 +426,48 @@
           <td class="py-3 px-2 text-gray-500">${new Date(q.created_at).toLocaleDateString()}</td>
         </tr>
       `).join('');
+    }
+
+    // Pagination
+    function renderPagination(data) {
+      const start = (data.page - 1) * data.limit + 1;
+      const end = Math.min(start + data.quotes.length - 1, data.total);
+      document.getElementById('paginationInfo').textContent =
+        data.total > 0 ? `Showing ${start}-${end} of ${data.total} quotes` : 'No quotes';
+
+      document.getElementById('prevBtn').disabled = data.page <= 1;
+      document.getElementById('nextBtn').disabled = data.page >= totalPages;
+
+      // Page numbers
+      let pagesHtml = '';
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === data.page) {
+          pagesHtml += `<span class="px-3 py-1.5 text-sm font-medium text-white bg-brand rounded">${i}</span>`;
+        } else if (i === 1 || i === totalPages || (i >= data.page - 2 && i <= data.page + 2)) {
+          pagesHtml += `<button onclick="goToPage(${i})" class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50">${i}</button>`;
+        } else if (i === data.page - 3 || i === data.page + 3) {
+          pagesHtml += `<span class="text-gray-400 px-1">...</span>`;
+        }
+      }
+      document.getElementById('pageNumbers').innerHTML = pagesHtml;
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        loadQuotes(currentPage - 1);
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        loadQuotes(currentPage + 1);
+      }
+    }
+
+    function goToPage(page) {
+      if (page >= 1 && page <= totalPages) {
+        loadQuotes(page);
+      }
     }
 
     // Toast
