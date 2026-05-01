@@ -152,6 +152,11 @@ function toRad(degrees) {
 }
 
 function parseHours(hoursValue) {
+  const parsed = parseFloat(hoursValue);
+  if (!isNaN(parsed) && parsed >= 2 && parsed <= 12) {
+    return parsed;
+  }
+  // Fallback for old format
   const map = {
     '1-2': 2,
     '3-4': 4,

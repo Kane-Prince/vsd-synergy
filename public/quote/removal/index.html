@@ -876,8 +876,8 @@
             <label class="form-label">Select transport type</label>
             <div class="button-group" id="transportGroup">
               <label class="button-option">
-                <input type="radio" name="verticalTransport" value="elevator">
-                Elevator
+                <input type="radio" name="verticalTransport" value="lift">
+                Lift
               </label>
               <label class="button-option">
                 <input type="radio" name="verticalTransport" value="stairs">
@@ -932,21 +932,31 @@
           <p class="step-description">How many hours do you need?</p>
 
           <div class="form-group">
-            <label class="form-label">Select duration</label>
-            <div class="button-group" id="hoursGroup">
-              <label class="button-option">
-                <input type="radio" name="hours" value="1-2">
-                1-2 hours
-              </label>
-              <label class="button-option">
-                <input type="radio" name="hours" value="3-4">
-                3-4 hours
-              </label>
-              <label class="button-option">
-                <input type="radio" name="hours" value="5-10">
-                5-10 hours
-              </label>
-            </div>
+            <label class="form-label" for="hoursSelect">Select duration</label>
+            <select class="form-input" id="hoursSelect" name="hours" required>
+              <option value="">Choose a duration...</option>
+              <option value="2">2 hours</option>
+              <option value="2.5">2 hours 30 minutes</option>
+              <option value="3">3 hours</option>
+              <option value="3.5">3 hours 30 minutes</option>
+              <option value="4">4 hours</option>
+              <option value="4.5">4 hours 30 minutes</option>
+              <option value="5">5 hours</option>
+              <option value="5.5">5 hours 30 minutes</option>
+              <option value="6">6 hours</option>
+              <option value="6.5">6 hours 30 minutes</option>
+              <option value="7">7 hours</option>
+              <option value="7.5">7 hours 30 minutes</option>
+              <option value="8">8 hours</option>
+              <option value="8.5">8 hours 30 minutes</option>
+              <option value="9">9 hours</option>
+              <option value="9.5">9 hours 30 minutes</option>
+              <option value="10">10 hours</option>
+              <option value="10.5">10 hours 30 minutes</option>
+              <option value="11">11 hours</option>
+              <option value="11.5">11 hours 30 minutes</option>
+              <option value="12">12 hours</option>
+            </select>
           </div>
 
           <div class="form-actions">
@@ -1855,7 +1865,14 @@
           case 'vanType': return value.charAt(0).toUpperCase() + value.slice(1) + ' Van';
           case 'helperType': return value === 'self' ? 'I will go myself' : value === '1' ? '1 Man' : value === '2' ? '2 Men' : value === '3' ? '3 Men' : `${data.customHelperCount || ''} Helpers`;
           case 'verticalTransport': return value.charAt(0).toUpperCase() + value.slice(1);
-          case 'hours': return value === '1-2' ? '1-2 hours' : value === '3-4' ? '3-4 hours' : '5-10 hours';
+          case 'hours': {
+            const h = parseFloat(value);
+            if (isNaN(h)) return value;
+            const whole = Math.floor(h);
+            const mins = (h - whole) * 60;
+            if (mins === 30) return `${whole} hours 30 minutes`;
+            return `${whole} hour${whole !== 1 ? 's' : ''}`;
+          }
           case 'materialSupply': return value === 'yes' ? 'Yes' : 'No';
           case 'boxSize': return value.charAt(0).toUpperCase() + value.slice(1) + ' Box';
           case 'assemblyService': return value === 'dismantling' ? 'Dismantling Service' : value === 'assembling' ? 'Assembling Service' : 'None';
