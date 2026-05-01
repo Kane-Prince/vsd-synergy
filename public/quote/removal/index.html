@@ -955,8 +955,111 @@
           </div>
         </div>
 
-        <!-- Step 9: Contact Info -->
+        <!-- Step 9: Additional Services -->
         <div class="form-step" data-step="9">
+          <h2 class="step-title">Additional Services</h2>
+          <p class="step-description">Select any extra services you may need</p>
+
+          <!-- Material Supply (Boxes) -->
+          <div class="form-group">
+            <label class="form-label">Would you like us to supply moving boxes?</label>
+            <div class="button-group" id="materialSupplyGroup">
+              <label class="button-option">
+                <input type="radio" name="materialSupply" value="yes">
+                Yes
+              </label>
+              <label class="button-option">
+                <input type="radio" name="materialSupply" value="no">
+                No
+              </label>
+            </div>
+          </div>
+
+          <div class="conditional-section" id="boxSizeSection" style="display: none;">
+            <div class="form-group">
+              <label class="form-label">Select box size</label>
+              <div class="button-group" id="boxSizeGroup">
+                <label class="button-option">
+                  <input type="radio" name="boxSize" value="small">
+                  Small
+                </label>
+                <label class="button-option">
+                  <input type="radio" name="boxSize" value="medium">
+                  Medium
+                </label>
+                <label class="button-option">
+                  <input type="radio" name="boxSize" value="large">
+                  Large
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dismantling / Assembling -->
+          <div class="form-group">
+            <label class="form-label">Do you need dismantling or assembling services?</label>
+            <div class="button-group" id="assemblyGroup">
+              <label class="button-option">
+                <input type="radio" name="assemblyService" value="dismantling">
+                Dismantling
+              </label>
+              <label class="button-option">
+                <input type="radio" name="assemblyService" value="assembling">
+                Assembling
+              </label>
+              <label class="button-option">
+                <input type="radio" name="assemblyService" value="none">
+                None of the above
+              </label>
+            </div>
+          </div>
+
+          <!-- Disposal Service -->
+          <div class="form-group">
+            <label class="form-label">How many items do you want to dispose?</label>
+            <div class="button-group" id="disposalGroup">
+              <label class="button-option">
+                <input type="radio" name="disposalItems" value="0">
+                I don't want to dispose any item
+              </label>
+              <label class="button-option">
+                <input type="radio" name="disposalItems" value="1">
+                1
+              </label>
+              <label class="button-option">
+                <input type="radio" name="disposalItems" value="2">
+                2
+              </label>
+              <label class="button-option">
+                <input type="radio" name="disposalItems" value="3">
+                3
+              </label>
+              <label class="button-option">
+                <input type="radio" name="disposalItems" value="4">
+                4
+              </label>
+              <label class="button-option">
+                <input type="radio" name="disposalItems" value="custom">
+                Above 4
+              </label>
+            </div>
+          </div>
+
+          <div class="conditional-section" id="customDisposalSection" style="display: none;">
+            <div class="form-group">
+              <label class="form-label" for="customDisposalCount">Enter number of items</label>
+              <input type="number" class="form-input" id="customDisposalCount" name="customDisposalCount" min="5" placeholder="Enter number">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="button" class="btn-next" onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 10: Contact Info -->
+        <div class="form-step" data-step="10">
           <h2 class="step-title">Contact Information</h2>
           <p class="step-description">How can we reach you?</p>
 
@@ -984,8 +1087,8 @@
           </div>
         </div>
 
-        <!-- Step 10: Summary -->
-        <div class="form-step" data-step="10">
+        <!-- Step 11: Summary -->
+        <div class="form-step" data-step="11">
           <h2 class="step-title">Review Your Quote</h2>
           <p class="step-description">Please review your details before submitting</p>
 
@@ -1005,7 +1108,7 @@
     const GEOAPIFY_API_KEY = '0ba8014cf5934da590805884dc8f2a52';
 
     const STORAGE_KEY = 'vsd_removal_quote';
-    const TOTAL_STEPS = 10;
+    const TOTAL_STEPS = 11;
     let currentStep = 1;
     let pickupAddressDebounce = null;
     let dropoffAddressDebounce = null;
@@ -1019,6 +1122,7 @@
       initFlatpickr();
       initButtonGroups();
       initStairsLogic();
+      initAdditionalServicesLogic();
       initGeoapifyAutocomplete();
       initTimeSlotSelector();
       initFormValidation();
@@ -1412,6 +1516,38 @@
       });
     }
 
+    // Additional Services Logic
+    function initAdditionalServicesLogic() {
+      // Material supply - show box size when Yes is selected
+      document.querySelectorAll('input[name="materialSupply"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const section = document.getElementById('boxSizeSection');
+          if (e.target.value === 'yes') {
+            section.style.display = 'block';
+          } else {
+            section.style.display = 'none';
+            // Clear box size selection
+            document.querySelectorAll('input[name="boxSize"]').forEach(r => r.checked = false);
+          }
+        });
+      });
+
+      // Disposal - show custom count when Above 4 is selected
+      document.querySelectorAll('input[name="disposalItems"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const section = document.getElementById('customDisposalSection');
+          if (e.target.value === 'custom') {
+            section.style.display = 'block';
+            document.getElementById('customDisposalCount').required = true;
+          } else {
+            section.style.display = 'none';
+            document.getElementById('customDisposalCount').required = false;
+            document.getElementById('customDisposalCount').value = '';
+          }
+        });
+      });
+    }
+
     // Form Validation
     function initFormValidation() {
       document.querySelectorAll('.form-input').forEach(input => {
@@ -1484,6 +1620,42 @@
         return true;
       }
 
+      // Special validation for additional services step (step 9)
+      if (currentStep === 9) {
+        let isValid = true;
+
+        // Material supply must be selected
+        const materialSupply = step.querySelector('input[name="materialSupply"]:checked');
+        if (!materialSupply) isValid = false;
+
+        // If yes, box size must be selected
+        if (materialSupply && materialSupply.value === 'yes') {
+          const boxSize = step.querySelector('input[name="boxSize"]:checked');
+          if (!boxSize) isValid = false;
+        }
+
+        // Assembly service must be selected
+        const assemblyService = step.querySelector('input[name="assemblyService"]:checked');
+        if (!assemblyService) isValid = false;
+
+        // Disposal items must be selected
+        const disposalItems = step.querySelector('input[name="disposalItems"]:checked');
+        if (!disposalItems) isValid = false;
+
+        // If custom disposal, count must be >= 5
+        if (disposalItems && disposalItems.value === 'custom') {
+          const count = document.getElementById('customDisposalCount').value;
+          if (!count || parseInt(count, 10) < 5) {
+            document.getElementById('customDisposalCount').classList.add('error');
+            isValid = false;
+          } else {
+            document.getElementById('customDisposalCount').classList.remove('error');
+          }
+        }
+
+        return isValid;
+      }
+
       // For steps with special validation (date/time), skip general validation
       if (currentStep === 3 || currentStep === 4) {
         return true;
@@ -1529,7 +1701,7 @@
         updateProgressDots();
         saveToStorage();
 
-        if (currentStep === 10) {
+        if (currentStep === 11) {
           renderSummary();
         }
 
@@ -1684,6 +1856,10 @@
           case 'helperType': return value === 'self' ? 'I will go myself' : value === '1' ? '1 Man' : value === '2' ? '2 Men' : value === '3' ? '3 Men' : `${data.customHelperCount || ''} Helpers`;
           case 'verticalTransport': return value.charAt(0).toUpperCase() + value.slice(1);
           case 'hours': return value === '1-2' ? '1-2 hours' : value === '3-4' ? '3-4 hours' : '5-10 hours';
+          case 'materialSupply': return value === 'yes' ? 'Yes' : 'No';
+          case 'boxSize': return value.charAt(0).toUpperCase() + value.slice(1) + ' Box';
+          case 'assemblyService': return value === 'dismantling' ? 'Dismantling Service' : value === 'assembling' ? 'Assembling Service' : 'None';
+          case 'disposalItems': return value === '0' ? 'None' : value === 'custom' ? `${data.customDisposalCount || ''} Items` : `${value} Item${value !== '1' ? 's' : ''}`;
           case 'fullName': return value;
           case 'email': return value;
           case 'phone': return value;
@@ -1692,7 +1868,7 @@
       };
 
       let html = '';
-      const skipKeys = ['serviceType', 'customHelperCount', 'stairsLocation', 'pickupFloorRange', 'dropoffFloorRange', 'moveDateValue', 'pickupLat', 'pickupLon', 'dropoffLat', 'dropoffLon', 'stairsDetails'];
+      const skipKeys = ['serviceType', 'customHelperCount', 'stairsLocation', 'pickupFloorRange', 'dropoffFloorRange', 'moveDateValue', 'pickupLat', 'pickupLon', 'dropoffLat', 'dropoffLon', 'stairsDetails', 'customDisposalCount'];
 
       Object.entries(data).forEach(([key, value]) => {
         if (skipKeys.includes(key) || !value) return;
@@ -1764,6 +1940,21 @@
               <span class="price-breakdown-label">Distance (${result.distanceMiles.toFixed(1)} miles)</span>
               <span class="price-breakdown-value">£${b.distancePrice.toFixed(2)}</span>
             </div>
+            ${b.boxPrice > 0 ? `
+            <div class="price-breakdown-row">
+              <span class="price-breakdown-label">Box Supply</span>
+              <span class="price-breakdown-value">£${b.boxPrice.toFixed(2)}</span>
+            </div>` : ''}
+            ${b.assemblyPrice > 0 ? `
+            <div class="price-breakdown-row">
+              <span class="price-breakdown-label">${data.assemblyService === 'dismantling' ? 'Dismantling' : 'Assembling'} Service</span>
+              <span class="price-breakdown-value">£${b.assemblyPrice.toFixed(2)}</span>
+            </div>` : ''}
+            ${b.disposalPrice > 0 ? `
+            <div class="price-breakdown-row">
+              <span class="price-breakdown-label">Disposal (${data.disposalItems === 'custom' ? data.customDisposalCount + ' items' : data.disposalItems + ' item' + (data.disposalItems !== '1' ? 's' : '')})</span>
+              <span class="price-breakdown-value">£${b.disposalPrice.toFixed(2)}</span>
+            </div>` : ''}
             <div class="price-breakdown-row">
               <span class="price-breakdown-label">Hourly Rate</span>
               <span class="price-breakdown-value">£${result.hourlyRate.toFixed(2)}</span>

@@ -50,7 +50,7 @@ function seedAdmin() {
 // Seed default pricing if none exists
 function seedPricing() {
   const count = db.prepare('SELECT COUNT(*) as count FROM pricing_config').get();
-  if (count.count > 0) return;
+  const isFresh = count.count === 0;
 
   const defaults = [
     // Van sizes
@@ -71,15 +71,45 @@ function seedPricing() {
     { category: 'stairs', option_key: '5-10', price: 35, label: '5th - 10th Floor' },
 
     // Distance base rate
-    { category: 'distance', option_key: '20-mile', price: 20, label: 'Per 20 Mile Radius' }
+    { category: 'distance', option_key: '20-mile', price: 20, label: 'Per 20 Mile Radius' },
+
+    // Box sizes
+    { category: 'box_size', option_key: 'small', price: 5, label: 'Small Box' },
+    { category: 'box_size', option_key: 'medium', price: 8, label: 'Medium Box' },
+    { category: 'box_size', option_key: 'large', price: 12, label: 'Large Box' },
+
+    // Assembly / Dismantling
+    { category: 'assembly', option_key: 'dismantling', price: 25, label: 'Dismantling Service' },
+    { category: 'assembly', option_key: 'assembling', price: 25, label: 'Assembling Service' },
+
+    // Disposal items (per count)
+    { category: 'disposal', option_key: '1', price: 20, label: '1 Item' },
+    { category: 'disposal', option_key: '2', price: 30, label: '2 Items' },
+    { category: 'disposal', option_key: '3', price: 40, label: '3 Items' },
+    { category: 'disposal', option_key: '4', price: 50, label: '4 Items' }
   ];
 
   const insert = db.prepare('INSERT INTO pricing_config (category, option_key, price, label) VALUES (?, ?, ?, ?)');
-  const insertMany = db.transaction((items) => {
-    for (const item of items) insert.run(item.category, item.option_key, item.price, item.label);
-  });
-  insertMany(defaults);
-  console.log('Default pricing seeded.');
+  const check = db.prepare('SELECT id FROM pricing_config WHERE category = ? AND option_key = ?');
+
+  if (isFresh) {
+    const insertMany = db.transaction((items) => {
+      for (const item of items) insert.run(item.category, item.option_key, item.price, item.label);
+    });
+    insertMany(defaults);
+    console.log('Default pricing seeded.');
+  } else {
+    // Seed any missing categories
+    let added = 0;
+    for (const item of defaults) {
+      const existing = check.get(item.category, item.option_key);
+      if (!existing) {
+        insert.run(item.category, item.option_key, item.price, item.label);
+        added++;
+      }
+    }
+    if (added > 0) console.log(`Added ${added} new pricing options.`);
+  }
 }
 
 seedAdmin();

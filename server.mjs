@@ -202,8 +202,50 @@ async function calculateRemovalQuote(formData) {
   // Hours
   const hours = parseHours(formData.hours);
 
+  // ─── NEW: Additional Services ───
+
+  // Box supply
+  let boxPrice = 0;
+  if (formData.materialSupply === 'yes' && formData.boxSize && pricing.box_size) {
+    boxPrice = pricing.box_size[formData.boxSize] || 0;
+  }
+
+  // Assembly / Dismantling
+  let assemblyPrice = 0;
+  if (formData.assemblyService && formData.assemblyService !== 'none' && pricing.assembly) {
+    assemblyPrice = pricing.assembly[formData.assemblyService] || 0;
+  }
+
+  // Disposal items
+  let disposalPrice = 0;
+  let disposalCount = 0;
+  if (formData.disposalItems && formData.disposalItems !== '0' && pricing.disposal) {
+    const countStr = formData.disposalItems;
+    if (countStr === 'custom') {
+      disposalCount = parseInt(formData.customDisposalCount || '0', 10);
+    } else {
+      disposalCount = parseInt(countStr, 10);
+    }
+
+    if (disposalCount > 0) {
+      if (disposalCount <= 4) {
+        disposalPrice = pricing.disposal[String(disposalCount)] || 0;
+      } else {
+        // Extrapolate from 1-4 pricing
+        const p1 = pricing.disposal['1'] || 0;
+        const p4 = pricing.disposal['4'] || 0;
+        if (p1 > 0 && p4 > 0) {
+          const increment = (p4 - p1) / 3;
+          disposalPrice = p4 + (disposalCount - 4) * increment;
+        } else {
+          disposalPrice = pricing.disposal['4'] || 0;
+        }
+      }
+    }
+  }
+
   // Totals
-  const hourlyRate = vanPrice + helperPrice + stairsPrice + distancePrice;
+  const hourlyRate = vanPrice + helperPrice + stairsPrice + distancePrice + boxPrice + assemblyPrice + disposalPrice;
   const total = hourlyRate * hours;
 
   return {
@@ -215,7 +257,10 @@ async function calculateRemovalQuote(formData) {
       vanPrice,
       helperPrice,
       stairsPrice,
-      distancePrice: Math.round(distancePrice * 100) / 100
+      distancePrice: Math.round(distancePrice * 100) / 100,
+      boxPrice,
+      assemblyPrice,
+      disposalPrice: Math.round(disposalPrice * 100) / 100
     }
   };
 }

@@ -177,6 +177,24 @@
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Distance Base Rate</h3>
             <div id="distanceGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
           </div>
+
+          <!-- Box Sizes -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Box Sizes (Material Supply)</h3>
+            <div id="boxSizeGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+          </div>
+
+          <!-- Assembly / Dismantling -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Assembly & Dismantling Services</h3>
+            <div id="assemblyGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+          </div>
+
+          <!-- Disposal Items -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Disposal Items (per count)</h3>
+            <div id="disposalGroup" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+          </div>
         </div>
       </div>
 
@@ -290,7 +308,10 @@
         van_size: document.getElementById('vanSizeGroup'),
         helpers: document.getElementById('helpersGroup'),
         stairs: document.getElementById('stairsGroup'),
-        distance: document.getElementById('distanceGroup')
+        distance: document.getElementById('distanceGroup'),
+        box_size: document.getElementById('boxSizeGroup'),
+        assembly: document.getElementById('assemblyGroup'),
+        disposal: document.getElementById('disposalGroup')
       };
 
       for (const key in groups) {
