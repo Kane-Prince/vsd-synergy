@@ -729,8 +729,48 @@
           </div>
         </div>
 
-        <!-- Step 6: Contact Info -->
+        <!-- Step 6: Hours -->
         <div class="form-step" data-step="6">
+          <h2 class="step-title">Duration</h2>
+          <p class="step-description">How many hours do you need the cleaning service for?</p>
+
+          <div class="form-group">
+            <label class="form-label" for="hours">Select number of hours</label>
+            <select class="form-input" id="hours" name="hours" required>
+              <option value="">Choose hours...</option>
+              <option value="2">2 hours</option>
+              <option value="2.5">2 hours 30 minutes</option>
+              <option value="3">3 hours</option>
+              <option value="3.5">3 hours 30 minutes</option>
+              <option value="4">4 hours</option>
+              <option value="4.5">4 hours 30 minutes</option>
+              <option value="5">5 hours</option>
+              <option value="5.5">5 hours 30 minutes</option>
+              <option value="6">6 hours</option>
+              <option value="6.5">6 hours 30 minutes</option>
+              <option value="7">7 hours</option>
+              <option value="7.5">7 hours 30 minutes</option>
+              <option value="8">8 hours</option>
+              <option value="8.5">8 hours 30 minutes</option>
+              <option value="9">9 hours</option>
+              <option value="9.5">9 hours 30 minutes</option>
+              <option value="10">10 hours</option>
+              <option value="10.5">10 hours 30 minutes</option>
+              <option value="11">11 hours</option>
+              <option value="11.5">11 hours 30 minutes</option>
+              <option value="12">12 hours</option>
+            </select>
+            <span class="error-message">Please select the number of hours</span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="button" class="btn-next" onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 7: Contact Info -->
+        <div class="form-step" data-step="7">
           <h2 class="step-title">Contact Information</h2>
           <p class="step-description">How can we reach you?</p>
 
@@ -758,12 +798,22 @@
           </div>
         </div>
 
-        <!-- Step 7: Summary -->
-        <div class="form-step" data-step="7">
+        <!-- Step 8: Summary -->
+        <div class="form-step" data-step="8">
           <h2 class="step-title">Review Your Quote</h2>
-          <p class="step-description">Please review your details before submitting</p>
+          <p class="step-description">Please review your details and calculated price before submitting</p>
 
           <div class="summary-grid" id="summaryGrid"></div>
+
+          <div id="priceSummary" style="margin-top: 1rem; padding: 1.25rem; background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%); border-radius: var(--radius-md); color: white; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div>
+                <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.25rem;">Estimated Total</div>
+                <div id="totalPrice" style="font-size: 1.75rem; font-weight: 700; font-family: var(--font-roboto);">£0.00</div>
+              </div>
+              <div id="priceBreakdown" style="font-size: 0.8125rem; opacity: 0.85; text-align: right;"></div>
+            </div>
+          </div>
 
           <div class="form-actions">
             <button type="button" class="btn-back" onclick="prevStep()">Back</button>
@@ -779,7 +829,7 @@
     const GEOAPIFY_API_KEY = '0ba8014cf5934da590805884dc8f2a52';
 
     const STORAGE_KEY = 'vsd_cleaning_quote';
-    const TOTAL_STEPS = 7;
+    const TOTAL_STEPS = 8;
     let currentStep = 1;
     let houseAddressDebounce = null;
     let flatpickrInstance = null;
@@ -1224,8 +1274,19 @@
         return true;
       }
 
-      // For steps with special validation (date/time), skip general validation
-      if (currentStep === 3 || currentStep === 4) {
+      // Special validation for hours step (step 6)
+      if (currentStep === 6) {
+        const hoursSelect = document.getElementById('hours');
+        if (!hoursSelect.value) {
+          hoursSelect.classList.add('error');
+          return false;
+        }
+        hoursSelect.classList.remove('error');
+        return true;
+      }
+
+      // For steps with special validation (date/time/hours), skip general validation
+      if (currentStep === 3 || currentStep === 4 || currentStep === 6) {
         return true;
       }
 
@@ -1286,8 +1347,9 @@
         updateProgressDots();
         saveToStorage();
 
-        if (currentStep === 7) {
+        if (currentStep === 8) {
           renderSummary();
+          fetchCleaningPrice();
         }
 
         // Re-render time slots when entering step 4
@@ -1387,6 +1449,7 @@
           cleaningDate: 'Date',
           selectedTimeSlot: 'Time',
           flatType: 'Property Type',
+          hours: 'Duration',
           fullName: 'Name',
           email: 'Email',
           phone: 'Phone'
@@ -1409,6 +1472,7 @@
           case 'cleaningDate': return new Date(value + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
           case 'selectedTimeSlot': return formatTimeSlot(value);
           case 'flatType': return value === 'studio' ? 'Studio Flat' : value === '1-bed' ? '1 Bedroom Flat' : value === '2-bed' ? '2 Bedroom Flat' : value === '3-bed' ? '3 Bedroom Flat' : `${data.customBedroomCount || ''} Bedrooms`;
+          case 'hours': return value ? `${value} hours` : value;
           case 'fullName': return value;
           case 'email': return value;
           case 'phone': return value;
@@ -1433,18 +1497,66 @@
       grid.innerHTML = html;
     }
 
+    async function fetchCleaningPrice() {
+      const data = getFormData();
+      const priceContainer = document.getElementById('priceSummary');
+      const totalEl = document.getElementById('totalPrice');
+      const breakdownEl = document.getElementById('priceBreakdown');
+
+      try {
+        const res = await fetch('/api/quote/calculate-cleaning', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ serviceType: 'cleaning', formData: data })
+        });
+        const result = await res.json();
+
+        if (result.total !== undefined) {
+          totalEl.textContent = '£' + result.total.toFixed(2);
+          let breakdownHtml = '';
+          if (result.breakdown) {
+            breakdownHtml = `
+              Service: £${(result.breakdown.cleaningTypePrice || 0).toFixed(2)}
+              <br>Property: £${(result.breakdown.propertyTypePrice || 0).toFixed(2)}
+              ${result.breakdown.travelFee ? `<br>Travel: £${result.breakdown.travelFee.toFixed(2)}` : ''}
+              ${result.breakdown.weekendSurcharge ? `<br>Weekend: £${result.breakdown.weekendSurcharge.toFixed(2)}` : ''}
+              <br>Hourly rate: £${(result.hourlyRate || 0).toFixed(2)} × ${result.hours || 0}h
+            `;
+          }
+          breakdownEl.innerHTML = breakdownHtml;
+          priceContainer.style.display = 'block';
+        } else {
+          priceContainer.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Failed to fetch price:', err);
+        priceContainer.style.display = 'none';
+      }
+    }
+
     // Submit
-    function submitQuote() {
+    async function submitQuote() {
       const quoteData = getFormData();
-      console.log('=== CLEANING QUOTE SUBMITTED ===');
-      console.log(quoteData);
-      console.log('==============================');
 
-      localStorage.removeItem(STORAGE_KEY);
+      try {
+        const res = await fetch('/api/quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ serviceType: 'cleaning', formData: quoteData })
+        });
+        const result = await res.json();
 
-      alert('Thank you for your quote request! We will contact you shortly.');
-
-      window.location.href = '/';
+        if (result.success) {
+          localStorage.removeItem(STORAGE_KEY);
+          alert(`Thank you for your quote request! Your reference number is #${result.quoteId}. We will contact you shortly.`);
+          window.location.href = '/';
+        } else {
+          alert('Failed to submit quote. Please try again.');
+        }
+      } catch (err) {
+        console.error('Submit error:', err);
+        alert('Network error. Please try again.');
+      }
     }
   </script>
 </body>

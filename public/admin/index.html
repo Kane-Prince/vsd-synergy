@@ -143,6 +143,22 @@
         </div>
       </div>
 
+      <!-- Cleaning Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Cleaning Service Types</p>
+          <p id="statCleaningTypes" class="text-3xl font-bold text-brand">0</p>
+        </div>
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Standard Travel Fee</p>
+          <p id="statTravelFee" class="text-3xl font-bold text-brand">£0</p>
+        </div>
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Weekend Surcharge</p>
+          <p id="statWeekendRate" class="text-3xl font-bold text-brand">£0</p>
+        </div>
+      </div>
+
       <!-- Pricing Editor -->
       <div class="card mb-8">
         <div class="flex justify-between items-center mb-6">
@@ -194,6 +210,30 @@
           <div>
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Disposal Items (per count)</h3>
             <div id="disposalGroup" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+          </div>
+
+          <!-- Cleaning Service Types -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Cleaning Service Types</h3>
+            <div id="cleaningTypeGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+          </div>
+
+          <!-- Travel Fee -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Travel Fee (Fixed)</h3>
+            <div id="travelFeeGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+          </div>
+
+          <!-- Property Type -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Property Type (per bedroom)</h3>
+            <div id="propertyTypeGroup" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+          </div>
+
+          <!-- Weekend Rate -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Weekend Surcharge</h3>
+            <div id="weekendRateGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
           </div>
         </div>
       </div>
@@ -324,7 +364,11 @@
         distance: document.getElementById('distanceGroup'),
         box_size: document.getElementById('boxSizeGroup'),
         assembly: document.getElementById('assemblyGroup'),
-        disposal: document.getElementById('disposalGroup')
+        disposal: document.getElementById('disposalGroup'),
+        cleaning_type: document.getElementById('cleaningTypeGroup'),
+        travel_fee: document.getElementById('travelFeeGroup'),
+        property_type: document.getElementById('propertyTypeGroup'),
+        weekend_rate: document.getElementById('weekendRateGroup')
       };
 
       for (const key in groups) {
@@ -357,6 +401,14 @@
       document.getElementById('statVanCount').textContent = vanItems.length;
       document.getElementById('statHelperCount').textContent = helperItems.length;
       document.getElementById('statDistanceRate').textContent = distItem ? `£${distItem.price}` : '£0';
+
+      const cleaningTypeItems = currentPricing.filter(p => p.category === 'cleaning_type');
+      const travelFeeItem = currentPricing.find(p => p.category === 'travel_fee');
+      const weekendRateItem = currentPricing.find(p => p.category === 'weekend_rate');
+
+      document.getElementById('statCleaningTypes').textContent = cleaningTypeItems.length;
+      document.getElementById('statTravelFee').textContent = travelFeeItem ? `£${travelFeeItem.price}` : '£0';
+      document.getElementById('statWeekendRate').textContent = weekendRateItem ? `£${weekendRateItem.price}` : '£0';
     }
 
     // Save pricing

@@ -270,6 +270,76 @@ async function calculateRemovalQuote(formData) {
   };
 }
 
+async function calculateCleaningQuote(formData) {
+  const pricing = getPricingMap();
+
+  // Cleaning type
+  const cleaningTypePrice = (pricing.cleaning_type && pricing.cleaning_type[formData.cleaningType]) || 0;
+
+  // Property type
+  let propertyTypePrice = 0;
+  let bedroomCount = 0;
+
+  if (formData.flatType === 'studio') {
+    propertyTypePrice = pricing.property_type?.studio || 0;
+    bedroomCount = 0;
+  } else if (formData.flatType === '1-bed') {
+    propertyTypePrice = pricing.property_type?.['1-bed'] || 0;
+    bedroomCount = 1;
+  } else if (formData.flatType === '2-bed') {
+    propertyTypePrice = pricing.property_type?.['2-bed'] || 0;
+    bedroomCount = 2;
+  } else if (formData.flatType === '3-bed') {
+    propertyTypePrice = pricing.property_type?.['3-bed'] || 0;
+    bedroomCount = 3;
+  } else if (formData.flatType === 'other') {
+    bedroomCount = parseInt(formData.customBedroomCount || '4', 10);
+    const p1 = pricing.property_type?.['1-bed'] || 0;
+    const p2 = pricing.property_type?.['2-bed'] || 0;
+    const p3 = pricing.property_type?.['3-bed'] || 0;
+
+    if (p1 > 0 && p2 > 0 && p3 > 0) {
+      const increment1 = p2 - p1;
+      const increment2 = p3 - p2;
+      const avgIncrement = (increment1 + increment2) / 2;
+      propertyTypePrice = p3 + (bedroomCount - 3) * avgIncrement;
+    } else if (p3 > 0) {
+      propertyTypePrice = p3 + (bedroomCount - 3) * 10;
+    }
+  }
+
+  // Hours
+  const hours = parseHours(formData.hours);
+
+  // Travel fee (flat)
+  const travelFee = pricing.travel_fee?.standard || 0;
+
+  // Weekend surcharge
+  let weekendSurcharge = 0;
+  if (formData.cleaningDate) {
+    const date = new Date(formData.cleaningDate + 'T00:00:00');
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      weekendSurcharge = pricing.weekend_rate?.surcharge || 0;
+    }
+  }
+
+  const hourlyRate = cleaningTypePrice + propertyTypePrice;
+  const total = (hourlyRate * hours) + travelFee + weekendSurcharge;
+
+  return {
+    total: Math.round(total * 100) / 100,
+    hourlyRate: Math.round(hourlyRate * 100) / 100,
+    hours,
+    breakdown: {
+      cleaningTypePrice,
+      propertyTypePrice: Math.round(propertyTypePrice * 100) / 100,
+      travelFee,
+      weekendSurcharge
+    }
+  };
+}
+
 app.post('/api/quote/calculate', async (req, res) => {
   try {
     const { serviceType, formData } = req.body;
@@ -284,21 +354,40 @@ app.post('/api/quote/calculate', async (req, res) => {
   }
 });
 
+app.post('/api/quote/calculate-cleaning', async (req, res) => {
+  try {
+    const { serviceType, formData } = req.body;
+    if (serviceType !== 'cleaning') {
+      return res.status(400).json({ error: 'Only cleaning quotes supported' });
+    }
+    const result = await calculateCleaningQuote(formData);
+    res.json(result);
+  } catch (err) {
+    console.error('Calculate cleaning error:', err);
+    res.status(500).json({ error: 'Failed to calculate quote' });
+  }
+});
+
 app.post('/api/quote', async (req, res) => {
   try {
     const { serviceType, formData } = req.body;
-    if (serviceType !== 'removal') {
-      return res.status(400).json({ error: 'Only removal quotes supported currently' });
+    let calc;
+
+    if (serviceType === 'removal') {
+      calc = await calculateRemovalQuote(formData);
+    } else if (serviceType === 'cleaning') {
+      calc = await calculateCleaningQuote(formData);
+    } else {
+      return res.status(400).json({ error: 'Unsupported service type' });
     }
 
-    const calc = await calculateRemovalQuote(formData);
     const quoteId = createQuote({
       serviceType,
       formData,
       calculatedPrice: calc.total,
       hourlyRate: calc.hourlyRate,
       hours: calc.hours,
-      distanceMiles: calc.distanceMiles,
+      distanceMiles: calc.distanceMiles || null,
       customerName: formData.fullName || null,
       customerEmail: formData.email || null,
       customerPhone: formData.phone || null

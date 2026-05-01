@@ -86,7 +86,23 @@ function seedPricing() {
     { category: 'disposal', option_key: '1', price: 20, label: '1 Item' },
     { category: 'disposal', option_key: '2', price: 30, label: '2 Items' },
     { category: 'disposal', option_key: '3', price: 40, label: '3 Items' },
-    { category: 'disposal', option_key: '4', price: 50, label: '4 Items' }
+    { category: 'disposal', option_key: '4', price: 50, label: '4 Items' },
+
+    // Cleaning service types
+    { category: 'cleaning_type', option_key: 'end-of-tenancy', price: 25, label: 'End of Tenancy Cleaning' },
+    { category: 'cleaning_type', option_key: 'routine', price: 15, label: 'Routine House Cleaning' },
+
+    // Travel fee
+    { category: 'travel_fee', option_key: 'standard', price: 50, label: 'Standard Travel Fee' },
+
+    // Property type
+    { category: 'property_type', option_key: 'studio', price: 10, label: 'Studio Flat' },
+    { category: 'property_type', option_key: '1-bed', price: 15, label: '1 Bedroom Flat' },
+    { category: 'property_type', option_key: '2-bed', price: 25, label: '2 Bedroom Flat' },
+    { category: 'property_type', option_key: '3-bed', price: 35, label: '3 Bedroom Flat' },
+
+    // Weekend rate
+    { category: 'weekend_rate', option_key: 'surcharge', price: 20, label: 'Weekend Surcharge' }
   ];
 
   const insert = db.prepare('INSERT INTO pricing_config (category, option_key, price, label) VALUES (?, ?, ?, ?)');
