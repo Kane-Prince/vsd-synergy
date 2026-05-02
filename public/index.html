@@ -962,6 +962,52 @@
       display: block;
     }
 
+    /* Image Carousel */
+    .image-carousel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+
+    .image-carousel .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+    }
+
+    .image-carousel .slide.active {
+      opacity: 1;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.5);
+      transition: background 0.3s ease;
+      cursor: pointer;
+    }
+
+    .carousel-dot.active {
+      background: white;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 640px) {
       .service-select-grid {
@@ -1197,7 +1243,7 @@
 
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Service 1: House/Office Removal -->
-        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg">
+        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg" style="border-top: 4px solid var(--brand-primary);">
           <div class="icon-circle mb-6">
             <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -1207,9 +1253,8 @@
           <p class="type-body text-gray-600 mb-4">
             Professional moving services for homes and offices.
             Trained helpers, careful handling, and efficient loading for a stress-free move.
-            We also offer additional services including dismantling, assembling, and disposal services — so if you need to take apart furniture, reassemble it at your new place, or dispose of unwanted items, we've got you covered.
           </p>
-          <a href="/quote/removal" class="type-link-16 text-blue-600 font-semibold hover:text-blue-700 inline-flex items-center">
+          <a href="/quote/removal" class="type-link-16 font-semibold hover:opacity-80 inline-flex items-center" style="color: var(--brand-primary);">
             Get a quote
             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -1218,7 +1263,7 @@
         </div>
 
         <!-- Service 2: Cleaning Services -->
-        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg">
+        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg" style="border-top: 4px solid var(--accent-coral);">
           <div class="icon-circle mb-6" style="background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);">
             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
@@ -1229,12 +1274,35 @@
             Professional cleaning for residential and commercial spaces.
             End of tenancy cleaning and routine house cleaning with attention to detail.
           </p>
-          <a href="/quote/cleaning" class="type-link-16 text-blue-600 font-semibold hover:text-blue-700 inline-flex items-center">
+          <a href="/quote/cleaning" class="type-link-16 font-semibold hover:opacity-80 inline-flex items-center" style="color: var(--accent-coral);">
             Get a quote
             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </a>
+        </div>
+      </div>
+
+      <!-- Additional Services -->
+      <div class="mt-8">
+        <div class="card-hover rounded-2xl p-8 shadow-lg text-white relative overflow-hidden" style="background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%); border: none;">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+          <div class="relative z-10">
+            <h3 class="type-h3 mb-3 flex items-center gap-3">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Additional Services
+            </h3>
+            <p class="type-body mb-4 opacity-90">
+              We also offer additional services including
+              <strong class="text-white" style="text-shadow: 0 1px 2px rgba(0,0,0,0.2);">dismantling, assembling, and disposal services</strong>
+              — so if you need to take apart furniture, reassemble it at your new place, or dispose of unwanted items, we've got you covered.
+            </p>
+            <p class="type-body opacity-75 text-sm">
+              These extras are available as add-ons when you book your removal quote.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -1303,11 +1371,11 @@
         <div class="text-center">
           <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
             <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
             </svg>
           </div>
-          <h3 class="type-h3 text-gray-800 mb-2">Fully Insured</h3>
-          <p class="type-body text-gray-600">Complete peace of mind with comprehensive insurance coverage</p>
+          <h3 class="type-h3 text-gray-800 mb-2">Vetted and insured local drivers</h3>
+          <p class="type-body text-gray-600">Book with confidence, knowing every driver is verified and insured.</p>
         </div>
 
         <div class="text-center">
@@ -1406,8 +1474,13 @@
         </div>
 
         <div class="relative">
-          <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl">
-            <img src="/whyChooseUs.jpeg" alt="VSD Synergy Team" class="w-full h-full object-cover">
+          <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl image-carousel" id="whyChooseUsCarousel">
+            <img src="/whyChooseUs.jpeg" alt="VSD Synergy Team" class="slide active">
+            <img src="/cleaning.png" alt="VSD Synergy Cleaning Service" class="slide">
+            <div class="carousel-dots">
+              <span class="carousel-dot active" data-slide="0"></span>
+              <span class="carousel-dot" data-slide="1"></span>
+            </div>
           </div>
           <div class="absolute -bottom-8 -left-8 bg-white rounded-2xl shadow-xl p-6 max-w-xs">
             <div class="flex items-center space-x-2 mb-2">
@@ -1417,6 +1490,77 @@
             <p class="type-small-body text-gray-500 mt-3">— Sarah M., Corporate Client</p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Affects Your Quote Section -->
+  <section class="py-24 relative overflow-hidden" style="background: linear-gradient(135deg, #f0f7ff 0%, #fff5f0 50%, #f8f0ff 100%);">
+    <!-- Decorative background shapes -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-80 h-80 bg-orange-200 rounded-full opacity-20 translate-x-1/3 translate-y-1/3"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="type-h2 text-gray-800 mb-6" style="text-shadow: 0 2px 10px rgba(0,0,0,0.05);">What affects your man and van quote?</h2>
+        <p class="type-body text-gray-600 mb-4">
+          Your quote is shaped by the van size you choose, the level of help you need, and the estimated duration of your move. Smarter choices start with understanding your load — selecting the right van and help level keeps costs down and ensures everything fits in one trip.
+        </p>
+        <p class="type-body text-gray-600 mb-8">
+          Travel distance, loading and unloading time, stairs, longer carries, and limited parking all influence the overall duration. Choosing the right van size and help level upfront is the easiest way to avoid surprises on moving day.
+        </p>
+      </div>
+
+      <!-- Factor Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+          <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #3080E8 0%, #1e5fb8 100%);">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7"/>
+            </svg>
+          </div>
+          <h4 class="font-bold text-gray-800 mb-1">Van Size</h4>
+          <p class="text-sm text-gray-500">Pick the right vehicle for your load</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+          <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <h4 class="font-bold text-gray-800 mb-1">Helpers</h4>
+          <p class="text-sm text-gray-500">Self-load or hire extra hands</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+          <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h4 class="font-bold text-gray-800 mb-1">Duration</h4>
+          <p class="text-sm text-gray-500">Hours, distance, and complexity</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+          <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h4 class="font-bold text-gray-800 mb-1">Extras</h4>
+          <p class="text-sm text-gray-500">Stairs, parking, dismantling</p>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="/van-calculator/" class="btn-accent inline-flex items-center">
+          Try our Van Size Calculator
+          <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
       </div>
     </div>
   </section>
@@ -1869,6 +2013,47 @@
         document.body.style.overflow = '';
       }
     });
+
+    // Image Carousel
+    const carouselSlides = document.querySelectorAll('#whyChooseUsCarousel .slide');
+    const carouselDots = document.querySelectorAll('#whyChooseUsCarousel .carousel-dot');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      carouselSlides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+      carouselDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+      currentSlide = index;
+    }
+
+    function nextSlide() {
+      const next = (currentSlide + 1) % carouselSlides.length;
+      showSlide(next);
+    }
+
+    // Auto-advance every 4 seconds
+    let carouselInterval = setInterval(nextSlide, 4000);
+
+    // Dot clicks
+    carouselDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        clearInterval(carouselInterval);
+        showSlide(index);
+        carouselInterval = setInterval(nextSlide, 4000);
+      });
+    });
+
+    // Pause on hover
+    const carouselEl = document.getElementById('whyChooseUsCarousel');
+    if (carouselEl) {
+      carouselEl.addEventListener('mouseenter', () => clearInterval(carouselInterval));
+      carouselEl.addEventListener('mouseleave', () => {
+        carouselInterval = setInterval(nextSlide, 4000);
+      });
+    }
 
     // Handle service card clicks - prevent default navigation for now
     document.querySelectorAll('.service-card').forEach(card => {

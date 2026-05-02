@@ -57,6 +57,8 @@ function seedPricing() {
     { category: 'van_size', option_key: 'small', price: 30, label: 'Small Van' },
     { category: 'van_size', option_key: 'medium', price: 45, label: 'Medium Van' },
     { category: 'van_size', option_key: 'large', price: 60, label: 'Large Van' },
+    { category: 'van_size', option_key: 'luton', price: 75, label: '3.5t Luton Van' },
+    { category: 'van_size', option_key: 'lorry', price: 100, label: '7.5t Lorry' },
 
     // Helpers
     { category: 'helpers', option_key: 'self', price: 0, label: 'Self Load' },

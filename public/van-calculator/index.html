@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Van Size Calculator - VSD Synergy Limited</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-roboto: 'Roboto', sans-serif;
+      --font-lato: 'Lato', sans-serif;
+      --brand-primary: #3080E8;
+      --brand-primary-dark: #1e5fb8;
+      --accent-coral: #FF6B35;
+      --accent-coral-dark: #E55A2B;
+      --neutral-50: #F8FAFC;
+      --neutral-100: #F1F5F9;
+      --neutral-200: #E2E8F0;
+      --neutral-300: #CBD5E1;
+      --neutral-400: #94A3B8;
+      --neutral-500: #64748B;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1E293B;
+      --bg-page: #f5f6f8;
+      --card-border: #e8eaed;
+    }
+
+    body {
+      font-family: var(--font-lato);
+      color: #444;
+      background: var(--bg-page);
+    }
+
+    .calc-header {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+    }
+    .calc-header h1 {
+      font-family: var(--font-roboto);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 500;
+      color: var(--neutral-800);
+      margin-bottom: 1rem;
+    }
+    .calc-header p {
+      font-size: 1.0625rem;
+      color: var(--neutral-600);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .preset-box {
+      background: white;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .preset-box .preset-label {
+      font-family: var(--font-roboto);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+      margin-bottom: 0.25rem;
+    }
+    .preset-box .preset-hint {
+      font-size: 0.875rem;
+      color: var(--neutral-500);
+      line-height: 1.4;
+    }
+    .preset-select {
+      min-width: 220px;
+      padding: 0.625rem 1rem;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-700);
+      background: white;
+      cursor: pointer;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .category-tabs::-webkit-scrollbar { display: none; }
+    .category-tab {
+      padding: 0.875rem 1.25rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--neutral-500);
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+    .category-tab:hover { color: var(--neutral-700); }
+    .category-tab.active {
+      color: var(--accent-coral);
+      border-bottom-color: var(--accent-coral);
+    }
+
+    .search-bar {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.875rem 1rem 0.875rem 2.75rem;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-700);
+      background: white;
+    }
+    .search-bar input::placeholder { color: var(--neutral-400); }
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(48,128,232,0.1);
+    }
+    .search-bar svg {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neutral-400);
+      width: 18px;
+      height: 18px;
+    }
+
+    .subcategory-title {
+      font-family: var(--font-roboto);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+      margin-bottom: 0.75rem;
+      padding-left: 0.25rem;
+    }
+
+    .item-card {
+      background: white;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.625rem;
+      transition: box-shadow 0.2s ease;
+    }
+    .item-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .item-info .item-name {
+      font-family: var(--font-roboto);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+      margin-bottom: 0.25rem;
+    }
+    .item-info .item-dims {
+      font-size: 0.8125rem;
+      color: var(--neutral-500);
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    .item-dims svg {
+      width: 14px;
+      height: 14px;
+      color: var(--neutral-400);
+    }
+
+    .qty-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--neutral-50);
+      border-radius: 9999px;
+      padding: 0.25rem;
+    }
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 9999px;
+      border: none;
+      background: white;
+      color: var(--accent-coral);
+      font-size: 1.125rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: all 0.15s ease;
+    }
+    .qty-btn:hover {
+      background: var(--accent-coral);
+      color: white;
+    }
+    .qty-btn:active { transform: scale(0.95); }
+    .qty-value {
+      min-width: 24px;
+      text-align: center;
+      font-family: var(--font-roboto);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+    }
+
+    .show-more {
+      display: inline-block;
+      margin-top: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--accent-coral);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0.25rem 0.25rem;
+      transition: opacity 0.2s ease;
+    }
+    .show-more:hover { opacity: 0.75; }
+
+    .sidebar {
+      position: sticky;
+      top: 100px;
+      background: white;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border-top: 4px solid var(--accent-coral);
+    }
+    .van-img {
+      width: 100%;
+      max-width: 180px;
+      max-height: 120px;
+      object-fit: contain;
+      margin: 0 auto 1rem;
+      display: block;
+    }
+    .van-name {
+      font-family: var(--font-roboto);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+    .van-capacity {
+      font-size: 0.875rem;
+      color: var(--neutral-500);
+      text-align: center;
+      margin-bottom: 1.25rem;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--neutral-200);
+    }
+    .stat-block .stat-label {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    .stat-block .stat-value {
+      font-family: var(--font-roboto);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+    }
+
+    .selected-items-title {
+      font-family: var(--font-roboto);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--neutral-700);
+      margin-bottom: 0.75rem;
+    }
+    .selected-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--neutral-100);
+      font-size: 0.875rem;
+    }
+    .selected-item:last-child { border-bottom: none; }
+    .selected-item .sel-name { color: var(--neutral-700); }
+    .selected-item .sel-qty { font-weight: 700; color: var(--neutral-800); }
+
+    .no-selection {
+      font-size: 0.875rem;
+      color: var(--neutral-400);
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(48,128,232,0.4);
+      text-decoration: none;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(48,128,232,0.5); }
+
+    .nav-link {
+      position: relative;
+      color: var(--neutral-600);
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 400;
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+    .nav-link:hover { color: var(--brand-primary); }
+
+    .reset-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.625rem 1rem;
+      font-family: var(--font-lato);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--neutral-500);
+      background: var(--neutral-50);
+      border: 1px solid var(--neutral-200);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .reset-btn:hover {
+      background: var(--neutral-200);
+      color: var(--neutral-700);
+    }
+    .reset-btn:active {
+      transform: scale(0.98);
+    }
+
+    .select-van-btn {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 1rem;
+      font-family: var(--font-lato);
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 107, 53, 0.4);
+      transition: all 0.3s ease;
+    }
+    .select-van-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    }
+    .select-van-hint {
+      text-align: center;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--neutral-500);
+    }
+    .select-van-hint a {
+      color: var(--neutral-500);
+      text-decoration: underline;
+    }
+    .select-van-hint a:hover {
+      color: var(--neutral-700);
+    }
+
+    .custom-item-box {
+      background: #fdf6f2;
+      border: 1px solid #f0e0d4;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .custom-item-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .custom-item-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--accent-coral);
+      flex-shrink: 0;
+    }
+    .custom-item-title {
+      font-family: var(--font-roboto);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--neutral-800);
+    }
+    .custom-item-subtitle {
+      font-size: 0.875rem;
+      color: var(--neutral-600);
+      margin-top: 0.125rem;
+    }
+    .custom-item-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .custom-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+      margin-bottom: 0.375rem;
+      display: block;
+    }
+    .custom-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      color: var(--neutral-800);
+      background: white;
+    }
+    .custom-input::placeholder { color: var(--neutral-400); }
+    .custom-input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(48,128,232,0.1);
+    }
+    .custom-dims-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .add-custom-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-family: var(--font-lato);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+      background: white;
+      border: 1px solid var(--brand-primary);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .add-custom-btn:hover {
+      background: var(--brand-primary);
+      color: white;
+    }
+    .support-text {
+      font-size: 0.9375rem;
+      color: var(--neutral-600);
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+    .support-text a {
+      color: var(--accent-coral);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+    .support-text a:hover {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar { position: static; margin-top: 2rem; }
+    }
+    @media (max-width: 640px) {
+      .preset-box { flex-direction: column; align-items: flex-start; }
+      .preset-select { width: 100%; }
+      .item-card { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .item-info { width: 100%; }
+      .qty-control { align-self: flex-end; }
+      .category-tab { padding: 0.625rem 0.875rem; font-size: 0.875rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <a href="/" class="flex items-center space-x-4">
+          <img src="/brand_assets/bp.jpeg" alt="VSD Synergy Limited Logo" class="h-14 w-auto">
+          <span class="font-bold text-xl text-gray-800" style="font-family: var(--font-roboto);">VSD SYNERGY LIMITED</span>
+        </a>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="/" class="nav-link">Home</a>
+          <a href="/#services" class="nav-link">Services</a>
+          <a href="/quote/removal" class="nav-link">Get a Quote</a>
+          <a href="/#contact" class="nav-link">Contact</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top: 80px;">
+    <div class="calc-header">
+      <h1>Van Size Calculator</h1>
+      <p>Not sure which van size you need? Use our handy calculator below. Simply select the items you're moving, and we'll calculate the volume and recommend the perfect van for your move.</p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+      <!-- Preset Box -->
+      <div class="preset-box">
+        <div>
+          <div class="preset-label">Need a hand?</div>
+          <div class="preset-hint">You can preload typical inventories based on property size to get you started.</div>
+        </div>
+        <select class="preset-select" id="presetSelect">
+          <option value="">Choose a preset</option>
+          <option value="studio">Studio Flat</option>
+          <option value="1bed">1 Bedroom Flat</option>
+          <option value="2bed">2 Bedroom Flat</option>
+          <option value="3bed">3 Bedroom House</option>
+          <option value="4bed">4 Bedroom House</option>
+          <option value="office-small">Small Office</option>
+          <option value="office-medium">Medium Office</option>
+        </select>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Left: Items -->
+        <div class="lg:col-span-2">
+          <!-- Tabs -->
+          <div class="category-tabs" id="categoryTabs">
+            <button class="category-tab active" data-cat="living">Living/Dining</button>
+            <button class="category-tab" data-cat="kitchen">Kitchen/Utility</button>
+            <button class="category-tab" data-cat="bedroom">Bedroom</button>
+            <button class="category-tab" data-cat="garden">Garden/Shed</button>
+            <button class="category-tab" data-cat="packing">Packing</button>
+            <button class="category-tab" data-cat="bathroom">Bathroom</button>
+            <button class="category-tab" data-cat="office">Office</button>
+          </div>
+
+          <!-- Search -->
+          <div class="search-bar">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" id="searchInput" placeholder="Type to search all items">
+          </div>
+
+          <!-- Items Container -->
+          <div id="itemsContainer"></div>
+        </div>
+
+        <!-- Right: Sidebar -->
+        <div class="lg:col-span-1">
+          <div class="sidebar">
+            <img src="/smallvan.png" alt="Recommended Van" class="van-img" id="vanImage">
+            <div class="van-name" id="vanName">Small Van</div>
+            <div class="van-capacity" id="vanCapacity">Capacity up to 2.50 m³</div>
+
+            <div class="stats-row">
+              <div class="stat-block">
+                <div class="stat-label">Total volume</div>
+                <div class="stat-value" id="totalVolume">0.00 m³</div>
+              </div>
+              <div class="stat-block" style="text-align: right;">
+                <div class="stat-label">Items selected</div>
+                <div class="stat-value" id="itemsSelected">0</div>
+              </div>
+            </div>
+
+            <div class="selected-items-title">Selected Items</div>
+            <div id="selectedItemsList">
+              <div class="no-selection">No items selected yet</div>
+            </div>
+
+            <button class="reset-btn" id="resetBtn" onclick="resetSelection()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Reset Selection
+            </button>
+
+            <a href="/quote/removal" class="select-van-btn" id="selectVanBtn" onclick="storeSelectedVan(event)">
+              SELECT THIS VAN
+            </a>
+            <p class="select-van-hint">
+              <a href="/quote/removal">Choose your own van size (not recommended)</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Item Section -->
+      <div class="max-w-4xl mx-auto mt-16 px-4 sm:px-6 lg:px-8">
+        <div class="custom-item-box">
+          <div class="custom-item-header">
+            <svg class="custom-item-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <div>
+              <div class="custom-item-title">Can't see what you're looking for?</div>
+              <div class="custom-item-subtitle">Add your own item</div>
+            </div>
+          </div>
+          <div class="custom-item-form">
+            <label class="custom-label">Item name</label>
+            <input type="text" id="customItemName" class="custom-input" placeholder="e.g. Piano">
+            <div class="custom-dims-row">
+              <div>
+                <label class="custom-label">Length (mm)</label>
+                <input type="number" id="customItemLength" class="custom-input" placeholder="">
+              </div>
+              <div>
+                <label class="custom-label">Width (mm)</label>
+                <input type="number" id="customItemWidth" class="custom-input" placeholder="">
+              </div>
+              <div>
+                <label class="custom-label">Height (mm)</label>
+                <input type="number" id="customItemHeight" class="custom-input" placeholder="">
+              </div>
+            </div>
+            <button class="add-custom-btn" onclick="addCustomItem()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add custom item
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support text -->
+      <div class="max-w-4xl mx-auto mt-12 mb-16 px-4 sm:px-6 lg:px-8">
+        <p class="support-text">
+          Our calculator uses dimensional averages based on thousands of moves to recommend a van. If you're unsure, speak with our <a href="/index.html#contact">support team</a> — we're happy to double-check.
+        </p>
+        <p class="support-text">
+          We store your selection locally so you can return to it later. Use the reset button if you need a fresh start.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center space-x-3 mb-4 md:mb-0">
+          <img src="/brand_assets/bp.jpeg" alt="VSD Synergy Limited Logo" class="h-12 w-auto">
+          <span class="font-bold text-lg">VSD SYNERGY LIMITED</span>
+        </div>
+        <p class="text-sm text-gray-400">
+          &copy; 2026 VSD Synergy Limited. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Van data
+    const VANS = [
+      { name: 'Small Van', capacity: 2.5, image: '/smallvan.png' },
+      { name: 'Medium Van', capacity: 8.00, image: '/mediumvan.png' },
+      { name: 'Large Van', capacity: 14.00, image: '/largevan.png' },
+      { name: '3.5t Luton Van', capacity: 22.00, image: '/3.5tlutonvan.png' },
+      { name: '7.5t Lorry', capacity: 30.00, image: '/7.5tlorry.png' },
+    ];
+
+    // Item data: { id, name, dims: [L,W,H] in mm, category, subcategory }
+    const ITEMS = [
+      // Living/Dining - Dining
+      { id: 'dining-table-2', name: '2 Seater Dining Table', dims: [500, 760, 500], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-4', name: '4 Seater Dining Table', dims: [1350, 760, 750], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-6', name: '6 Seater Dining Table', dims: [1500, 760, 900], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-chair', name: 'Dining Chair', dims: [450, 900, 450], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-round-4', name: '4 Seater Round Dining Table', dims: [1100, 760, 1100], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-round-4-dis', name: '4 Seater Round Dining Table (Dismantled)', dims: [1100, 150, 1100], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-round-6', name: '6 Seater Round Dining Table', dims: [1200, 760, 1200], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-round-6-dis', name: '6 Seater Round Dining Table (Dismantled)', dims: [1200, 150, 1200], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-8', name: '8 Seater Dining Table', dims: [1950, 760, 900], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-4-dis', name: '4 Seater Dining Table (Dismantled)', dims: [1350, 200, 750], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-6-dis', name: '6 Seater Dining Table (Dismantled)', dims: [1500, 200, 900], category: 'living', subcategory: 'Dining' },
+      { id: 'dining-table-8-dis', name: '8 Seater Dining Table (Dismantled)', dims: [1950, 200, 900], category: 'living', subcategory: 'Dining' },
+      // Living/Dining - Seating
+      { id: 'sofa-2', name: 'Two Seater Sofa', dims: [1500, 980, 950], category: 'living', subcategory: 'Seating' },
+      { id: 'sofa-3', name: 'Three Seater Sofa', dims: [2100, 980, 950], category: 'living', subcategory: 'Seating' },
+      { id: 'sofa-4', name: 'Four Seater Sofa', dims: [2400, 980, 950], category: 'living', subcategory: 'Seating' },
+      { id: 'armchair', name: 'Armchair', dims: [900, 1000, 950], category: 'living', subcategory: 'Seating' },
+      // Living/Dining - Furniture
+      { id: 'coffee-table', name: 'Coffee Table', dims: [750, 450, 750], category: 'living', subcategory: 'Furniture' },
+      { id: 'tv-stand', name: 'TV Stand', dims: [650, 450, 220], category: 'living', subcategory: 'Furniture' },
+      { id: 'sideboard-2', name: '2 Door Sideboard', dims: [960, 760, 350], category: 'living', subcategory: 'Furniture' },
+      { id: 'dresser-2', name: '2 Door Dresser', dims: [1050, 2000, 430], category: 'living', subcategory: 'Furniture' },
+      { id: 'bookcase-std', name: 'Standard Bookcase', dims: [1320, 960, 340], category: 'living', subcategory: 'Furniture' },
+      { id: 'sideboard-3', name: '3 Door Sideboard', dims: [1370, 850, 420], category: 'living', subcategory: 'Furniture' },
+      { id: 'sideboard-4', name: '4 Door Sideboard', dims: [1900, 860, 440], category: 'living', subcategory: 'Furniture' },
+      { id: 'dresser-3', name: '3 Door Dresser', dims: [1455, 2000, 430], category: 'living', subcategory: 'Furniture' },
+      { id: 'bookcase-sm', name: 'Small Bookcase', dims: [700, 805, 300], category: 'living', subcategory: 'Furniture' },
+      { id: 'bookcase-tall', name: 'Tall Bookcase', dims: [950, 1980, 320], category: 'living', subcategory: 'Furniture' },
+      { id: 'side-table', name: 'Side/Occasional Table', dims: [450, 700, 450], category: 'living', subcategory: 'Furniture' },
+      // Living/Dining - Electronics
+      { id: 'tv-small', name: 'Small Television/TV (Under 40")', dims: [740, 450, 120], category: 'living', subcategory: 'Electronics' },
+      { id: 'tv-large', name: 'Large Television/TV (40" - 60")', dims: [1400, 800, 120], category: 'living', subcategory: 'Electronics' },
+      { id: 'tv-xl', name: 'XL Television (Over 60")', dims: [1800, 1100, 120], category: 'living', subcategory: 'Electronics' },
+      // Living/Dining - Other
+      { id: 'floor-lamp', name: 'Floor Lamp', dims: [380, 1620, 380], category: 'living', subcategory: 'Other' },
+      { id: 'table-lamp', name: 'Table Lamp', dims: [400, 500, 400], category: 'living', subcategory: 'Other' },
+      { id: 'rug-medium', name: 'Medium Rug (up to 120 x 180cm)', dims: [1200, 130, 1800], category: 'living', subcategory: 'Other' },
+      { id: 'rug-small', name: 'Small Rug (up to 90 x 150cm)', dims: [900, 120, 1500], category: 'living', subcategory: 'Other' },
+      { id: 'rug-large', name: 'Large Rug (up to 170 x 240cm)', dims: [1700, 150, 2400], category: 'living', subcategory: 'Other' },
+      { id: 'rug-xl', name: 'XL Rug (up to 200 x 290cm)', dims: [2000, 180, 2900], category: 'living', subcategory: 'Other' },
+      // Kitchen/Utility - Appliances
+      { id: 'fridge-freezer', name: 'Fridge Freezer', dims: [600, 1750, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'washing-machine', name: 'Washing Machine', dims: [600, 850, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'microwave-oven', name: 'Microwave Oven', dims: [500, 330, 450], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'american-fridge', name: 'American Fridge Freezer', dims: [908, 1760, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'tumble-dryer', name: 'Tumble Dryer', dims: [600, 850, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'single-oven', name: 'Single Oven', dims: [600, 900, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'double-oven', name: 'Double Oven', dims: [1100, 900, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'dishwasher', name: 'Dishwasher', dims: [600, 850, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'under-counter-fridge', name: 'Under Counter Fridge or Freezer', dims: [600, 850, 600], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'chest-freezer-150', name: 'Chest Freezer up to 150l', dims: [630, 850, 580], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'chest-freezer-300', name: 'Chest Freezer up to 300l', dims: [1110, 850, 620], category: 'kitchen', subcategory: 'Appliances' },
+      { id: 'chest-freezer-500', name: 'Chest Freezer up to 500l', dims: [1550, 850, 750], category: 'kitchen', subcategory: 'Appliances' },
+      // Kitchen/Utility - Other
+      { id: 'bin-30', name: 'Bin - 30 Litre', dims: [350, 610, 290], category: 'kitchen', subcategory: 'Other' },
+      { id: 'bin-60', name: 'Bin - 60 Litre', dims: [500, 610, 360], category: 'kitchen', subcategory: 'Other' },
+      { id: 'high-chair', name: 'High Chair', dims: [560, 900, 620], category: 'kitchen', subcategory: 'Other' },
+      { id: 'kitchen-stool', name: 'Kitchen Stool', dims: [400, 700, 650], category: 'kitchen', subcategory: 'Other' },
+      // Bedroom - Beds
+      { id: 'single-bed-frame', name: 'Single Bed Frame & Mattress', dims: [1000, 600, 2000], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'double-bed-frame', name: 'Double Bed Frame & Mattress', dims: [1450, 600, 2000], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'king-bed-frame', name: 'King Size Bed Frame & Mattress', dims: [1600, 600, 2100], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'super-king-bed-frame', name: 'Super King Size Bed Frame & Mattress', dims: [1900, 600, 2100], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'cot', name: 'Cot', dims: [650, 950, 1250], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'single-divan', name: 'Single Divan/Ottoman Bed & Mattress', dims: [900, 700, 1900], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'double-divan', name: 'Double Divan/Ottoman Bed & Mattress', dims: [1350, 700, 1900], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'king-divan', name: 'King Size Divan/Ottoman Bed & Mattress', dims: [1500, 700, 2000], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'super-king-divan', name: 'Super King Size Divan/Ottoman Bed & Mattress', dims: [1800, 700, 2000], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'single-headboard', name: 'Single Bed - Headboard', dims: [900, 600, 50], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'double-headboard', name: 'Double Bed - Headboard', dims: [1350, 600, 50], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'king-headboard', name: 'King Size Bed - Headboard', dims: [1500, 600, 50], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'super-king-headboard', name: 'Super King Size Bed - Headboard', dims: [1800, 600, 50], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'single-bed-dis', name: 'Single Bed Frame (dismantled)', dims: [1000, 250, 2000], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'double-bed-dis', name: 'Double Bed Frame (dismantled)', dims: [1450, 250, 2000], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'king-bed-dis', name: 'King Size Bed Frame (dismantled)', dims: [1600, 250, 2100], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'super-king-bed-dis', name: 'Super King Size Bed Frame (dismantled)', dims: [1900, 250, 2100], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'single-mattress', name: 'Single Mattress', dims: [900, 300, 1900], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'double-mattress', name: 'Double Mattress', dims: [1350, 300, 1900], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'king-mattress', name: 'King Size Mattress', dims: [1500, 300, 2000], category: 'bedroom', subcategory: 'Beds' },
+      { id: 'super-king-mattress', name: 'Super King Size Mattress', dims: [1800, 300, 2000], category: 'bedroom', subcategory: 'Beds' },
+      // Bedroom - Furniture
+      { id: 'single-wardrobe', name: 'Single Wardrobe', dims: [900, 1800, 600], category: 'bedroom', subcategory: 'Furniture' },
+      { id: 'double-wardrobe', name: 'Double Wardrobe', dims: [1200, 2000, 600], category: 'bedroom', subcategory: 'Furniture' },
+      { id: 'chest-drawers', name: 'Chest Of Drawers', dims: [1000, 800, 500], category: 'bedroom', subcategory: 'Furniture' },
+      { id: 'bedside-table', name: 'Bedside Table', dims: [450, 700, 450], category: 'bedroom', subcategory: 'Furniture' },
+      { id: 'dressing-table', name: 'Dressing Table', dims: [1350, 800, 450], category: 'bedroom', subcategory: 'Furniture' },
+      { id: 'tv-stand-bedroom', name: 'TV Stand', dims: [650, 450, 220], category: 'bedroom', subcategory: 'Furniture' },
+      { id: 'triple-wardrobe', name: 'Triple Wardrobe', dims: [2100, 2000, 600], category: 'bedroom', subcategory: 'Furniture' },
+      // Bedroom - Electronics
+      { id: 'tv-small-bedroom', name: 'Small Television/TV (Under 40")', dims: [740, 450, 120], category: 'bedroom', subcategory: 'Electronics' },
+      { id: 'tv-large-bedroom', name: 'Large Television/TV (40" - 60")', dims: [1400, 800, 120], category: 'bedroom', subcategory: 'Electronics' },
+      { id: 'tv-xl-bedroom', name: 'XL Television (Over 60")', dims: [1800, 1100, 120], category: 'bedroom', subcategory: 'Electronics' },
+      // Bedroom - Other
+      { id: 'floor-lamp-bedroom', name: 'Floor Lamp', dims: [380, 1620, 380], category: 'bedroom', subcategory: 'Other' },
+      { id: 'table-lamp-bedroom', name: 'Table Lamp', dims: [400, 500, 400], category: 'bedroom', subcategory: 'Other' },
+      { id: 'rug-medium-bedroom', name: 'Medium Rug (up to 120 x 180cm)', dims: [1200, 130, 1800], category: 'bedroom', subcategory: 'Other' },
+      { id: 'ottoman-box', name: 'Ottoman / Blanket Box', dims: [870, 440, 430], category: 'bedroom', subcategory: 'Other' },
+      { id: 'laundry-basket', name: 'Laundry Basket', dims: [400, 600, 400], category: 'bedroom', subcategory: 'Other' },
+      { id: 'rug-small-bedroom', name: 'Small Rug (up to 90 x 150cm)', dims: [900, 120, 1500], category: 'bedroom', subcategory: 'Other' },
+      { id: 'rug-large-bedroom', name: 'Large Rug (up to 170 x 240cm)', dims: [1700, 150, 2400], category: 'bedroom', subcategory: 'Other' },
+      { id: 'rug-xl-bedroom', name: 'XL Rug (up to 200 x 290cm)', dims: [2000, 180, 2900], category: 'bedroom', subcategory: 'Other' },
+      // Garden/Shed - Garden Furniture
+      { id: 'garden-chair-fold', name: 'Folding Garden Chair', dims: [560, 590, 170], category: 'garden', subcategory: 'Garden Furniture' },
+      { id: 'garden-chair-nonfold', name: 'Non-Folding Garden Chair', dims: [450, 900, 450], category: 'garden', subcategory: 'Garden Furniture' },
+      { id: 'garden-bench', name: 'Garden Bench', dims: [1460, 880, 630], category: 'garden', subcategory: 'Garden Furniture' },
+      { id: 'picnic-table', name: 'Picnic Table', dims: [620, 760, 180], category: 'garden', subcategory: 'Garden Furniture' },
+      { id: 'garden-table-4', name: '4 Seater Garden Table', dims: [1350, 760, 750], category: 'garden', subcategory: 'Garden Furniture' },
+      { id: 'garden-table-6', name: '6 Seater Garden Table', dims: [1500, 760, 900], category: 'garden', subcategory: 'Garden Furniture' },
+      { id: 'garden-table-8', name: '8 Seater Garden Table', dims: [1950, 760, 900], category: 'garden', subcategory: 'Garden Furniture' },
+      // Garden/Shed - Other
+      { id: 'lawn-mower', name: 'Lawn Mower', dims: [560, 1065, 1690], category: 'garden', subcategory: 'Other' },
+      { id: 'tool-box', name: 'Tool Box', dims: [480, 380, 185], category: 'garden', subcategory: 'Other' },
+      { id: 'parasol', name: 'Parasol', dims: [480, 480, 2650], category: 'garden', subcategory: 'Other' },
+      { id: 'bicycle-adult', name: 'Adult Bicycle', dims: [800, 1800, 700], category: 'garden', subcategory: 'Other' },
+      { id: 'bicycle-child', name: 'Childs Bicycle', dims: [700, 1180, 550], category: 'garden', subcategory: 'Other' },
+      { id: 'bbq-kettle', name: 'Kettle Barbeque', dims: [650, 1070, 670], category: 'garden', subcategory: 'Other' },
+      { id: 'bbq-gas', name: 'Gas Barbeque', dims: [1400, 1130, 600], category: 'garden', subcategory: 'Other' },
+      { id: 'step-ladder', name: '4-Step Step Ladder', dims: [460, 1410, 200], category: 'garden', subcategory: 'Other' },
+      // Packing (no subcategories)
+      { id: 'box-small', name: 'Small Box - up to 55 litres', dims: [330, 330, 457], category: 'packing', subcategory: '' },
+      { id: 'box-medium', name: 'Medium Box - up to 95 litres', dims: [457, 457, 457], category: 'packing', subcategory: '' },
+      { id: 'box-large', name: 'Large Box - up to 130 litres', dims: [457, 610, 457], category: 'packing', subcategory: '' },
+      { id: 'box-xl', name: 'XL Box - up to 170 litres', dims: [460, 610, 610], category: 'packing', subcategory: '' },
+      { id: 'wardrobe-box', name: 'Wardrobe Box', dims: [508, 1220, 457], category: 'packing', subcategory: '' },
+      { id: 'suitcase-small', name: 'Small/Cabin Suitcase', dims: [400, 550, 200], category: 'packing', subcategory: '' },
+      { id: 'suitcase-medium', name: 'Medium Suitcase - up to 80 litres', dims: [480, 680, 310], category: 'packing', subcategory: '' },
+      { id: 'suitcase-large', name: 'Large Suitcase - up to 150 litres', dims: [540, 810, 410], category: 'packing', subcategory: '' },
+      // Bathroom
+      { id: 'bathroom-cabinet-1', name: 'Bathroom Cabinet - 1 Door', dims: [350, 700, 200], category: 'bathroom', subcategory: '' },
+      { id: 'bathroom-cabinet-2', name: 'Bathroom Cabinet - 2 Door', dims: [600, 700, 200], category: 'bathroom', subcategory: '' },
+      // Bathroom - Other
+      { id: 'laundry-basket-bath', name: 'Laundry Basket', dims: [400, 600, 400], category: 'bathroom', subcategory: 'Other' },
+      // Office
+      { id: 'office-chair', name: 'Office Chair', dims: [500, 900, 500], category: 'office', subcategory: '' },
+      { id: 'desk-office', name: 'Desk', dims: [1500, 760, 750], category: 'office', subcategory: '' },
+      { id: 'filing-cabinet-2', name: '2 Drawer Filing Cabinet', dims: [480, 730, 650], category: 'office', subcategory: '' },
+      { id: 'filing-cabinet-3', name: '3 Drawer Filing Cabinet', dims: [480, 1045, 650], category: 'office', subcategory: '' },
+      { id: 'filing-cabinet-4', name: '4 Drawer Filing Cabinet', dims: [480, 1300, 650], category: 'office', subcategory: '' },
+      // Office - Electronics
+      { id: 'computer-tower-full', name: 'Computer Tower - Full', dims: [250, 600, 650], category: 'office', subcategory: 'Electronics' },
+      { id: 'computer-tower-mid', name: 'Computer Tower - Mid', dims: [230, 490, 480], category: 'office', subcategory: 'Electronics' },
+      { id: 'computer-tower-mini', name: 'Computer Tower - Mini/SFF', dims: [210, 420, 430], category: 'office', subcategory: 'Electronics' },
+    ];
+
+    // Preset data
+    const PRESETS = {
+      'studio': { 'sofa-2': 1, 'coffee-table': 1, 'tv-stand': 1, 'single-bed-frame': 1, 'bedside-table': 1, 'single-wardrobe': 1, 'chest-drawers': 1, 'under-counter-fridge': 1, 'microwave-oven': 1, 'box-medium': 5, 'suitcase-small': 2 },
+      '1bed': { 'sofa-2': 1, 'coffee-table': 1, 'tv-stand': 1, 'double-bed-frame': 1, 'bedside-table': 2, 'double-wardrobe': 1, 'chest-drawers': 1, 'fridge-freezer': 1, 'washing-machine': 1, 'microwave-oven': 1, 'box-medium': 8, 'box-large': 4, 'suitcase-medium': 3 },
+      '2bed': { 'sofa-3': 1, 'coffee-table': 1, 'tv-stand': 1, 'bookcase-sm': 1, 'double-bed-frame': 1, 'single-bed-frame': 1, 'bedside-table': 3, 'double-wardrobe': 2, 'chest-drawers': 2, 'dressing-table': 1, 'fridge-freezer': 1, 'washing-machine': 1, 'dishwasher': 1, 'microwave-oven': 1, 'box-medium': 12, 'box-large': 8, 'suitcase-medium': 4 },
+      '3bed': { 'sofa-3': 1, 'armchair': 1, 'coffee-table': 1, 'tv-stand': 1, 'bookcase-std': 1, 'dining-table-4': 1, 'dining-chair': 4, 'double-bed-frame': 1, 'king-bed-frame': 1, 'single-bed-frame': 1, 'bedside-table': 4, 'triple-wardrobe': 1, 'double-wardrobe': 2, 'chest-drawers': 3, 'dressing-table': 1, 'fridge-freezer': 1, 'washing-machine': 1, 'dishwasher': 1, 'microwave-oven': 1, 'box-medium': 18, 'box-large': 12, 'suitcase-large': 6 },
+      '4bed': { 'sofa-3': 1, 'armchair': 2, 'coffee-table': 1, 'tv-stand': 1, 'bookcase-tall': 2, 'dining-table-6': 1, 'dining-chair': 6, 'double-bed-frame': 2, 'king-bed-frame': 1, 'single-bed-frame': 1, 'bedside-table': 5, 'triple-wardrobe': 2, 'double-wardrobe': 2, 'chest-drawers': 4, 'dressing-table': 2, 'fridge-freezer': 1, 'washing-machine': 1, 'dishwasher': 1, 'microwave-oven': 1, 'box-medium': 25, 'box-large': 15, 'suitcase-large': 8 },
+      'office-small': { 'desk-office': 2, 'office-chair': 2, 'filing-cabinet-2': 1, 'computer-tower-mid': 1, 'box-medium': 6, 'box-large': 3 },
+      'office-medium': { 'desk-office': 5, 'filing-cabinet-3': 3, 'office-chair': 8, 'computer-tower-mid': 3, 'box-medium': 15, 'box-large': 8 },
+    };
+
+    let quantities = {};
+    let activeCategory = 'living';
+    let expandedSubs = new Set();
+
+    function getVolume(item) {
+      const m3 = (item.dims[0] / 1000) * (item.dims[1] / 1000) * (item.dims[2] / 1000);
+      return m3;
+    }
+
+    function getTotalVolume() {
+      let total = 0;
+      for (const id in quantities) {
+        if (quantities[id] > 0) {
+          const item = ITEMS.find(i => i.id === id);
+          if (item) total += getVolume(item) * quantities[id];
+        }
+      }
+      total += getCustomVolume();
+      return total;
+    }
+
+    function getTotalItems() {
+      let total = 0;
+      for (const id in quantities) total += quantities[id] || 0;
+      return total;
+    }
+
+    function getRecommendedVan(volume) {
+      if (volume <= 0) return VANS[0]; // Small Van as default when nothing selected
+      for (const van of VANS) {
+        if (volume <= van.capacity) return van;
+      }
+      return VANS[VANS.length - 1];
+    }
+
+    // Custom items storage
+    let customItems = [];
+    let customItemCounter = 0;
+
+    function loadCustomItems() {
+      try {
+        const saved = localStorage.getItem('vsd_van_calculator_custom');
+        if (saved) customItems = JSON.parse(saved);
+      } catch (e) {}
+    }
+
+    function saveCustomItems() {
+      try {
+        localStorage.setItem('vsd_van_calculator_custom', JSON.stringify(customItems));
+      } catch (e) {}
+    }
+
+    function addCustomItem() {
+      const name = document.getElementById('customItemName').value.trim();
+      const length = parseFloat(document.getElementById('customItemLength').value);
+      const width = parseFloat(document.getElementById('customItemWidth').value);
+      const height = parseFloat(document.getElementById('customItemHeight').value);
+
+      if (!name || !length || !width || !height) {
+        alert('Please fill in all fields for the custom item.');
+        return;
+      }
+
+      customItemCounter++;
+      const customId = 'custom_' + customItemCounter;
+      const dims = [Math.round(length), Math.round(width), Math.round(height)];
+
+      customItems.push({ id: customId, name, dims });
+      quantities[customId] = 1;
+      saveCustomItems();
+      saveQuantities();
+
+      // Clear inputs
+      document.getElementById('customItemName').value = '';
+      document.getElementById('customItemLength').value = '';
+      document.getElementById('customItemWidth').value = '';
+      document.getElementById('customItemHeight').value = '';
+
+      updateSidebar();
+      alert('"' + name + '" added to your selection.');
+    }
+
+    function getCustomVolume() {
+      let total = 0;
+      for (const item of customItems) {
+        const qty = quantities[item.id] || 0;
+        if (qty > 0) {
+          total += (item.dims[0] / 1000) * (item.dims[1] / 1000) * (item.dims[2] / 1000) * qty;
+        }
+      }
+      return total;
+    }
+
+    function storeSelectedVan(e) {
+      const totalVol = getTotalVolume() + getCustomVolume();
+      const van = getRecommendedVan(totalVol);
+      const vanMap = {
+        'Small Van': 'small',
+        'Medium Van': 'medium',
+        'Large Van': 'large',
+        '3.5t Luton Van': 'luton',
+        '7.5t Lorry': 'lorry'
+      };
+      const vanValue = vanMap[van.name] || 'medium';
+      e.target.href = `/quote/removal?targetStep=5&vanType=${vanValue}`;
+    }
+
+    function formatDims(dims) {
+      return dims.map(d => d.toLocaleString()).join(' × ') + 'mm';
+    }
+
+    function formatVolume(vol) {
+      return vol.toFixed(2) + ' m³';
+    }
+
+    function updateSidebar() {
+      const totalVol = getTotalVolume();
+      const totalItems = getTotalItems();
+      const van = getRecommendedVan(totalVol);
+
+      document.getElementById('vanName').textContent = van.name;
+      document.getElementById('vanCapacity').textContent = 'Capacity up to ' + formatVolume(van.capacity);
+      document.getElementById('vanImage').src = van.image;
+      document.getElementById('totalVolume').textContent = formatVolume(totalVol);
+      document.getElementById('itemsSelected').textContent = totalItems;
+
+      const list = document.getElementById('selectedItemsList');
+      const selected = [];
+      for (const id in quantities) {
+        if (quantities[id] > 0) {
+          const item = ITEMS.find(i => i.id === id);
+          if (item) selected.push({ ...item, qty: quantities[id] });
+          // Check custom items
+          const customItem = customItems.find(i => i.id === id);
+          if (customItem) selected.push({ name: customItem.name, qty: quantities[id] });
+        }
+      }
+
+      if (selected.length === 0) {
+        list.innerHTML = '<div class="no-selection">No items selected yet</div>';
+        return;
+      }
+
+      list.innerHTML = selected.map(item => `
+        <div class="selected-item">
+          <span class="sel-name">${item.name}</span>
+          <span class="sel-qty">${item.qty}</span>
+        </div>
+      `).join('');
+    }
+
+    function setQty(id, delta) {
+      quantities[id] = (quantities[id] || 0) + delta;
+      if (quantities[id] < 0) quantities[id] = 0;
+      saveQuantities();
+      renderItems();
+      updateSidebar();
+    }
+
+    function setQtyAbsolute(id, val) {
+      quantities[id] = Math.max(0, parseInt(val) || 0);
+      saveQuantities();
+      renderItems();
+      updateSidebar();
+    }
+
+    function saveQuantities() {
+      try {
+        localStorage.setItem('vsd_van_calculator_quantities', JSON.stringify(quantities));
+      } catch (e) { /* ignore storage errors */ }
+    }
+
+    function loadQuantities() {
+      try {
+        const saved = localStorage.getItem('vsd_van_calculator_quantities');
+        if (saved) {
+          quantities = JSON.parse(saved);
+        }
+      } catch (e) { /* ignore storage errors */ }
+    }
+
+    function resetSelection() {
+      quantities = {};
+      customItems = [];
+      expandedSubs.clear();
+      document.getElementById('presetSelect').value = '';
+      saveQuantities();
+      saveCustomItems();
+      renderItems();
+      updateSidebar();
+    }
+
+    function toggleSubcategory(sub) {
+      if (expandedSubs.has(sub)) {
+        expandedSubs.delete(sub);
+      } else {
+        expandedSubs.add(sub);
+      }
+      renderItems();
+    }
+
+    function renderItems() {
+      const container = document.getElementById('itemsContainer');
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      let itemsToShow = ITEMS;
+      if (search) {
+        itemsToShow = ITEMS.filter(i => i.name.toLowerCase().includes(search) || i.subcategory.toLowerCase().includes(search));
+      } else {
+        itemsToShow = ITEMS.filter(i => i.category === activeCategory);
+      }
+
+      // Group by subcategory
+      const groups = {};
+      for (const item of itemsToShow) {
+        const sub = item.subcategory || '_';
+        if (!groups[sub]) groups[sub] = [];
+        groups[sub].push(item);
+      }
+
+      const INITIAL_SHOW = 4;
+
+      let html = '';
+      for (const sub in groups) {
+        const items = groups[sub];
+        const isExpanded = expandedSubs.has(sub);
+        const visibleItems = isExpanded ? items : items.slice(0, INITIAL_SHOW);
+        const hiddenCount = items.length - INITIAL_SHOW;
+        const hasSubTitle = sub !== '_';
+
+        if (hasSubTitle) {
+          html += `<div class="subcategory-title">${sub}</div>`;
+        }
+        for (const item of visibleItems) {
+          const qty = quantities[item.id] || 0;
+          html += `
+            <div class="item-card">
+              <div class="item-info">
+                <div class="item-name">${item.name}</div>
+                <div class="item-dims">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m8-2a2 2 0 00-2-2H9a2 2 0 00-2 2v2m8-2a2 2 0 01-2-2h-2a2 2 0 01-2 2v2"/></svg>
+                  ${formatDims(item.dims)}
+                </div>
+              </div>
+              <div class="qty-control">
+                <button class="qty-btn" onclick="setQty('${item.id}', -1)" aria-label="Decrease">&minus;</button>
+                <span class="qty-value">${qty}</span>
+                <button class="qty-btn" onclick="setQty('${item.id}', 1)" aria-label="Increase">+</button>
+              </div>
+            </div>
+          `;
+        }
+
+        if (hiddenCount > 0) {
+          if (!isExpanded) {
+            html += `<button class="show-more" onclick="toggleSubcategory('${sub}')">Show ${hiddenCount} more ${hasSubTitle ? sub : 'items'}</button>`;
+          } else {
+            html += `<button class="show-more" onclick="toggleSubcategory('${sub}')">Hide additional items</button>`;
+          }
+        }
+      }
+
+      if (itemsToShow.length === 0) {
+        html = '<div class="no-selection" style="padding: 2rem;">No items found</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    // Tab switching
+    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+      if (e.target.classList.contains('category-tab')) {
+        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        activeCategory = e.target.dataset.cat;
+        document.getElementById('searchInput').value = '';
+        expandedSubs.clear();
+        renderItems();
+      }
+    });
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', () => {
+      expandedSubs.clear();
+      renderItems();
+    });
+
+    // Preset select
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      const presetKey = e.target.value;
+      if (!presetKey) return;
+      const preset = PRESETS[presetKey];
+      if (!preset) return;
+      quantities = { ...preset };
+      expandedSubs.clear();
+      saveQuantities();
+      renderItems();
+      updateSidebar();
+    });
+
+    // Init
+    loadQuantities();
+    loadCustomItems();
+    renderItems();
+    updateSidebar();
+  </script>
+</body>
+</html>
