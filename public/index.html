@@ -421,7 +421,7 @@
 
     /* Testimonial card */
     .testimonial-card {
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: var(--radius-lg);
       padding: 2rem;
       box-shadow: var(--shadow-md);
@@ -494,7 +494,7 @@
       align-items: center;
       justify-content: center;
       padding: 1.5rem;
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
       transition: all 0.3s ease;
@@ -555,7 +555,7 @@
     }
 
     .modal-content {
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: var(--radius-xl);
       max-width: 900px;
       width: 100%;
@@ -602,7 +602,7 @@
 
     .service-card {
       position: relative;
-      background: linear-gradient(135deg, var(--neutral-50) 0%, white 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border: 2px solid var(--neutral-200);
       border-radius: var(--radius-lg);
       padding: 2.5rem;
@@ -1053,7 +1053,7 @@
 
     .coming-soon-content {
       text-align: center;
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: var(--radius-xl);
       padding: 4rem 2rem;
       box-shadow: var(--shadow-2xl);
@@ -1109,7 +1109,7 @@
     }
   </style>
 </head>
-<body class="bg-white">
+<body style="background-color: #e8f4ff;">
 
   <!-- Navigation -->
   <nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
@@ -1161,9 +1161,9 @@
         <div class="grid lg:grid-cols-2 gap-12 items-center">
           <!-- Hero Content -->
           <div class="text-white animate-fade-in-up">
-            <h1 class="type-h1 mb-6 leading-tight" style="text-shadow: 0 2px 20px rgba(0,0,0,0.3);">
+            <h1 class="type-h1 mb-6 leading-tight" style="text-shadow: 0 2px 20px rgba(0,0,0,0.3); color: #FF6B35;">
               Professional Removal &<br/>
-              <span class="text-orange-500">Cleaning Services</span> You Can Trust
+              Cleaning Services You Can Trust
             </h1>
             <p class="type-body text-lg mb-8 text-white max-w-lg" style="opacity: 0.95;">
               Expert house/office removals and professional cleaning services across England.
@@ -1203,12 +1203,46 @@
             </div>
           </div>
         </div>
+
+        <!-- Right: Van Calculator CTA -->
+        <div class="hidden lg:flex items-center justify-center animate-fade-in-up delay-300">
+          <div class="relative w-full max-w-md">
+            <div class="absolute -inset-1 rounded-2xl opacity-60 blur-lg" style="background: linear-gradient(135deg, var(--accent-coral) 0%, var(--brand-primary) 100%);"></div>
+            <div class="relative rounded-2xl p-8 text-left overflow-hidden" style="background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25);">
+              <div class="absolute top-0 right-0 w-32 h-32 opacity-20" style="background: radial-gradient(circle, var(--accent-coral) 0%, transparent 70%);"></div>
+              <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4" style="background: rgba(255,107,53,0.25); color: #FF8557; border: 1px solid rgba(255,107,53,0.4);">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  Smart Tool
+                </div>
+                <h3 class="font-roboto text-2xl font-bold mb-2" style="color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">Not sure what van size you need?</h3>
+                <p class="text-white text-opacity-90 mb-6 leading-relaxed" style="text-shadow: 0 1px 4px rgba(0,0,0,0.3);">
+                  Picking the wrong van can cost you extra trips, time, and money. Our calculator matches your load to the perfect vehicle in seconds.
+                </p>
+                <a href="/van-calculator/" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white transition-all duration-300 hover:-translate-y-1" style="background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%); box-shadow: 0 8px 24px rgba(255,107,53,0.4);">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                  </svg>
+                  Try Van Size Calculator
+                </a>
+                <div class="mt-4 flex items-center gap-3 text-sm text-white text-opacity-75">
+                  <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">Free, instant, no sign-up required</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Stats Section -->
-  <section class="py-16 bg-white border-b border-gray-100">
+  <section class="py-16 border-b border-sky-100" style="background: linear-gradient(135deg, #e8f4ff 0%, #dbeafe 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div class="text-center">
@@ -1232,7 +1266,7 @@
   </section>
 
   <!-- Services Section -->
-  <section id="services" class="py-24 bg-gradient-to-b from-gray-50 to-white">
+  <section id="services" class="py-24" style="background: linear-gradient(135deg, #e0f2fe 0%, #e8f4ff 50%, #fff7ed 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
         <h2 class="type-h2 text-gray-800 mb-4">Our Services</h2>
@@ -1243,7 +1277,7 @@
 
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Service 1: House/Office Removal -->
-        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg" style="border-top: 4px solid var(--brand-primary);">
+        <div class="card-hover rounded-2xl p-8 shadow-lg" style="background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%); border-top: 4px solid var(--brand-primary);">
           <div class="icon-circle mb-6">
             <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -1263,7 +1297,7 @@
         </div>
 
         <!-- Service 2: Cleaning Services -->
-        <div class="card-hover bg-white rounded-2xl p-8 shadow-lg" style="border-top: 4px solid var(--accent-coral);">
+        <div class="card-hover rounded-2xl p-8 shadow-lg" style="background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%); border-top: 4px solid var(--accent-coral);">
           <div class="icon-circle mb-6" style="background: linear-gradient(135deg, var(--accent-coral) 0%, var(--accent-coral-dark) 100%);">
             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
@@ -1309,7 +1343,7 @@
   </section>
 
   <!-- How It Works Section -->
-  <section id="how-it-works" class="py-24 bg-white">
+  <section id="how-it-works" class="py-24" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
         <h2 class="type-h2 text-gray-800 mb-4">How It Works</h2>
@@ -1358,7 +1392,7 @@
   </section>
 
   <!-- Why Choose Us Section -->
-  <section id="why-choose-us" class="py-24 bg-gradient-to-b from-gray-50 to-white">
+  <section id="why-choose-us" class="py-24" style="background: linear-gradient(135deg, #e8f4ff 0%, #dbeafe 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
         <h2 class="type-h2 text-gray-800 mb-4">Why Choose VSD Synergy?</h2>
@@ -1412,7 +1446,7 @@
   </section>
 
   <!-- Why Choose Us Section -->
-  <section class="py-24 bg-white">
+  <section class="py-24" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <div>
@@ -1513,7 +1547,7 @@
 
       <!-- Factor Cards -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+        <div class="rounded-2xl p-6 shadow-lg text-center card-hover" style="background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);">
           <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #3080E8 0%, #1e5fb8 100%);">
             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7"/>
@@ -1523,7 +1557,7 @@
           <p class="text-sm text-gray-500">Pick the right vehicle for your load</p>
         </div>
 
-        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+        <div class="rounded-2xl p-6 shadow-lg text-center card-hover" style="background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);">
           <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);">
             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -1533,7 +1567,7 @@
           <p class="text-sm text-gray-500">Self-load or hire extra hands</p>
         </div>
 
-        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+        <div class="rounded-2xl p-6 shadow-lg text-center card-hover" style="background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);">
           <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -1543,7 +1577,7 @@
           <p class="text-sm text-gray-500">Hours, distance, and complexity</p>
         </div>
 
-        <div class="bg-white rounded-2xl p-6 shadow-lg text-center card-hover">
+        <div class="rounded-2xl p-6 shadow-lg text-center card-hover" style="background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);">
           <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -1566,7 +1600,7 @@
   </section>
 
   <!-- Reviews Section -->
-  <section id="reviews" class="py-24 bg-gradient-to-b from-gray-50 to-white">
+  <section id="reviews" class="py-24" style="background: linear-gradient(135deg, #f0f9ff 0%, #e8f4ff 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
         <h2 class="type-h2 text-gray-800 mb-4">What Our Customers Say</h2>
@@ -1648,7 +1682,7 @@
   </section>
 
   <!-- Contact Section -->
-  <section id="contact" class="py-24 bg-white">
+  <section id="contact" class="py-24" style="background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-16">
         <div>
@@ -1712,68 +1746,40 @@
           <div class="mt-8">
             <p class="type-small-body text-gray-500 mb-4">Follow Us</p>
             <div class="flex space-x-4">
-              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-colors">
+              <a href="https://www.facebook.com/share/18gung1Jtw/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-colors">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               </a>
-              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-400 hover:text-white transition-colors">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+              <a href="https://x.com/vsdsynergyltd?s=21" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-900 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               </a>
-              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/vsdmovingsolution?igsh=NHUwNTlva3o1YXAz" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
               </a>
-              <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-700 hover:text-white transition-colors">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              <a href="https://www.tiktok.com/@manandvanvsdsynergyuk?_r=1&_t=ZS-963KfIFKSQ9" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93v6.16a5.99 5.99 0 01-2.55 4.95 6.03 6.03 0 01-7.26.03 5.97 5.97 0 01-1.96-2.23 5.94 5.94 0 01-.67-3.35 6.01 6.01 0 012.91-4.74 6.04 6.04 0 013.35-.92c.22 0 .44.01.66.04v4.12a2.18 2.18 0 00-1.15.34c-.49.31-.82.85-.82 1.45 0 .64.33 1.19.82 1.51.5.32 1.11.41 1.67.25.57-.16 1.04-.56 1.31-1.08.14-.27.21-.57.21-.88V.02z"/></svg>
               </a>
             </div>
           </div>
         </div>
 
-        <!-- Contact Form -->
-        <div>
-          <div class="bg-gray-50 rounded-2xl p-8">
-            <h3 class="type-h3 text-gray-800 mb-6">Send Us a Message</h3>
-            <form class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                  <input type="text" class="form-input" placeholder="John">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                  <input type="text" class="form-input" placeholder="Doe">
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" class="form-input" placeholder="john@example.com">
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input type="tel" class="form-input" placeholder="+44 2033557811">
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                <select class="form-input">
-                  <option value="">Select a subject</option>
-                  <option value="quote">Request a Quote</option>
-                  <option value="booking">Existing Booking</option>
-                  <option value="corporate">Corporate Enquiry</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                <textarea class="form-input" rows="4" placeholder="How can we help you?"></textarea>
-              </div>
-
-              <button type="submit" class="btn-primary w-full">
-                Send Message
-              </button>
-            </form>
+        <!-- Email CTA -->
+        <div class="flex items-center justify-center">
+          <div class="rounded-2xl p-10 shadow-lg border border-sky-100 text-center max-w-md w-full" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);">
+            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <h3 class="type-h3 text-gray-800 mb-3">Have any questions?</h3>
+            <p class="text-gray-600 mb-6 leading-relaxed">
+              We would love to hear from you. Drop us a line and we will get back to you as soon as possible.
+            </p>
+            <a href="mailto:info@vsdsynergy.com" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              Email us at info@vsdsynergy.com
+            </a>
           </div>
         </div>
       </div>
@@ -1874,6 +1880,17 @@
           <a href="#" class="type-small-body text-gray-500 hover:text-white transition-colors">Terms of Service</a>
           <a href="#" class="type-small-body text-gray-500 hover:text-white transition-colors">Cookie Policy</a>
         </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <p class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800 border border-gray-700 type-small-body text-gray-300 font-semibold">
+          Developed by
+          <span class="text-white font-bold">Propa AI Systems</span>
+          Want to work with us?
+          <a href="https://propaai.lovable.app/" target="_blank" rel="noopener noreferrer" class="ml-1 inline-flex items-center px-3 py-1 bg-[var(--brand-primary)] text-white text-xs font-bold rounded-full hover:bg-[var(--brand-primary-dark)] transition-colors shadow-sm">
+            Click here
+          </a>
+        </p>
       </div>
     </div>
   </footer>

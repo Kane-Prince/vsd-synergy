@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Dashboard - VSD Synergy Limited</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-primary: #3080E8;
+      --brand-primary-dark: #1e5fb8;
+      --brand-primary-light: #5a9aef;
+      --accent-coral: #FF6B35;
+      --neutral-50: #F8FAFC;
+      --neutral-100: #F1F5F9;
+      --neutral-200: #E2E8F0;
+      --neutral-300: #CBD5E1;
+      --neutral-400: #94A3B8;
+      --neutral-500: #64748B;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1E293B;
+      --neutral-900: #0F172A;
+    }
+    body { font-family: 'Lato', sans-serif; background: var(--neutral-50); }
+    .font-roboto { font-family: 'Roboto', sans-serif; }
+    .bg-brand { background-color: var(--brand-primary); }
+    .bg-brand-dark { background-color: var(--brand-primary-dark); }
+    .text-brand { color: var(--brand-primary); }
+    .border-brand { border-color: var(--brand-primary); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .input-field {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--neutral-300);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15);
+    }
+    .card {
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+    }
+    .toast {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 500;
+      z-index: 50;
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.success { background: #10B981; }
+    .toast.error { background: #EF4444; }
+
+    /* Interest Form */
+    .interest-form {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: var(--neutral-50);
+      border-radius: 0.5rem;
+      border: 1px solid var(--neutral-200);
+    }
+    .interest-form.hidden { display: none; }
+    .interest-btn {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      border-radius: 0.375rem;
+      border: 1px solid var(--neutral-300);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .interest-btn.yes {
+      background: #ecfdf5;
+      color: #059669;
+      border-color: #a7f3d0;
+    }
+    .interest-btn.yes:hover { background: #d1fae5; }
+    .interest-btn.no {
+      background: white;
+      color: var(--neutral-600);
+    }
+    .interest-btn.no:hover { background: var(--neutral-100); }
+    .interest-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .interest-status.pending { background: #fef3c7; color: #92400e; }
+    .interest-status.accepted { background: #d1fae5; color: #065f46; }
+    .interest-status.rejected { background: #fee2e2; color: #991b1b; }
+
+    /* Mobile table cards */
+    @media (max-width: 768px) {
+      .responsive-table thead { display: none; }
+      .responsive-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--neutral-200);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        background: white;
+      }
+      .responsive-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--neutral-100);
+      }
+      .responsive-table tbody td:last-child { border-bottom: none; }
+      .responsive-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--neutral-600);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+    <div class="card w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="flex items-center justify-center space-x-3 mb-4">
+          <img src="/brand_assets/bp.jpeg" alt="VSD Synergy" class="h-12 w-auto rounded">
+          <span class="font-roboto text-xl font-bold text-gray-800">VSD SYNERGY</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Driver Dashboard</h1>
+        <p class="text-gray-500 text-sm">Sign in to view your assigned quotes</p>
+      </div>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <input type="text" id="username" class="input-field" required autofocus>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" id="password" class="input-field" required>
+        </div>
+        <button type="submit" class="btn-primary w-full">Sign In</button>
+      </form>
+      <p id="loginError" class="text-red-500 text-sm text-center mt-3 hidden"></p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-3">
+            <img src="/brand_assets/bp.jpeg" alt="VSD Synergy" class="h-10 w-auto rounded">
+            <span class="font-roboto text-lg font-bold text-gray-800">VSD SYNERGY</span>
+            <span class="text-gray-300">|</span>
+            <span class="text-sm text-gray-500">Driver Dashboard</span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="text-right">
+              <div id="driverName" class="text-sm text-gray-600"></div>
+              <div id="driverCode" class="text-xs font-mono font-bold text-brand"></div>
+            </div>
+            <button onclick="logout()" class="text-sm text-red-600 hover:text-red-800 font-medium">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Total Quotes</p>
+          <p id="statTotalQuotes" class="text-3xl font-bold text-brand">0</p>
+        </div>
+        <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Your Earnings</p>
+          <p id="statTotalEarnings" class="text-3xl font-bold text-brand">£0.00</p>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #3080E8 0%, #1e5fb8 100%); color: white;">
+          <p class="text-sm opacity-90 mb-1">Your Driver ID</p>
+          <p id="statDriverCode" class="text-2xl font-bold font-mono">---</p>
+          <p class="text-xs opacity-75 mt-1">Show this ID to prove you booked a job</p>
+        </div>
+      </div>
+
+      <!-- Quotes List -->
+      <div class="card">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Assigned Quotes</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm responsive-table">
+            <thead>
+              <tr class="border-b border-gray-200">
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">ID</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Customer</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Service</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Price</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Status</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Date</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Notes</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Interest</th>
+              </tr>
+            </thead>
+            <tbody id="quotesTableBody">
+              <tr><td colspan="8" class="py-8 text-center text-gray-400">Loading quotes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+          <div class="text-sm text-gray-500" id="paginationInfo">Showing 0 quotes</div>
+          <div class="flex items-center space-x-2" id="paginationControls">
+            <button onclick="prevPage()" id="prevBtn" class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+            <span id="pageNumbers" class="text-sm text-gray-600"></span>
+            <button onclick="nextPage()" id="nextBtn" class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    let isLoggedIn = false;
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentQuotes = [];
+    let currentCommission = 30;
+    let driverInterests = {};
+    let takenQuoteIds = new Set();
+    const QUOTES_PER_PAGE = 50;
+
+    // Check auth on load
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/driver/auth/me');
+        const data = await res.json();
+        if (data.authenticated) {
+          isLoggedIn = true;
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('dashboard').classList.remove('hidden');
+          document.getElementById('driverName').textContent = data.username;
+          document.getElementById('driverCode').textContent = data.driver_code ? `ID: ${data.driver_code}` : '';
+          document.getElementById('statDriverCode').textContent = data.driver_code || '---';
+          await loadQuotes();
+        }
+      } catch (err) {
+        console.error('Auth check failed:', err);
+      }
+    }
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('loginError');
+
+      try {
+        const res = await fetch('/api/driver/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          isLoggedIn = true;
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('dashboard').classList.remove('hidden');
+          document.getElementById('driverName').textContent = data.username;
+          document.getElementById('driverCode').textContent = data.driver_code ? `ID: ${data.driver_code}` : '';
+          document.getElementById('statDriverCode').textContent = data.driver_code || '---';
+          await loadQuotes();
+        } else {
+          errorEl.textContent = data.error || 'Login failed';
+          errorEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorEl.textContent = 'Network error. Please try again.';
+        errorEl.classList.remove('hidden');
+      }
+    });
+
+    // Logout
+    async function logout() {
+      await fetch('/api/driver/auth/logout', { method: 'POST' });
+      isLoggedIn = false;
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    // Load quotes
+    async function loadQuotes(page = 1) {
+      try {
+        const quotesRes = await fetch(`/api/driver/quotes?page=${page}&limit=${QUOTES_PER_PAGE}`);
+        const data = await quotesRes.json();
+        currentPage = data.page;
+        totalPages = Math.ceil(data.total / data.limit);
+        currentCommission = data.commission_percentage || 30;
+        currentQuotes = data.quotes || [];
+
+        // Fetch secondary data independently so one failure doesn't break quotes
+        let interestsData = { interests: [] };
+        let takenData = { quoteIds: [] };
+        try {
+          const res = await fetch('/api/driver/interests');
+          if (res.ok) interestsData = await res.json();
+        } catch (e) {
+          console.error('Failed to load interests:', e);
+        }
+        try {
+          const res = await fetch('/api/driver/taken-quotes');
+          if (res.ok) takenData = await res.json();
+        } catch (e) {
+          console.error('Failed to load taken-quotes:', e);
+        }
+
+        // Build interest lookup map
+        driverInterests = {};
+        (interestsData.interests || []).forEach(i => {
+          driverInterests[i.quote_id] = i;
+        });
+
+        // Build set of all quote IDs with any interest
+        takenQuoteIds = new Set((takenData.quoteIds || []));
+
+        renderQuotes(data.quotes);
+        renderPagination(data);
+        updateStats(data);
+      } catch (err) {
+        console.error('Load quotes error:', err);
+        document.getElementById('quotesTableBody').innerHTML =
+          '<tr><td colspan="8" class="py-8 text-center text-gray-400">Failed to load quotes</td></tr>';
+      }
+    }
+
+    // Update stats
+    function updateStats(data) {
+      const quotes = data.quotes || [];
+      const totalDriver = quotes.reduce((sum, q) => sum + (q.driver_price || 0), 0);
+
+      document.getElementById('statTotalQuotes').textContent = data.total || 0;
+      document.getElementById('statTotalEarnings').textContent = '£' + totalDriver.toFixed(2);
+    }
+
+    // Render quotes table
+    function renderQuotes(quotes) {
+      const tbody = document.getElementById('quotesTableBody');
+      if (!quotes || quotes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-400">No quotes yet</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = quotes.map(q => {
+        const notes = q.additional_notes || '';
+        const notesDisplay = notes.length > 40 ? notes.substring(0, 40) + '...' : (notes || '-');
+        const interest = driverInterests[q.id];
+
+        let interestHtml = '';
+        if (interest) {
+          interestHtml = `<span class="interest-status ${interest.status}">${interest.status.charAt(0).toUpperCase() + interest.status.slice(1)}</span>`;
+        } else if (takenQuoteIds.has(q.id)) {
+          interestHtml = `<span class="text-xs text-gray-500 font-medium">Interest already declared</span>`;
+        } else {
+          interestHtml = `
+            <div class="flex flex-wrap gap-2 items-center" data-label="Interest">
+              <button type="button" class="interest-btn yes" onclick="toggleInterestForm(${q.id}, true)">Interested? Yes</button>
+              <button type="button" class="interest-btn no" onclick="toggleInterestForm(${q.id}, false)">No</button>
+            </div>
+            <div id="interest-form-${q.id}" class="interest-form hidden">
+              <label class="block text-xs font-medium text-gray-600 mb-1">Your email address</label>
+              <div class="flex gap-2">
+                <input type="email" id="interest-email-${q.id}" class="input-field flex-1" placeholder="you@example.com" required>
+                <button type="button" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8125rem;" onclick="submitInterest(${q.id})">Submit</button>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <tr class="border-b border-gray-100 hover:bg-gray-50">
+            <td class="py-3 px-2 font-mono text-xs text-gray-500" data-label="ID">#${q.id}</td>
+            <td class="py-3 px-2" data-label="Customer">
+              <div class="font-medium text-gray-800">${q.customer_name || 'N/A'}</div>
+              <div class="text-xs text-gray-400">${q.customer_email || ''}</div>
+              <div class="text-xs text-gray-400">${q.customer_phone || ''}</div>
+            </td>
+            <td class="py-3 px-2 capitalize text-gray-600" data-label="Service">${q.service_type}</td>
+            <td class="py-3 px-2 font-semibold text-brand" data-label="Price">£${q.driver_price?.toFixed(2) || '0.00'}</td>
+            <td class="py-3 px-2" data-label="Status">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 capitalize">${q.status}</span>
+            </td>
+            <td class="py-3 px-2 text-gray-500" data-label="Date">${new Date(q.created_at).toLocaleDateString()}</td>
+            <td class="py-3 px-2 text-gray-500 text-xs max-w-xs" data-label="Notes" title="${escapeHtml(notes)}">${escapeHtml(notesDisplay)}</td>
+            <td class="py-3 px-2" data-label="Interest">${interestHtml}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function toggleInterestForm(quoteId, show) {
+      const form = document.getElementById(`interest-form-${quoteId}`);
+      if (form) {
+        form.classList.toggle('hidden', !show);
+        if (show) {
+          const input = document.getElementById(`interest-email-${quoteId}`);
+          if (input) input.focus();
+        }
+      }
+    }
+
+    async function submitInterest(quoteId) {
+      const emailInput = document.getElementById(`interest-email-${quoteId}`);
+      const email = emailInput?.value?.trim();
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+      }
+      try {
+        const res = await fetch('/api/driver/interests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quoteId, email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Interest submitted successfully', 'success');
+          await loadQuotes(currentPage);
+        } else {
+          showToast(data.error || 'Failed to submit interest', 'error');
+        }
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Pagination
+    function renderPagination(data) {
+      const start = (data.page - 1) * data.limit + 1;
+      const end = Math.min(start + data.quotes.length - 1, data.total);
+      document.getElementById('paginationInfo').textContent =
+        data.total > 0 ? `Showing ${start}-${end} of ${data.total} quotes` : 'No quotes';
+
+      document.getElementById('prevBtn').disabled = data.page <= 1;
+      document.getElementById('nextBtn').disabled = data.page >= totalPages;
+
+      // Page numbers
+      let pagesHtml = '';
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === data.page) {
+          pagesHtml += `<span class="px-3 py-1.5 text-sm font-medium text-white bg-brand rounded">${i}</span>`;
+        } else if (i === 1 || i === totalPages || (i >= data.page - 2 && i <= data.page + 2)) {
+          pagesHtml += `<button onclick="goToPage(${i})" class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50">${i}</button>`;
+        } else if (i === data.page - 3 || i === data.page + 3) {
+          pagesHtml += `<span class="text-gray-400 px-1">...</span>`;
+        }
+      }
+      document.getElementById('pageNumbers').innerHTML = pagesHtml;
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        loadQuotes(currentPage - 1);
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        loadQuotes(currentPage + 1);
+      }
+    }
+
+    function goToPage(page) {
+      if (page >= 1 && page <= totalPages) {
+        loadQuotes(page);
+      }
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Init
+    checkAuth();
+  </script>
+</body>
+</html>

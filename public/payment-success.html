@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Successful - VSD Synergy Limited</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-primary: #3080E8;
+      --brand-primary-dark: #1e5fb8;
+      --accent-coral: #FF6B35;
+    }
+    body { font-family: 'Lato', sans-serif; }
+    .font-roboto { font-family: 'Roboto', sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+  <div class="max-w-md w-full text-center">
+    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+      <div id="status-icon" class="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h1 id="status-title" class="font-roboto text-2xl font-bold text-gray-800 mb-3">Payment Successful!</h1>
+      <p id="status-message" class="text-gray-600 mb-6 leading-relaxed">
+        Thank you for your payment. We've received your booking and will contact you shortly to confirm the details.
+      </p>
+      <div id="verification-status" class="hidden bg-gray-50 rounded-lg p-3 mb-4 text-sm text-gray-500"></div>
+      <div class="bg-gray-50 rounded-lg p-4 mb-6 text-sm text-gray-500">
+        <p>If you have any questions, please contact us at</p>
+        <p class="font-semibold text-gray-700">info@vsdsynergy.com</p>
+        <p class="font-semibold text-gray-700">+44 2033557811</p>
+      </div>
+      <a href="/" class="inline-block w-full py-3 px-6 bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-primary-dark)] text-white font-bold rounded-lg hover:opacity-90 transition-opacity">
+        Back to Home
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id');
+      const quoteId = params.get('quote_id');
+
+      if (sessionId && quoteId) {
+        const statusEl = document.getElementById('verification-status');
+        statusEl.classList.remove('hidden');
+        statusEl.textContent = 'Verifying payment...';
+
+        try {
+          const res = await fetch('/api/quote/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId, quote_id: quoteId })
+          });
+          const result = await res.json();
+
+          if (result.success && result.status === 'paid') {
+            statusEl.innerHTML = '<span class="text-green-600 font-semibold">Quote marked as paid.</span>';
+          } else if (result.status) {
+            statusEl.innerHTML = '<span class="text-yellow-600 font-semibold">Payment status: ' + result.status + '</span>';
+          } else {
+            statusEl.innerHTML = '<span class="text-red-600 font-semibold">Could not verify payment.</span>';
+          }
+        } catch (err) {
+          console.error('Verification error:', err);
+          statusEl.innerHTML = '<span class="text-red-600 font-semibold">Verification failed. Please contact support.</span>';
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -25,7 +25,7 @@
       --neutral-800: #1E293B;
       --neutral-900: #0F172A;
     }
-    body { font-family: 'Lato', sans-serif; background: var(--neutral-50); }
+    body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #e8f4ff 0%, #f0f9ff 100%); min-height: 100vh; }
     .font-roboto { font-family: 'Roboto', sans-serif; }
     .bg-brand { background-color: var(--brand-primary); }
     .bg-brand-dark { background-color: var(--brand-primary-dark); }
@@ -56,7 +56,7 @@
       box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15);
     }
     .card {
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: 0.75rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       padding: 1.5rem;
@@ -76,13 +76,53 @@
     .toast.show { transform: translateX(0); }
     .toast.success { background: #10B981; }
     .toast.error { background: #EF4444; }
+
+    /* Application actions */
+    .app-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .btn-accept {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: white;
+      background: #10B981;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-accept:hover { opacity: 0.9; }
+    .btn-reject {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: white;
+      background: #EF4444;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-reject:hover { opacity: 0.9; }
+    .badge-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.5rem;
+      height: 1.5rem;
+      padding: 0 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      background: #EF4444;
+      border-radius: 9999px;
+    }
   </style>
 </head>
 <body class="min-h-screen">
 
   <!-- Login Screen -->
   <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
-    <div class="card w-full max-w-md">
+    <div class="w-full max-w-md rounded-xl shadow-lg p-6" style="background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);">
       <div class="text-center mb-8">
         <div class="flex items-center justify-center space-x-3 mb-4">
           <img src="/brand_assets/bp.jpeg" alt="VSD Synergy" class="h-12 w-auto rounded">
@@ -109,7 +149,7 @@
   <!-- Dashboard -->
   <div id="dashboard" class="hidden">
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
+    <header class="shadow-sm border-b border-sky-100" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center space-x-3">
@@ -156,6 +196,97 @@
         <div class="card">
           <p class="text-sm text-gray-500 mb-1">Weekend Surcharge</p>
           <p id="statWeekendRate" class="text-3xl font-bold text-brand">£0</p>
+        </div>
+      </div>
+
+      <!-- Driver Settings -->
+      <div class="card mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">Driver Settings</h2>
+            <p class="text-sm text-gray-500 mt-1">Configure the commission percentage deducted from quotes shown to drivers.</p>
+          </div>
+          <button onclick="saveDriverCommission()" class="btn-primary">Save</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Driver Commission Percentage</label>
+            <div class="flex items-center">
+              <input type="number" id="driverCommission" min="0" max="100" step="1" value="30" class="input-field flex-1">
+              <span class="text-gray-500 ml-2 font-medium">%</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Percent deducted from quote price for driver view. E.g., 30% means a £200 quote shows as £140.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promo Discount -->
+      <div class="card mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">Promo Discount</h2>
+            <p class="text-sm text-gray-500 mt-1">Set a percentage discount applied to all customer quotes. Set to 0% to disable.</p>
+          </div>
+          <button onclick="savePromoDiscount()" class="btn-primary">Save</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Customer Discount Percentage</label>
+            <div class="flex items-center">
+              <input type="number" id="promoDiscount" min="0" max="100" step="1" value="0" class="input-field flex-1">
+              <span class="text-gray-500 ml-2 font-medium">%</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Percent reduced from the total quote price shown to customers. E.g., 20% means a £500 quote becomes £400.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manage Drivers -->
+      <div class="card mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">Manage Drivers</h2>
+            <p class="text-sm text-gray-500 mt-1">Create new driver accounts. Each driver gets their own login and unique Driver ID.</p>
+          </div>
+          <button onclick="showAddDriverModal()" class="btn-primary">+ Add Driver</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200">
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">ID</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Username</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Driver ID</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Created</th>
+              </tr>
+            </thead>
+            <tbody id="driversTableBody">
+              <tr><td colspan="4" class="py-8 text-center text-gray-400">Loading drivers...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add Driver Modal -->
+      <div id="addDriverModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="rounded-lg shadow-xl max-w-md w-full mx-4 p-6" style="background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">Add New Driver</h3>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <input type="text" id="newDriverUsername" class="input-field" placeholder="e.g. driver_john" autocomplete="off">
+            <p class="text-xs text-gray-400 mt-1">Min 3 characters. A temporary password will be generated automatically.</p>
+          </div>
+          <div id="addDriverResult" class="hidden mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <p class="text-sm font-medium text-green-800 mb-1">Driver created successfully!</p>
+            <p class="text-xs text-gray-600">Username: <span id="resultDriverUsername" class="font-mono font-bold"></span></p>
+            <p class="text-xs text-gray-600">Temporary Password: <span id="resultDriverPassword" class="font-mono font-bold text-red-600"></span></p>
+            <p class="text-xs text-gray-600">Driver ID: <span id="resultDriverCode" class="font-mono font-bold"></span></p>
+            <p class="text-xs text-gray-500 mt-2">Please save these details — the password cannot be shown again.</p>
+          </div>
+          <div class="flex justify-end gap-3">
+            <button onclick="closeAddDriverModal()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Close</button>
+            <button onclick="createDriver()" id="createDriverBtn" class="btn-primary">Create</button>
+          </div>
         </div>
       </div>
 
@@ -238,6 +369,39 @@
         </div>
       </div>
 
+      <!-- Driver Applications -->
+      <div class="card mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">
+            Driver Applications
+            <span id="appBadge" class="badge-count hidden">0</span>
+          </h2>
+          <button onclick="loadApplications()" class="text-sm text-brand font-medium hover:underline">Refresh</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200">
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">ID</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Quote</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Customer</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Service</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Date / Time</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Driver</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Driver ID</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Driver Email</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Price</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Status</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="applicationsTableBody">
+              <tr><td colspan="11" class="py-8 text-center text-gray-400">Loading applications...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Quotes List -->
       <div class="card">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Quotes</h2>
@@ -295,6 +459,10 @@
           document.getElementById('adminName').textContent = data.username;
           await loadPricing();
           await loadQuotes();
+          await loadDriverCommission();
+          await loadPromoDiscount();
+          await loadApplications();
+          await loadDrivers();
         }
       } catch (err) {
         console.error('Auth check failed:', err);
@@ -323,6 +491,10 @@
           document.getElementById('adminName').textContent = data.username;
           await loadPricing();
           await loadQuotes();
+          await loadDriverCommission();
+          await loadPromoDiscount();
+          await loadApplications();
+          await loadDrivers();
         } else {
           errorEl.textContent = data.error || 'Login failed';
           errorEl.classList.remove('hidden');
@@ -530,6 +702,246 @@
       setTimeout(() => {
         toast.classList.remove('show');
       }, 3000);
+    }
+
+    // Load driver commission setting
+    async function loadDriverCommission() {
+      try {
+        const res = await fetch('/api/settings/driver_commission_percentage');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('driverCommission').value = data.value;
+        }
+      } catch (err) {
+        console.error('Failed to load driver commission:', err);
+      }
+    }
+
+    // Save driver commission setting
+    async function saveDriverCommission() {
+      const value = document.getElementById('driverCommission').value;
+      try {
+        const res = await fetch('/api/settings/driver_commission_percentage', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ value })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Driver commission saved successfully', 'success');
+        } else {
+          showToast(data.error || 'Failed to save', 'error');
+        }
+      } catch (err) {
+        showToast('Network error while saving', 'error');
+      }
+    }
+
+    // Load promo discount setting
+    async function loadPromoDiscount() {
+      try {
+        const res = await fetch('/api/settings/customer_discount_percentage');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('promoDiscount').value = data.value;
+        }
+      } catch (err) {
+        console.error('Failed to load promo discount:', err);
+      }
+    }
+
+    // Save promo discount setting
+    async function savePromoDiscount() {
+      const value = document.getElementById('promoDiscount').value;
+      try {
+        const res = await fetch('/api/settings/customer_discount_percentage', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ value })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Promo discount saved successfully', 'success');
+        } else {
+          showToast(data.error || 'Failed to save', 'error');
+        }
+      } catch (err) {
+        showToast('Network error while saving', 'error');
+      }
+    }
+
+    // Load applications
+    async function loadApplications() {
+      try {
+        const res = await fetch('/api/admin/interests');
+        const data = await res.json();
+        renderApplications(data.interests || []);
+      } catch (err) {
+        document.getElementById('applicationsTableBody').innerHTML =
+          '<tr><td colspan="11" class="py-8 text-center text-gray-400">Failed to load applications</td></tr>';
+      }
+    }
+
+    function renderApplications(interests) {
+      const tbody = document.getElementById('applicationsTableBody');
+      if (!interests || interests.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" class="py-8 text-center text-gray-400">No driver applications yet</td></tr>';
+        updateAppBadge(0);
+        return;
+      }
+
+      const pendingCount = interests.filter(i => i.status === 'pending').length;
+      updateAppBadge(pendingCount);
+
+      tbody.innerHTML = interests.map(i => {
+        let formData = {};
+        try { formData = JSON.parse(i.form_data || '{}'); } catch (e) {}
+        const dateValue = i.service_type === 'removal' ? formData.moveDateValue : formData.cleaningDateValue;
+        const timeValue = formData.selectedTimeSlot || '-';
+
+        let actionsHtml = '';
+        if (i.status === 'pending') {
+          actionsHtml = `
+            <div class="app-actions">
+              <button class="btn-accept" onclick="handleApplication(${i.id}, 'accept')">Accept</button>
+              <button class="btn-reject" onclick="handleApplication(${i.id}, 'reject')">Reject</button>
+            </div>
+          `;
+        } else {
+          actionsHtml = `<span class="text-xs text-gray-400 capitalize">${i.status}</span>`;
+        }
+
+        return `
+          <tr class="border-b border-gray-100 hover:bg-gray-50">
+            <td class="py-3 px-2 font-mono text-xs text-gray-500">#${i.id}</td>
+            <td class="py-3 px-2 font-mono text-xs text-gray-500">#${i.quote_id}</td>
+            <td class="py-3 px-2">
+              <div class="font-medium text-gray-800">${i.customer_name || 'N/A'}</div>
+              <div class="text-xs text-gray-400">${i.customer_email || ''}</div>
+            </td>
+            <td class="py-3 px-2 capitalize text-gray-600">${i.service_type}</td>
+            <td class="py-3 px-2 text-gray-600">
+              <div>${dateValue || '-'}</div>
+              <div class="text-xs text-gray-400">${timeValue}</div>
+            </td>
+            <td class="py-3 px-2 font-medium text-gray-800">${i.driver_username || 'N/A'}</td>
+            <td class="py-3 px-2 font-mono text-xs font-bold text-brand">${i.driver_code || 'N/A'}</td>
+            <td class="py-3 px-2 text-gray-600 text-xs">${i.driver_email || '-'}</td>
+            <td class="py-3 px-2 font-semibold text-brand">£${i.calculated_price?.toFixed(2) || '0.00'}</td>
+            <td class="py-3 px-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize
+                ${i.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : i.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                ${i.status}
+              </span>
+            </td>
+            <td class="py-3 px-2">${actionsHtml}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateAppBadge(count) {
+      const badge = document.getElementById('appBadge');
+      if (count > 0) {
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    async function handleApplication(id, action) {
+      try {
+        const res = await fetch(`/api/admin/interests/${id}/${action}`, { method: 'PUT' });
+        const data = await res.json();
+        if (data.success) {
+          showToast(action === 'accept' ? 'Application accepted' : 'Application rejected', 'success');
+          await loadApplications();
+          await loadQuotes(currentPage);
+        } else {
+          showToast(data.error || 'Action failed', 'error');
+        }
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+    }
+
+    // Driver Management
+    async function loadDrivers() {
+      try {
+        const res = await fetch('/api/admin/drivers');
+        const data = await res.json();
+        renderDrivers(data.drivers || []);
+      } catch (err) {
+        document.getElementById('driversTableBody').innerHTML =
+          '<tr><td colspan="4" class="py-8 text-center text-gray-400">Failed to load drivers</td></tr>';
+      }
+    }
+
+    function renderDrivers(drivers) {
+      const tbody = document.getElementById('driversTableBody');
+      if (!drivers || drivers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-gray-400">No drivers yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = drivers.map(d => `
+        <tr class="border-b border-gray-100 hover:bg-gray-50">
+          <td class="py-3 px-2 font-mono text-xs text-gray-500">#${d.id}</td>
+          <td class="py-3 px-2 font-medium text-gray-800">${d.username}</td>
+          <td class="py-3 px-2 font-mono text-xs font-bold text-brand">${d.driver_code || 'N/A'}</td>
+          <td class="py-3 px-2 text-gray-500">${new Date(d.created_at).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    function showAddDriverModal() {
+      document.getElementById('addDriverModal').classList.remove('hidden');
+      document.getElementById('addDriverModal').classList.add('flex');
+      document.getElementById('newDriverUsername').value = '';
+      document.getElementById('addDriverResult').classList.add('hidden');
+      document.getElementById('createDriverBtn').disabled = false;
+      document.getElementById('createDriverBtn').textContent = 'Create';
+      setTimeout(() => document.getElementById('newDriverUsername').focus(), 100);
+    }
+
+    function closeAddDriverModal() {
+      document.getElementById('addDriverModal').classList.add('hidden');
+      document.getElementById('addDriverModal').classList.remove('flex');
+    }
+
+    async function createDriver() {
+      const username = document.getElementById('newDriverUsername').value.trim();
+      if (username.length < 3) {
+        showToast('Username must be at least 3 characters', 'error');
+        return;
+      }
+      const btn = document.getElementById('createDriverBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      try {
+        const res = await fetch('/api/admin/drivers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('resultDriverUsername').textContent = data.driver.username;
+          document.getElementById('resultDriverPassword').textContent = data.tempPassword;
+          document.getElementById('resultDriverCode').textContent = data.driver.driver_code;
+          document.getElementById('addDriverResult').classList.remove('hidden');
+          showToast('Driver created successfully', 'success');
+          await loadDrivers();
+        } else {
+          showToast(data.error || 'Failed to create driver', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Create';
+        }
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Create';
+      }
     }
 
     // Init

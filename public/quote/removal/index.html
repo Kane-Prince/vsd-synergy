@@ -62,7 +62,7 @@
     .form-container {
       max-width: 700px;
       margin: 2rem auto;
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-2xl);
     }
@@ -850,10 +850,6 @@
                 <input type="radio" name="vanType" value="luton">
                 3.5t Luton Van
               </label>
-              <label class="button-option">
-                <input type="radio" name="vanType" value="lorry">
-                7.5t Lorry
-              </label>
             </div>
           </div>
 
@@ -1113,8 +1109,24 @@
           </div>
         </div>
 
-        <!-- Step 10: Contact Info -->
+        <!-- Step 10: Additional Notes -->
         <div class="form-step" data-step="10">
+          <h2 class="step-title">Additional Notes</h2>
+          <p class="step-description">Is there anything else we should know about your move?</p>
+
+          <div class="form-group">
+            <label class="form-label" for="additionalNotes">Notes (optional)</label>
+            <textarea class="form-input" id="additionalNotes" name="additionalNotes" rows="4" placeholder="E.g., parking restrictions, fragile items, specific access requirements..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-back" onclick="prevStep()">Back</button>
+            <button type="button" class="btn-next" onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 11: Contact Info -->
+        <div class="form-step" data-step="11">
           <h2 class="step-title">Contact Information</h2>
           <p class="step-description">How can we reach you?</p>
 
@@ -1142,8 +1154,8 @@
           </div>
         </div>
 
-        <!-- Step 11: Summary -->
-        <div class="form-step" data-step="11">
+        <!-- Step 12: Summary -->
+        <div class="form-step" data-step="12">
           <h2 class="step-title">Review Your Quote</h2>
           <p class="step-description">Please review your details before submitting</p>
 
@@ -1159,11 +1171,8 @@
   </div>
 
   <script>
-    // Geoapify API Key - Replace with your actual key from geoapify.com
-    const GEOAPIFY_API_KEY = '0ba8014cf5934da590805884dc8f2a52';
-
     const STORAGE_KEY = 'vsd_removal_quote';
-    const TOTAL_STEPS = 11;
+    const TOTAL_STEPS = 12;
     let currentStep = 1;
     let pickupAddressDebounce = null;
     let dropoffAddressDebounce = null;
@@ -1213,8 +1222,7 @@
               'Small Van': 'small',
               'Medium Van': 'medium',
               'Large Van': 'large',
-              '3.5t Luton Van': 'luton',
-              '7.5t Lorry': 'lorry'
+              '3.5t Luton Van': 'luton'
             };
             const vanValue = vanMap[selectedVan];
             if (vanValue) {
@@ -1373,51 +1381,18 @@
       });
     }
 
-    function isEnglandLocation(result) {
-      const props = result.properties || {};
-      const state = (props.state || '').toLowerCase();
-      const stateCode = (props.state_code || '').toLowerCase();
-
-      // Reliable check using Geoapify's state field
-      if (state === 'england' || stateCode === 'eng') return true;
-      if (state === 'scotland' || stateCode === 'sct') return false;
-      if (state === 'wales' || stateCode === 'wls') return false;
-      if (state === 'northern ireland' || stateCode === 'nir') return false;
-
-      // Fallback for edge cases where state might be missing
-      const formatted = (props.formatted || '').toLowerCase();
-      if (formatted.includes('scotland') || formatted.includes('wales') || formatted.includes('northern ireland')) {
-        return false;
-      }
-
-      return true;
-    }
-
     async function fetchAddressSuggestions(query, dropdown, input) {
       try {
         const response = await fetch(
-          `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(query)}&apiKey=${GEOAPIFY_API_KEY}&limit=10&filter=countrycode:gb`
+          `/api/geocode/autocomplete?query=${encodeURIComponent(query)}`
         );
+        if (!response.ok) throw new Error('Autocomplete failed');
         const data = await response.json();
 
-        // Geoapify returns GeoJSON FeatureCollection with features[]
         const features = data.features || [];
 
         if (features.length > 0) {
-          // Filter for England only
-          const englandResults = features.filter(result => isEnglandLocation(result));
-
-          if (englandResults.length === 0) {
-            dropdown.innerHTML = `
-              <div class="geoapify-autocomplete-item" style="color: #ef4444; cursor: default;">
-                Please enter a location in England only
-              </div>
-            `;
-            dropdown.style.display = 'block';
-            return;
-          }
-
-          dropdown.innerHTML = englandResults.slice(0, 5).map(result => {
+          dropdown.innerHTML = features.map(result => {
             const props = result.properties || {};
             return `
               <div class="geoapify-autocomplete-item" data-address="${escapeHtml(props.formatted)}" data-lat="${props.lat}" data-lon="${props.lon}">
@@ -1428,12 +1403,11 @@
 
           dropdown.style.display = 'block';
 
-          console.log('Address suggestions:', englandResults.slice(0, 5).map(r => r.properties?.formatted));
+          console.log('Address suggestions:', features.map(r => r.properties?.formatted));
 
           // Add click handlers
           dropdown.querySelectorAll('.geoapify-autocomplete-item').forEach(item => {
             item.addEventListener('click', function() {
-              if (this.textContent.includes('Please enter a location in England only')) return;
               input.value = this.dataset.address;
               // Store lat/lon for pricing
               input.dataset.lat = this.dataset.lat;
@@ -1446,7 +1420,7 @@
           dropdown.style.display = 'none';
         }
       } catch (error) {
-        console.error('Geoapify API error:', error);
+        console.error('Address autocomplete error:', error);
         dropdown.style.display = 'none';
       }
     }
@@ -1489,12 +1463,12 @@
       const container = document.getElementById('timeSlotContainer');
       if (!container) return;
 
-      const selectedDate = document.getElementById('moveDateValue').value;
-      const selectedDateObj = selectedDate ? new Date(selectedDate) : new Date();
+      const selectedDateStr = document.getElementById('moveDateValue').value;
+      const selectedDate = selectedDateStr ? new Date(selectedDateStr + 'T00:00:00') : null;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const isToday = selectedDate && new Date(selectedDate).toDateString() === today.toDateString();
+      const isToday = selectedDate && selectedDate.toDateString() === today.toDateString();
 
       let html = '';
       const timeSlots = generateTimeSlots();
@@ -1575,18 +1549,16 @@
         for (let minute = 0; minute < (hour === 20 ? 1 : 60); minute += 5) {
           if (hour === 20 && minute > 0) break;
           const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-          slots.evening.push({ time, display: hour === 18 ? '6:00 PM' : hour === 19 ? '7:00 PM' : '8:00 PM' });
+          const displayHour = hour - 12;
+          const display = `${displayHour}:${minute.toString().padStart(2, '0')} PM`;
+          slots.evening.push({ time, display });
         }
       }
-
-      const eveningUnique = slots.evening.filter((slot, index, self) =>
-        index === self.findIndex(s => s.time === slot.time)
-      );
 
       return [
         { period: 'Morning', slots: slots.morning },
         { period: 'Afternoon', slots: slots.afternoon },
-        { period: 'Evening', slots: eveningUnique }
+        { period: 'Evening', slots: slots.evening }
       ];
     }
 
@@ -1816,7 +1788,7 @@
         updateProgressDots();
         saveToStorage();
 
-        if (currentStep === 11) {
+        if (currentStep === 12) {
           renderSummary();
         }
 
@@ -1968,7 +1940,7 @@
           case 'moveDate': return new Date(value + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
           case 'selectedTimeSlot': return formatTimeSlot(value);
           case 'vanType': {
-            const vanLabels = { small: 'Small Van', medium: 'Medium Van', large: 'Large Van', luton: '3.5t Luton Van', lorry: '7.5t Lorry' };
+            const vanLabels = { small: 'Small Van', medium: 'Medium Van', large: 'Large Van', luton: '3.5t Luton Van' };
             return vanLabels[value] || value;
           }
           case 'helperType': return value === 'self' ? 'I will go myself' : value === '1' ? '1 Man' : value === '2' ? '2 Men' : value === '3' ? '3 Men' : `${data.customHelperCount || ''} Helpers`;
@@ -2088,8 +2060,18 @@
               <span class="price-breakdown-label">Duration</span>
               <span class="price-breakdown-value">${result.hours} hours</span>
             </div>
+            ${result.discountPercentage > 0 ? `
+            <div class="price-breakdown-row" style="border-top: 1px dashed var(--neutral-200); padding-top: 0.75rem; margin-top: 0.5rem;">
+              <span class="price-breakdown-label">Original Price</span>
+              <span class="price-breakdown-value" style="text-decoration: line-through; color: var(--neutral-500);">£${result.originalTotal.toFixed(2)}</span>
+            </div>
+            <div class="price-breakdown-row">
+              <span class="price-breakdown-label">Promo Discount</span>
+              <span class="price-breakdown-value" style="color: #16a34a; font-weight: 700;">-${result.discountPercentage}%</span>
+            </div>
+            ` : ''}
             <div class="price-total-row">
-              <span class="price-total-label">Estimated Total</span>
+              <span class="price-total-label">${result.discountPercentage > 0 ? 'Discounted Total' : 'Estimated Total'}</span>
               <span class="price-total-value">£${result.total.toFixed(2)}</span>
             </div>
           </div>
@@ -2120,14 +2102,17 @@
         submitBtn.textContent = 'Submitting...';
       }
 
-      fetch('/api/quote', {
+      fetch('/api/quote/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ serviceType: 'removal', formData: quoteData })
       })
       .then(res => res.json())
       .then(result => {
-        if (result.success) {
+        if (result.success && result.checkoutUrl) {
+          localStorage.removeItem(STORAGE_KEY);
+          window.location.href = result.checkoutUrl;
+        } else if (result.success) {
           localStorage.removeItem(STORAGE_KEY);
           alert(`Thank you! Your quote has been submitted. Reference: #${result.quoteId}\n\nEstimated Total: £${result.total.toFixed(2)}\n\nWe will contact you shortly.`);
           window.location.href = '/';

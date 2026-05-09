@@ -25,14 +25,15 @@
       --neutral-600: #475569;
       --neutral-700: #334155;
       --neutral-800: #1E293B;
-      --bg-page: #f5f6f8;
-      --card-border: #e8eaed;
+      --bg-page: #e8f4ff;
+      --card-border: #bae6fd;
     }
 
     body {
       font-family: var(--font-lato);
       color: #444;
-      background: var(--bg-page);
+      background: linear-gradient(135deg, #e8f4ff 0%, #f0f9ff 100%);
+      min-height: 100vh;
     }
 
     .calc-header {
@@ -55,7 +56,7 @@
     }
 
     .preset-box {
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
@@ -158,7 +159,7 @@
     }
 
     .item-card {
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border: 1px solid var(--card-border);
       border-radius: 10px;
       padding: 1rem 1.25rem;
@@ -248,7 +249,7 @@
     .sidebar {
       position: sticky;
       top: 100px;
-      background: white;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 1.5rem;
@@ -416,8 +417,8 @@
     }
 
     .custom-item-box {
-      background: #fdf6f2;
-      border: 1px solid #f0e0d4;
+      background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+      border: 1px solid #fed7aa;
       border-radius: 12px;
       padding: 1.5rem;
     }
@@ -529,7 +530,7 @@
 <body>
 
   <!-- Navigation -->
-  <nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+  <nav class="fixed top-0 left-0 right-0 shadow-md z-50" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-20">
         <a href="/" class="flex items-center space-x-4">
@@ -702,7 +703,6 @@
       { name: 'Medium Van', capacity: 8.00, image: '/mediumvan.png' },
       { name: 'Large Van', capacity: 14.00, image: '/largevan.png' },
       { name: '3.5t Luton Van', capacity: 22.00, image: '/3.5tlutonvan.png' },
-      { name: '7.5t Lorry', capacity: 30.00, image: '/7.5tlorry.png' },
     ];
 
     // Item data: { id, name, dims: [L,W,H] in mm, category, subcategory }
@@ -963,8 +963,7 @@
         'Small Van': 'small',
         'Medium Van': 'medium',
         'Large Van': 'large',
-        '3.5t Luton Van': 'luton',
-        '7.5t Lorry': 'lorry'
+        '3.5t Luton Van': 'luton'
       };
       const vanValue = vanMap[van.name] || 'medium';
       e.target.href = `/quote/removal?targetStep=5&vanType=${vanValue}`;
