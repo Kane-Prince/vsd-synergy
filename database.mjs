@@ -275,6 +275,13 @@ function runMigrations() {
     // Add unique index separately
     db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_drivers_code ON drivers(driver_code)');
   }
+
+  // Remove deprecated 7.5t Lorry pricing option if present
+  const lorryRow = db.prepare("SELECT id FROM pricing_config WHERE category = 'van_size' AND option_key = 'lorry'").get();
+  if (lorryRow) {
+    db.prepare("DELETE FROM pricing_config WHERE category = 'van_size' AND option_key = 'lorry'").run();
+    console.log('Migration: removed deprecated 7.5t Lorry pricing option');
+  }
 }
 
 runMigrations();
