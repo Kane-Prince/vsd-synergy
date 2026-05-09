@@ -3,7 +3,8 @@ import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
 
-const db = new Database('database.sqlite');
+const DB_PATH = process.env.DATABASE_PATH || path.join(process.cwd(), 'database.sqlite');
+const db = new Database(DB_PATH);
 
 // Enable WAL mode for better concurrent read/write performance
 // WAL mode allows readers to not block writers and vice versa
