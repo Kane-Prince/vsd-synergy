@@ -13,8 +13,12 @@ db.pragma('synchronous = NORMAL');
 
 // ─── AUTOMATED BACKUPS ───
 const BACKUP_DIR = path.join(process.cwd(), 'database-backups');
-if (!fs.existsSync(BACKUP_DIR)) {
-  fs.mkdirSync(BACKUP_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(BACKUP_DIR)) {
+    fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.warn('[BACKUP] Skipping backup directory creation:', err.message);
 }
 
 function backupDatabase() {
@@ -140,14 +144,20 @@ db.exec(`
 
 // Seed admin if none exists
 function seedAdmin() {
-  const existing = db.prepare('SELECT * FROM admins WHERE username = ?').get(process.env.ADMIN_USERNAME);
-  const hash = bcrypt.hashSync(process.env.ADMIN_PASSWORD, 10);
+  const username = process.env.ADMIN_USERNAME;
+  const password = process.env.ADMIN_PASSWORD;
+  if (!username || !password) {
+    console.warn('[SEED] ADMIN_USERNAME or ADMIN_PASSWORD not set. Skipping admin seed.');
+    return;
+  }
+  const existing = db.prepare('SELECT * FROM admins WHERE username = ?').get(username);
+  const hash = bcrypt.hashSync(password, 10);
   if (!existing) {
-    db.prepare('INSERT INTO admins (username, password_hash) VALUES (?, ?)').run(process.env.ADMIN_USERNAME, hash);
-    console.log('Admin user seeded:', process.env.ADMIN_USERNAME);
+    db.prepare('INSERT INTO admins (username, password_hash) VALUES (?, ?)').run(username, hash);
+    console.log('Admin user seeded:', username);
   } else {
-    db.prepare('UPDATE admins SET password_hash = ? WHERE username = ?').run(hash, process.env.ADMIN_USERNAME);
-    console.log('Admin password synced:', process.env.ADMIN_USERNAME);
+    db.prepare('UPDATE admins SET password_hash = ? WHERE username = ?').run(hash, username);
+    console.log('Admin password synced:', username);
   }
 }
 
@@ -306,19 +316,25 @@ seedDriver();
 seedSettings();
 
 function seedDriver() {
-  const existing = db.prepare('SELECT * FROM drivers WHERE username = ?').get(process.env.DRIVER_USERNAME);
-  const hash = bcrypt.hashSync(process.env.DRIVER_PASSWORD, 10);
+  const username = process.env.DRIVER_USERNAME;
+  const password = process.env.DRIVER_PASSWORD;
+  if (!username || !password) {
+    console.warn('[SEED] DRIVER_USERNAME or DRIVER_PASSWORD not set. Skipping driver seed.');
+    return;
+  }
+  const existing = db.prepare('SELECT * FROM drivers WHERE username = ?').get(username);
+  const hash = bcrypt.hashSync(password, 10);
   if (!existing) {
     const code = generateDriverCode();
-    db.prepare('INSERT INTO drivers (username, password_hash, driver_code) VALUES (?, ?, ?)').run(process.env.DRIVER_USERNAME, hash, code);
-    console.log('Driver user seeded:', process.env.DRIVER_USERNAME, 'Code:', code);
+    db.prepare('INSERT INTO drivers (username, password_hash, driver_code) VALUES (?, ?, ?)').run(username, hash, code);
+    console.log('Driver user seeded:', username, 'Code:', code);
   } else {
-    db.prepare('UPDATE drivers SET password_hash = ? WHERE username = ?').run(hash, process.env.DRIVER_USERNAME);
-    console.log('Driver password synced:', process.env.DRIVER_USERNAME);
+    db.prepare('UPDATE drivers SET password_hash = ? WHERE username = ?').run(hash, username);
+    console.log('Driver password synced:', username);
     if (!existing.driver_code) {
       const code = generateDriverCode();
       db.prepare('UPDATE drivers SET driver_code = ? WHERE id = ?').run(code, existing.id);
-      console.log('Assigned driver code', code, 'to existing driver:', process.env.DRIVER_USERNAME);
+      console.log('Assigned driver code', code, 'to existing driver:', username);
     }
   }
 }
