@@ -226,6 +226,7 @@
               <tr class="border-b border-gray-200">
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">ID</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Customer</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Locations</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Service</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Price</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Status</th>
@@ -235,7 +236,7 @@
               </tr>
             </thead>
             <tbody id="quotesTableBody">
-              <tr><td colspan="8" class="py-8 text-center text-gray-400">Loading quotes...</td></tr>
+              <tr><td colspan="9" class="py-8 text-center text-gray-400">Loading quotes...</td></tr>
             </tbody>
           </table>
         </div>
@@ -369,7 +370,7 @@
       } catch (err) {
         console.error('Load quotes error:', err);
         document.getElementById('quotesTableBody').innerHTML =
-          '<tr><td colspan="8" class="py-8 text-center text-gray-400">Failed to load quotes</td></tr>';
+          '<tr><td colspan="9" class="py-8 text-center text-gray-400">Failed to load quotes</td></tr>';
       }
     }
 
@@ -386,7 +387,7 @@
     function renderQuotes(quotes) {
       const tbody = document.getElementById('quotesTableBody');
       if (!quotes || quotes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-gray-400">No quotes yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="py-8 text-center text-gray-400">No quotes yet</td></tr>';
         return;
       }
 
@@ -394,6 +395,11 @@
         const notes = q.additional_notes || '';
         const notesDisplay = notes.length > 40 ? notes.substring(0, 40) + '...' : (notes || '-');
         const interest = driverInterests[q.id];
+
+        let formData = {};
+        try { formData = JSON.parse(q.form_data || '{}'); } catch (e) {}
+        const pickup = formData.pickupAddress || '-';
+        const dropoff = formData.dropoffAddress || '-';
 
         let interestHtml = '';
         if (interest) {
@@ -423,6 +429,10 @@
               <div class="font-medium text-gray-800">${q.customer_name || 'N/A'}</div>
               <div class="text-xs text-gray-400">${q.customer_email || ''}</div>
               <div class="text-xs text-gray-400">${q.customer_phone || ''}</div>
+            </td>
+            <td class="py-3 px-2 text-gray-600 text-xs max-w-[180px]" data-label="Locations">
+              <div class="truncate" title="Pickup: ${pickup}"><span class="font-medium">Pickup:</span> ${pickup}</div>
+              <div class="truncate" title="Dropoff: ${dropoff}"><span class="font-medium">Dropoff:</span> ${dropoff}</div>
             </td>
             <td class="py-3 px-2 capitalize text-gray-600" data-label="Service">${q.service_type}</td>
             <td class="py-3 px-2 font-semibold text-brand" data-label="Price">£${q.driver_price?.toFixed(2) || '0.00'}</td>

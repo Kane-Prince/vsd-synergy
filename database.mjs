@@ -174,16 +174,16 @@ function seedPricing() {
     { category: 'van_size', option_key: 'luton', price: 75, label: '3.5t Luton Van' },
 
     // Helpers
-    { category: 'helpers', option_key: 'self', price: 0, label: 'Self Load' },
-    { category: 'helpers', option_key: '1', price: 15, label: 'One Man' },
+    { category: 'helpers', option_key: 'self', price: 0, label: 'Customer loading' },
+    { category: 'helpers', option_key: '1', price: 15, label: 'Driver help' },
     { category: 'helpers', option_key: '2', price: 30, label: 'Two Men' },
     { category: 'helpers', option_key: '3', price: 45, label: 'Three Men' },
-    { category: 'helpers', option_key: 'custom', price: 60, label: 'Custom (4+)' },
 
-    // Stairs (per floor range)
-    { category: 'stairs', option_key: 'ground-2', price: 10, label: 'Ground - 2nd Floor' },
-    { category: 'stairs', option_key: '3-4', price: 20, label: '3rd - 4th Floor' },
-    { category: 'stairs', option_key: '5-10', price: 35, label: '5th - 10th Floor' },
+    // Stairs (grouped floors)
+    { category: 'stairs', option_key: 'ground', price: 0, label: 'Ground Floor (Free)' },
+    { category: 'stairs', option_key: '1-2', price: 10, label: '1st - 2nd Floor' },
+    { category: 'stairs', option_key: '3-5', price: 20, label: '3rd - 5th Floor' },
+    { category: 'stairs', option_key: '6-10', price: 35, label: '6th - 10th Floor' },
 
     // Distance base rate
     { category: 'distance', option_key: '20-mile', price: 20, label: 'Per 20 Mile Radius' },
@@ -193,15 +193,30 @@ function seedPricing() {
     { category: 'box_size', option_key: 'medium', price: 8, label: 'Medium Box' },
     { category: 'box_size', option_key: 'large', price: 12, label: 'Large Box' },
 
-    // Assembly / Dismantling
-    { category: 'assembly', option_key: 'dismantling', price: 25, label: 'Dismantling Service' },
-    { category: 'assembly', option_key: 'assembling', price: 25, label: 'Assembling Service' },
+    // Assembly / Dismantling (per item)
+    { category: 'assembly', option_key: 'per-item', price: 25, label: 'Per Item (Dismantling/Assembling)' },
 
-    // Disposal items (per count)
-    { category: 'disposal', option_key: '1', price: 20, label: '1 Item' },
-    { category: 'disposal', option_key: '2', price: 30, label: '2 Items' },
-    { category: 'disposal', option_key: '3', price: 40, label: '3 Items' },
-    { category: 'disposal', option_key: '4', price: 50, label: '4 Items' },
+    // Disposal items (tiered by groups of 5)
+    { category: 'disposal', option_key: '1-5', price: 20, label: '1 - 5 Items' },
+    { category: 'disposal', option_key: '6-10', price: 35, label: '6 - 10 Items' },
+    { category: 'disposal', option_key: '11-15', price: 50, label: '11 - 15 Items' },
+    { category: 'disposal', option_key: '16-20', price: 65, label: '16 - 20 Items' },
+    { category: 'disposal', option_key: '21-25', price: 80, label: '21 - 25 Items' },
+    { category: 'disposal', option_key: '26-30', price: 95, label: '26 - 30 Items' },
+    { category: 'disposal', option_key: '31-35', price: 110, label: '31 - 35 Items' },
+    { category: 'disposal', option_key: '36-40', price: 125, label: '36 - 40 Items' },
+    { category: 'disposal', option_key: '41-45', price: 140, label: '41 - 45 Items' },
+    { category: 'disposal', option_key: '46-50', price: 155, label: '46 - 50 Items' },
+    { category: 'disposal', option_key: '51-55', price: 170, label: '51 - 55 Items' },
+    { category: 'disposal', option_key: '56-60', price: 185, label: '56 - 60 Items' },
+    { category: 'disposal', option_key: '61-65', price: 200, label: '61 - 65 Items' },
+    { category: 'disposal', option_key: '66-70', price: 215, label: '66 - 70 Items' },
+    { category: 'disposal', option_key: '71-75', price: 230, label: '71 - 75 Items' },
+    { category: 'disposal', option_key: '76-80', price: 245, label: '76 - 80 Items' },
+    { category: 'disposal', option_key: '81-85', price: 260, label: '81 - 85 Items' },
+    { category: 'disposal', option_key: '86-90', price: 275, label: '86 - 90 Items' },
+    { category: 'disposal', option_key: '91-95', price: 290, label: '91 - 95 Items' },
+    { category: 'disposal', option_key: '96-100', price: 305, label: '96 - 100 Items' },
 
     // Cleaning service types
     { category: 'cleaning_type', option_key: 'end-of-tenancy', price: 25, label: 'End of Tenancy Cleaning' },
@@ -292,6 +307,41 @@ function runMigrations() {
   if (lorryRow) {
     db.prepare("DELETE FROM pricing_config WHERE category = 'van_size' AND option_key = 'lorry'").run();
     console.log('Migration: removed deprecated 7.5t Lorry pricing option');
+  }
+
+  // Remove deprecated grouped stairs options
+  const oldStairsRows = db.prepare("SELECT id FROM pricing_config WHERE category = 'stairs' AND option_key IN ('ground-2', '3-4', '5-10')").all();
+  if (oldStairsRows.length > 0) {
+    db.prepare("DELETE FROM pricing_config WHERE category = 'stairs' AND option_key IN ('ground-2', '3-4', '5-10')").run();
+    console.log('Migration: removed deprecated grouped stairs options');
+  }
+
+  // Remove deprecated individual floor stairs options
+  const oldStairsFloors = db.prepare("SELECT id FROM pricing_config WHERE category = 'stairs' AND option_key IN ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10')").all();
+  if (oldStairsFloors.length > 0) {
+    db.prepare("DELETE FROM pricing_config WHERE category = 'stairs' AND option_key IN ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10')").run();
+    console.log('Migration: removed deprecated individual floor stairs options');
+  }
+
+  // Remove deprecated assembly options
+  const oldAssemblyRows = db.prepare("SELECT id FROM pricing_config WHERE category = 'assembly' AND option_key IN ('dismantling', 'assembling')").all();
+  if (oldAssemblyRows.length > 0) {
+    db.prepare("DELETE FROM pricing_config WHERE category = 'assembly' AND option_key IN ('dismantling', 'assembling')").run();
+    console.log('Migration: removed deprecated assembly options');
+  }
+
+  // Remove deprecated disposal count options
+  const oldDisposalRows = db.prepare("SELECT id FROM pricing_config WHERE category = 'disposal' AND option_key IN ('1', '2', '3', '4')").all();
+  if (oldDisposalRows.length > 0) {
+    db.prepare("DELETE FROM pricing_config WHERE category = 'disposal' AND option_key IN ('1', '2', '3', '4')").run();
+    console.log('Migration: removed deprecated disposal count options');
+  }
+
+  // Remove deprecated per-item disposal option
+  const perItemDisposal = db.prepare("SELECT id FROM pricing_config WHERE category = 'disposal' AND option_key = 'per-item'").get();
+  if (perItemDisposal) {
+    db.prepare("DELETE FROM pricing_config WHERE category = 'disposal' AND option_key = 'per-item'").run();
+    console.log('Migration: removed deprecated per-item disposal option');
   }
 }
 

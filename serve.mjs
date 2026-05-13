@@ -29,15 +29,22 @@ const server = http.createServer((req, res) => {
   let urlPath = req.url.split('?')[0]; // Remove query string
   let filePath;
 
-  // Handle routing for quote pages
+  // Handle routing for all pages (from public/ dir)
+  const publicDir = path.join(__dirname, 'public');
   if (urlPath === '/quote/removal' || urlPath === '/quote/removal/') {
-    filePath = path.join(__dirname, 'quote', 'removal', 'index.html');
+    filePath = path.join(publicDir, 'quote', 'removal', 'index.html');
   } else if (urlPath === '/quote/cleaning' || urlPath === '/quote/cleaning/') {
-    filePath = path.join(__dirname, 'quote', 'cleaning', 'index.html');
+    filePath = path.join(publicDir, 'quote', 'cleaning', 'index.html');
+  } else if (urlPath === '/van-calculator' || urlPath === '/van-calculator/') {
+    filePath = path.join(publicDir, 'van-calculator', 'index.html');
+  } else if (urlPath === '/admin' || urlPath === '/admin/') {
+    filePath = path.join(publicDir, 'admin', 'index.html');
+  } else if (urlPath === '/driver' || urlPath === '/driver/') {
+    filePath = path.join(publicDir, 'driver', 'index.html');
   } else if (urlPath === '/' || urlPath === '/index.html') {
-    filePath = path.join(__dirname, 'index.html');
+    filePath = path.join(publicDir, 'index.html');
   } else {
-    filePath = path.join(__dirname, urlPath);
+    filePath = path.join(publicDir, urlPath);
   }
 
   const ext = path.extname(filePath);

@@ -613,16 +613,24 @@ async function calculateRemovalQuote(formData) {
   // Helpers
   const helperPrice = (pricing.helpers && pricing.helpers[formData.helperType]) || 0;
 
-  // Stairs
+  // Stairs (map individual floor to group key)
+  function mapFloorToGroup(floor) {
+    if (floor === 'ground') return 'ground';
+    if (['1', '2'].includes(floor)) return '1-2';
+    if (['3', '4', '5'].includes(floor)) return '3-5';
+    if (['6', '7', '8', '9', '10'].includes(floor)) return '6-10';
+    return floor;
+  }
+
   let stairsPrice = 0;
   if (formData.verticalTransport === 'stairs') {
     const pickupRange = formData.pickupFloorRange;
     const dropoffRange = formData.dropoffFloorRange;
     if (pickupRange && pricing.stairs) {
-      stairsPrice += pricing.stairs[pickupRange] || 0;
+      stairsPrice += pricing.stairs[mapFloorToGroup(pickupRange)] || 0;
     }
     if (dropoffRange && pricing.stairs) {
-      stairsPrice += pricing.stairs[dropoffRange] || 0;
+      stairsPrice += pricing.stairs[mapFloorToGroup(dropoffRange)] || 0;
     }
   }
 
@@ -648,43 +656,38 @@ async function calculateRemovalQuote(formData) {
 
   // ─── NEW: Additional Services ───
 
-  // Box supply
+  // Box supply (multiple sizes with quantities)
   let boxPrice = 0;
-  if (formData.materialSupply === 'yes' && formData.boxSize && pricing.box_size) {
-    boxPrice = pricing.box_size[formData.boxSize] || 0;
+  if (formData.materialSupply === 'yes' && formData.boxQuantities && pricing.box_size) {
+    const boxQty = formData.boxQuantities;
+    for (const size of ['small', 'medium', 'large']) {
+      if (boxQty[size]) {
+        const qty = parseInt(boxQty[size], 10) || 0;
+        const unitPrice = pricing.box_size[size] || 0;
+        boxPrice += unitPrice * qty;
+      }
+    }
   }
 
-  // Assembly / Dismantling
+  // Assembly / Dismantling (per item)
   let assemblyPrice = 0;
-  if (formData.assemblyService && formData.assemblyService !== 'none' && pricing.assembly) {
-    assemblyPrice = pricing.assembly[formData.assemblyService] || 0;
+  if (formData.assemblyService === 'yes' && pricing.assembly) {
+    const itemCount = parseInt(formData.assemblyItemCount || '1', 10);
+    const unitPrice = pricing.assembly['per-item'] || pricing.assembly['dismantling'] || 25;
+    assemblyPrice = unitPrice * itemCount;
   }
 
-  // Disposal items
+  // Disposal items (tiered pricing in groups of 5)
   let disposalPrice = 0;
   let disposalCount = 0;
-  if (formData.disposalItems && formData.disposalItems !== '0' && pricing.disposal) {
-    const countStr = formData.disposalItems;
-    if (countStr === 'custom') {
-      disposalCount = parseInt(formData.customDisposalCount || '0', 10);
-    } else {
-      disposalCount = parseInt(countStr, 10);
-    }
-
+  if (formData.disposalItems === 'yes' && pricing.disposal) {
+    disposalCount = parseInt(formData.customDisposalCount || '1', 10);
     if (disposalCount > 0) {
-      if (disposalCount <= 4) {
-        disposalPrice = pricing.disposal[String(disposalCount)] || 0;
-      } else {
-        // Extrapolate from 1-4 pricing
-        const p1 = pricing.disposal['1'] || 0;
-        const p4 = pricing.disposal['4'] || 0;
-        if (p1 > 0 && p4 > 0) {
-          const increment = (p4 - p1) / 3;
-          disposalPrice = p4 + (disposalCount - 4) * increment;
-        } else {
-          disposalPrice = pricing.disposal['4'] || 0;
-        }
-      }
+      // Map count to tier key (groups of 5)
+      const tierStart = Math.floor((disposalCount - 1) / 5) * 5 + 1;
+      const tierEnd = tierStart + 4;
+      const tierKey = `${tierStart}-${tierEnd}`;
+      disposalPrice = pricing.disposal[tierKey] || 0;
     }
   }
 

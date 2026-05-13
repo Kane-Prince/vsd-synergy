@@ -183,16 +183,8 @@
         </div>
       </div>
 
-      <!-- Cleaning Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="card">
-          <p class="text-sm text-gray-500 mb-1">Cleaning Service Types</p>
-          <p id="statCleaningTypes" class="text-3xl font-bold text-brand">0</p>
-        </div>
-        <div class="card">
-          <p class="text-sm text-gray-500 mb-1">Standard Travel Fee</p>
-          <p id="statTravelFee" class="text-3xl font-bold text-brand">£0</p>
-        </div>
+      <!-- Weekend Surcharge Stat -->
+      <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8 max-w-sm">
         <div class="card">
           <p class="text-sm text-gray-500 mb-1">Weekend Surcharge</p>
           <p id="statWeekendRate" class="text-3xl font-bold text-brand">£0</p>
@@ -316,7 +308,7 @@
           <!-- Stairs -->
           <div>
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Stairs / Floor Range</h3>
-            <div id="stairsGroup" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+            <div id="stairsGroup" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
           </div>
 
           <!-- Distance -->
@@ -341,24 +333,6 @@
           <div>
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Disposal Items (per count)</h3>
             <div id="disposalGroup" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-          </div>
-
-          <!-- Cleaning Service Types -->
-          <div>
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Cleaning Service Types</h3>
-            <div id="cleaningTypeGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-          </div>
-
-          <!-- Travel Fee -->
-          <div>
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Travel Fee (Fixed)</h3>
-            <div id="travelFeeGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-          </div>
-
-          <!-- Property Type -->
-          <div>
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Property Type (per bedroom)</h3>
-            <div id="propertyTypeGroup" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
           </div>
 
           <!-- Weekend Rate -->
@@ -411,6 +385,8 @@
               <tr class="border-b border-gray-200">
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">ID</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Customer</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Phone</th>
+                <th class="text-left py-3 px-2 font-semibold text-gray-600">Locations</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Service</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Price</th>
                 <th class="text-left py-3 px-2 font-semibold text-gray-600">Distance</th>
@@ -419,7 +395,7 @@
               </tr>
             </thead>
             <tbody id="quotesTableBody">
-              <tr><td colspan="7" class="py-8 text-center text-gray-400">Loading quotes...</td></tr>
+              <tr><td colspan="9" class="py-8 text-center text-gray-400">Loading quotes...</td></tr>
             </tbody>
           </table>
         </div>
@@ -537,9 +513,6 @@
         box_size: document.getElementById('boxSizeGroup'),
         assembly: document.getElementById('assemblyGroup'),
         disposal: document.getElementById('disposalGroup'),
-        cleaning_type: document.getElementById('cleaningTypeGroup'),
-        travel_fee: document.getElementById('travelFeeGroup'),
-        property_type: document.getElementById('propertyTypeGroup'),
         weekend_rate: document.getElementById('weekendRateGroup')
       };
 
@@ -574,12 +547,8 @@
       document.getElementById('statHelperCount').textContent = helperItems.length;
       document.getElementById('statDistanceRate').textContent = distItem ? `£${distItem.price}` : '£0';
 
-      const cleaningTypeItems = currentPricing.filter(p => p.category === 'cleaning_type');
-      const travelFeeItem = currentPricing.find(p => p.category === 'travel_fee');
       const weekendRateItem = currentPricing.find(p => p.category === 'weekend_rate');
 
-      document.getElementById('statCleaningTypes').textContent = cleaningTypeItems.length;
-      document.getElementById('statTravelFee').textContent = travelFeeItem ? `£${travelFeeItem.price}` : '£0';
       document.getElementById('statWeekendRate').textContent = weekendRateItem ? `£${weekendRateItem.price}` : '£0';
     }
 
@@ -622,7 +591,7 @@
         renderPagination(data);
       } catch (err) {
         document.getElementById('quotesTableBody').innerHTML =
-          '<tr><td colspan="7" class="py-8 text-center text-gray-400">Failed to load quotes</td></tr>';
+          '<tr><td colspan="9" class="py-8 text-center text-gray-400">Failed to load quotes</td></tr>';
       }
     }
 
@@ -630,16 +599,27 @@
     function renderQuotes(quotes) {
       const tbody = document.getElementById('quotesTableBody');
       if (!quotes || quotes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-400">No quotes yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="py-8 text-center text-gray-400">No quotes yet</td></tr>';
         return;
       }
 
-      tbody.innerHTML = quotes.map(q => `
+      tbody.innerHTML = quotes.map(q => {
+        let formData = {};
+        try { formData = JSON.parse(q.form_data || '{}'); } catch (e) {}
+        const pickup = formData.pickupAddress || '-';
+        const dropoff = formData.dropoffAddress || '-';
+
+        return `
         <tr class="border-b border-gray-100 hover:bg-gray-50">
           <td class="py-3 px-2 font-mono text-xs text-gray-500">#${q.id}</td>
           <td class="py-3 px-2">
             <div class="font-medium text-gray-800">${q.customer_name || 'N/A'}</div>
             <div class="text-xs text-gray-400">${q.customer_email || ''}</div>
+          </td>
+          <td class="py-3 px-2 text-gray-600">${q.customer_phone || '-'}</td>
+          <td class="py-3 px-2 text-gray-600 text-xs max-w-[200px]">
+            <div class="truncate" title="Pickup: ${pickup}"><span class="font-medium">Pickup:</span> ${pickup}</div>
+            <div class="truncate" title="Dropoff: ${dropoff}"><span class="font-medium">Dropoff:</span> ${dropoff}</div>
           </td>
           <td class="py-3 px-2 capitalize text-gray-600">${q.service_type}</td>
           <td class="py-3 px-2 font-semibold text-brand">£${q.calculated_price?.toFixed(2) || '0.00'}</td>
@@ -649,7 +629,8 @@
           </td>
           <td class="py-3 px-2 text-gray-500">${new Date(q.created_at).toLocaleDateString()}</td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     // Pagination

@@ -876,11 +876,11 @@
             <div class="button-group" id="helperGroup">
               <label class="button-option">
                 <input type="radio" name="helperType" value="self">
-                I will go myself
+                Customer loading
               </label>
               <label class="button-option">
                 <input type="radio" name="helperType" value="1">
-                1 Man
+                Driver help
               </label>
               <label class="button-option">
                 <input type="radio" name="helperType" value="2">
@@ -890,17 +890,9 @@
                 <input type="radio" name="helperType" value="3">
                 3 Men
               </label>
-              <label class="button-option">
-                <input type="radio" name="helperType" value="custom">
-                More than 3
-              </label>
             </div>
           </div>
 
-          <div class="conditional-section" id="customHelperSection">
-            <label class="form-label" for="customHelperCount">Number of helpers</label>
-            <input type="number" class="form-input" id="customHelperCount" name="customHelperCount" placeholder="Enter number" min="4">
-          </div>
 
           <div class="form-actions">
             <button type="button" class="btn-back" onclick="prevStep()">Back</button>
@@ -941,22 +933,38 @@
             </div>
 
             <div class="conditional-section visible" id="pickupFloorSection" style="display: none;">
-              <label class="floor-label">Pickup Floor Range</label>
+              <label class="floor-label">Pickup Floor</label>
               <select class="form-input" id="pickupFloorRange" name="pickupFloorRange">
-                <option value="">Select floor range</option>
-                <option value="ground-2">Ground Floor to 2nd Floor</option>
-                <option value="3-4">3rd to 4th Floor</option>
-                <option value="5-10">5th to 10th Floor</option>
+                <option value="">Select floor</option>
+                <option value="ground">Ground Floor</option>
+                <option value="1">1st Floor</option>
+                <option value="2">2nd Floor</option>
+                <option value="3">3rd Floor</option>
+                <option value="4">4th Floor</option>
+                <option value="5">5th Floor</option>
+                <option value="6">6th Floor</option>
+                <option value="7">7th Floor</option>
+                <option value="8">8th Floor</option>
+                <option value="9">9th Floor</option>
+                <option value="10">10th Floor</option>
               </select>
             </div>
 
             <div class="conditional-section visible" id="dropoffFloorSection" style="display: none;">
-              <label class="floor-label">Dropoff Floor Range</label>
+              <label class="floor-label">Dropoff Floor</label>
               <select class="form-input" id="dropoffFloorRange" name="dropoffFloorRange">
-                <option value="">Select floor range</option>
-                <option value="ground-2">Ground Floor to 2nd Floor</option>
-                <option value="3-4">3rd to 4th Floor</option>
-                <option value="5-10">5th to 10th Floor</option>
+                <option value="">Select floor</option>
+                <option value="ground">Ground Floor</option>
+                <option value="1">1st Floor</option>
+                <option value="2">2nd Floor</option>
+                <option value="3">3rd Floor</option>
+                <option value="4">4th Floor</option>
+                <option value="5">5th Floor</option>
+                <option value="6">6th Floor</option>
+                <option value="7">7th Floor</option>
+                <option value="8">8th Floor</option>
+                <option value="9">9th Floor</option>
+                <option value="10">10th Floor</option>
               </select>
             </div>
           </div>
@@ -1028,78 +1036,85 @@
 
           <div class="conditional-section" id="boxSizeSection" style="display: none;">
             <div class="form-group">
-              <label class="form-label">Select box size</label>
-              <div class="button-group" id="boxSizeGroup">
-                <label class="button-option">
-                  <input type="radio" name="boxSize" value="small">
+              <label class="form-label">Select box sizes (choose all that apply)</label>
+              <div class="checkbox-group" id="boxSizeGroup">
+                <label class="checkbox-option">
+                  <input type="checkbox" name="boxSize" value="small" id="boxSmall">
                   Small
                 </label>
-                <label class="button-option">
-                  <input type="radio" name="boxSize" value="medium">
+                <label class="checkbox-option">
+                  <input type="checkbox" name="boxSize" value="medium" id="boxMedium">
                   Medium
                 </label>
-                <label class="button-option">
-                  <input type="radio" name="boxSize" value="large">
+                <label class="checkbox-option">
+                  <input type="checkbox" name="boxSize" value="large" id="boxLarge">
                   Large
                 </label>
+              </div>
+            </div>
+
+            <div id="boxQuantitySection" style="display: none; margin-top: 1rem;">
+              <div id="smallBoxQtyWrap" class="form-group" style="display: none;">
+                <label class="form-label" for="smallBoxQty">Small boxes quantity</label>
+                <input type="number" class="form-input" id="smallBoxQty" name="smallBoxQty" min="1" max="100" value="1" placeholder="1-100">
+                <span class="error-message" id="smallBoxQtyError">Maximum 100 boxes allowed</span>
+              </div>
+              <div id="mediumBoxQtyWrap" class="form-group" style="display: none;">
+                <label class="form-label" for="mediumBoxQty">Medium boxes quantity</label>
+                <input type="number" class="form-input" id="mediumBoxQty" name="mediumBoxQty" min="1" max="100" value="1" placeholder="1-100">
+                <span class="error-message" id="mediumBoxQtyError">Maximum 100 boxes allowed</span>
+              </div>
+              <div id="largeBoxQtyWrap" class="form-group" style="display: none;">
+                <label class="form-label" for="largeBoxQty">Large boxes quantity</label>
+                <input type="number" class="form-input" id="largeBoxQty" name="largeBoxQty" min="1" max="100" value="1" placeholder="1-100">
+                <span class="error-message" id="largeBoxQtyError">Maximum 100 boxes allowed</span>
               </div>
             </div>
           </div>
 
           <!-- Dismantling / Assembling -->
           <div class="form-group">
-            <label class="form-label">Do you need dismantling or assembling services?</label>
+            <label class="form-label">Do you need dismantling/assembling services?</label>
             <div class="button-group" id="assemblyGroup">
               <label class="button-option">
-                <input type="radio" name="assemblyService" value="dismantling">
-                Dismantling
+                <input type="radio" name="assemblyService" value="yes">
+                Yes
               </label>
               <label class="button-option">
-                <input type="radio" name="assemblyService" value="assembling">
-                Assembling
+                <input type="radio" name="assemblyService" value="no">
+                No
               </label>
-              <label class="button-option">
-                <input type="radio" name="assemblyService" value="none">
-                None of the above
-              </label>
+            </div>
+          </div>
+
+          <div class="conditional-section" id="assemblyQtySection" style="display: none;">
+            <div class="form-group">
+              <label class="form-label" for="assemblyItemCount">How many items?</label>
+              <input type="number" class="form-input" id="assemblyItemCount" name="assemblyItemCount" min="1" max="100" value="1" placeholder="1-100">
+              <span class="error-message" id="assemblyItemCountError">Maximum 100 items allowed</span>
             </div>
           </div>
 
           <!-- Disposal Service -->
           <div class="form-group">
-            <label class="form-label">How many items do you want to dispose?</label>
+            <label class="form-label">Do you need disposal services?</label>
             <div class="button-group" id="disposalGroup">
               <label class="button-option">
-                <input type="radio" name="disposalItems" value="0">
-                I don't want to dispose any item
+                <input type="radio" name="disposalItems" value="yes">
+                Yes
               </label>
               <label class="button-option">
-                <input type="radio" name="disposalItems" value="1">
-                1
-              </label>
-              <label class="button-option">
-                <input type="radio" name="disposalItems" value="2">
-                2
-              </label>
-              <label class="button-option">
-                <input type="radio" name="disposalItems" value="3">
-                3
-              </label>
-              <label class="button-option">
-                <input type="radio" name="disposalItems" value="4">
-                4
-              </label>
-              <label class="button-option">
-                <input type="radio" name="disposalItems" value="custom">
-                Above 4
+                <input type="radio" name="disposalItems" value="no">
+                No
               </label>
             </div>
           </div>
 
           <div class="conditional-section" id="customDisposalSection" style="display: none;">
             <div class="form-group">
-              <label class="form-label" for="customDisposalCount">Enter number of items</label>
-              <input type="number" class="form-input" id="customDisposalCount" name="customDisposalCount" min="5" placeholder="Enter number">
+              <label class="form-label" for="customDisposalCount">How many items to dispose?</label>
+              <input type="number" class="form-input" id="customDisposalCount" name="customDisposalCount" min="1" max="100" value="1" placeholder="1-100">
+              <span class="error-message" id="customDisposalCountError">Maximum 100 items allowed</span>
             </div>
           </div>
 
@@ -1569,12 +1584,6 @@
           const group = e.target.closest('.button-group');
           group.querySelectorAll('.button-option').forEach(opt => opt.classList.remove('selected'));
           e.target.closest('.button-option').classList.add('selected');
-
-          if (e.target.name === 'helperType' && e.target.value === 'custom') {
-            document.getElementById('customHelperSection').classList.add('visible');
-          } else if (e.target.name === 'helperType') {
-            document.getElementById('customHelperSection').classList.remove('visible');
-          }
         });
       });
     }
@@ -1613,26 +1622,98 @@
             section.style.display = 'block';
           } else {
             section.style.display = 'none';
-            // Clear box size selection
+            // Clear all box selections and quantities
             document.querySelectorAll('input[name="boxSize"]').forEach(r => r.checked = false);
+            document.querySelectorAll('#boxQuantitySection input[type="number"]').forEach(i => i.value = '1');
+            document.getElementById('boxQuantitySection').style.display = 'none';
+            document.getElementById('smallBoxQtyWrap').style.display = 'none';
+            document.getElementById('mediumBoxQtyWrap').style.display = 'none';
+            document.getElementById('largeBoxQtyWrap').style.display = 'none';
           }
         });
       });
 
-      // Disposal - show custom count when Above 4 is selected
-      document.querySelectorAll('input[name="disposalItems"]').forEach(input => {
+      // Box size checkboxes - toggle quantities
+      document.querySelectorAll('input[name="boxSize"]').forEach(input => {
         input.addEventListener('change', (e) => {
-          const section = document.getElementById('customDisposalSection');
-          if (e.target.value === 'custom') {
+          const option = e.target.closest('.checkbox-option');
+          if (e.target.checked) {
+            option.classList.add('selected');
+          } else {
+            option.classList.remove('selected');
+          }
+
+          const qtySection = document.getElementById('boxQuantitySection');
+          const smallWrap = document.getElementById('smallBoxQtyWrap');
+          const mediumWrap = document.getElementById('mediumBoxQtyWrap');
+          const largeWrap = document.getElementById('largeBoxQtyWrap');
+
+          const smallChecked = document.getElementById('boxSmall').checked;
+          const mediumChecked = document.getElementById('boxMedium').checked;
+          const largeChecked = document.getElementById('boxLarge').checked;
+
+          smallWrap.style.display = smallChecked ? 'block' : 'none';
+          mediumWrap.style.display = mediumChecked ? 'block' : 'none';
+          largeWrap.style.display = largeChecked ? 'block' : 'none';
+
+          qtySection.style.display = (smallChecked || mediumChecked || largeChecked) ? 'block' : 'none';
+        });
+      });
+
+      // Assembly - show quantity when Yes is selected
+      document.querySelectorAll('input[name="assemblyService"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const section = document.getElementById('assemblyQtySection');
+          if (e.target.value === 'yes') {
             section.style.display = 'block';
-            document.getElementById('customDisposalCount').required = true;
           } else {
             section.style.display = 'none';
-            document.getElementById('customDisposalCount').required = false;
-            document.getElementById('customDisposalCount').value = '';
+            document.getElementById('assemblyItemCount').value = '1';
           }
         });
       });
+
+      // Disposal - show custom count when Yes is selected
+      document.querySelectorAll('input[name="disposalItems"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const section = document.getElementById('customDisposalSection');
+          if (e.target.value === 'yes') {
+            section.style.display = 'block';
+          } else {
+            section.style.display = 'none';
+            document.getElementById('customDisposalCount').value = '1';
+          }
+        });
+      });
+
+      // Real-time quantity validation (max 100)
+      ['smallBoxQty', 'mediumBoxQty', 'largeBoxQty', 'assemblyItemCount', 'customDisposalCount'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', () => validateQuantityInput(el, 100));
+          el.addEventListener('blur', () => validateQuantityInput(el, 100));
+        }
+      });
+    }
+
+    function validateQuantityInput(input, max) {
+      const val = parseInt(input.value, 10);
+      const parent = input.closest('.form-group');
+      if (!isNaN(val) && val > max) {
+        input.classList.add('error');
+        if (parent) {
+          const err = parent.querySelector('.error-message');
+          if (err) err.style.display = 'block';
+        }
+        return false;
+      } else {
+        input.classList.remove('error');
+        if (parent) {
+          const err = parent.querySelector('.error-message');
+          if (err) err.style.display = 'none';
+        }
+        return true;
+      }
     }
 
     // Form Validation
@@ -1715,29 +1796,40 @@
         const materialSupply = step.querySelector('input[name="materialSupply"]:checked');
         if (!materialSupply) isValid = false;
 
-        // If yes, box size must be selected
+        // If yes, at least one box size must be selected and quantities valid (1-100)
         if (materialSupply && materialSupply.value === 'yes') {
-          const boxSize = step.querySelector('input[name="boxSize"]:checked');
-          if (!boxSize) isValid = false;
+          const checkedBoxes = step.querySelectorAll('input[name="boxSize"]:checked');
+          if (checkedBoxes.length === 0) isValid = false;
+
+          // Validate quantities
+          const qtyMap = { small: 'smallBoxQty', medium: 'mediumBoxQty', large: 'largeBoxQty' };
+          checkedBoxes.forEach(cb => {
+            const qtyId = qtyMap[cb.value];
+            if (qtyId) {
+              const qtyEl = document.getElementById(qtyId);
+              if (!validateQuantityInput(qtyEl, 100)) isValid = false;
+            }
+          });
         }
 
         // Assembly service must be selected
         const assemblyService = step.querySelector('input[name="assemblyService"]:checked');
         if (!assemblyService) isValid = false;
 
+        // If assembly yes, validate item count (1-100)
+        if (assemblyService && assemblyService.value === 'yes') {
+          const assemblyCount = document.getElementById('assemblyItemCount');
+          if (!validateQuantityInput(assemblyCount, 100)) isValid = false;
+        }
+
         // Disposal items must be selected
         const disposalItems = step.querySelector('input[name="disposalItems"]:checked');
         if (!disposalItems) isValid = false;
 
-        // If custom disposal, count must be >= 5
-        if (disposalItems && disposalItems.value === 'custom') {
-          const count = document.getElementById('customDisposalCount').value;
-          if (!count || parseInt(count, 10) < 5) {
-            document.getElementById('customDisposalCount').classList.add('error');
-            isValid = false;
-          } else {
-            document.getElementById('customDisposalCount').classList.remove('error');
-          }
+        // If disposal yes, validate count (1-100)
+        if (disposalItems && disposalItems.value === 'yes') {
+          const disposalCount = document.getElementById('customDisposalCount');
+          if (!validateQuantityInput(disposalCount, 100)) isValid = false;
         }
 
         return isValid;
@@ -1884,8 +1976,36 @@
         }
       }
 
+      // Box quantities
+      const checkedBoxes = [];
+      document.querySelectorAll('input[name="boxSize"]:checked').forEach(cb => {
+        checkedBoxes.push(cb.value);
+      });
+      if (checkedBoxes.length > 0) {
+        data.boxQuantities = {};
+        const qtyMap = { small: 'smallBoxQty', medium: 'mediumBoxQty', large: 'largeBoxQty' };
+        checkedBoxes.forEach(size => {
+          const qtyId = qtyMap[size];
+          if (qtyId) {
+            data.boxQuantities[size] = parseInt(document.getElementById(qtyId).value, 10) || 1;
+          }
+        });
+      }
+
       if (selectedTimeValue) {
         data.selectedTimeSlot = selectedTimeValue;
+      }
+
+      // Assembly item count
+      const assemblyService = document.querySelector('input[name="assemblyService"]:checked');
+      if (assemblyService && assemblyService.value === 'yes') {
+        data.assemblyItemCount = parseInt(document.getElementById('assemblyItemCount').value, 10) || 1;
+      }
+
+      // Disposal item count
+      const disposalItems = document.querySelector('input[name="disposalItems"]:checked');
+      if (disposalItems && disposalItems.value === 'yes') {
+        data.customDisposalCount = parseInt(document.getElementById('customDisposalCount').value, 10) || 1;
       }
 
       // Include lat/lon from address inputs for distance calculation
@@ -1943,7 +2063,7 @@
             const vanLabels = { small: 'Small Van', medium: 'Medium Van', large: 'Large Van', luton: '3.5t Luton Van' };
             return vanLabels[value] || value;
           }
-          case 'helperType': return value === 'self' ? 'I will go myself' : value === '1' ? '1 Man' : value === '2' ? '2 Men' : value === '3' ? '3 Men' : `${data.customHelperCount || ''} Helpers`;
+          case 'helperType': return value === 'self' ? 'Customer loading' : value === '1' ? 'Driver help' : value === '2' ? '2 Men' : value === '3' ? '3 Men' : value;
           case 'verticalTransport': return value.charAt(0).toUpperCase() + value.slice(1);
           case 'hours': {
             const h = parseFloat(value);
@@ -1954,9 +2074,16 @@
             return `${whole} hour${whole !== 1 ? 's' : ''}`;
           }
           case 'materialSupply': return value === 'yes' ? 'Yes' : 'No';
-          case 'boxSize': return value.charAt(0).toUpperCase() + value.slice(1) + ' Box';
-          case 'assemblyService': return value === 'dismantling' ? 'Dismantling Service' : value === 'assembling' ? 'Assembling Service' : 'None';
-          case 'disposalItems': return value === '0' ? 'None' : value === 'custom' ? `${data.customDisposalCount || ''} Items` : `${value} Item${value !== '1' ? 's' : ''}`;
+          case 'boxSize': {
+            if (!data.boxQuantities || Object.keys(data.boxQuantities).length === 0) return value.charAt(0).toUpperCase() + value.slice(1) + ' Box';
+            const parts = [];
+            if (data.boxQuantities.small) parts.push(`${data.boxQuantities.small} Small`);
+            if (data.boxQuantities.medium) parts.push(`${data.boxQuantities.medium} Medium`);
+            if (data.boxQuantities.large) parts.push(`${data.boxQuantities.large} Large`);
+            return parts.join(', ') + (parts.length === 1 ? ' Box' : ' Boxes');
+          }
+          case 'assemblyService': return value === 'yes' ? `${data.assemblyItemCount || '1'} Item${(data.assemblyItemCount || '1') !== '1' ? 's' : ''} (Dismantling/Assembling)` : 'None';
+          case 'disposalItems': return value === 'yes' ? `${data.customDisposalCount || '1'} Item${(data.customDisposalCount || '1') !== '1' ? 's' : ''} (Disposal)` : 'None';
           case 'fullName': return value;
           case 'email': return value;
           case 'phone': return value;
@@ -1965,7 +2092,7 @@
       };
 
       let html = '';
-      const skipKeys = ['serviceType', 'customHelperCount', 'stairsLocation', 'pickupFloorRange', 'dropoffFloorRange', 'moveDateValue', 'pickupLat', 'pickupLon', 'dropoffLat', 'dropoffLon', 'stairsDetails', 'customDisposalCount'];
+      const skipKeys = ['serviceType', 'stairsLocation', 'pickupFloorRange', 'dropoffFloorRange', 'moveDateValue', 'pickupLat', 'pickupLon', 'dropoffLat', 'dropoffLon', 'stairsDetails', 'customDisposalCount', 'boxQuantities'];
 
       Object.entries(data).forEach(([key, value]) => {
         if (skipKeys.includes(key) || !value) return;
@@ -2037,19 +2164,25 @@
               <span class="price-breakdown-label">Distance (${result.distanceMiles.toFixed(1)} miles)</span>
               <span class="price-breakdown-value">£${b.distancePrice.toFixed(2)}</span>
             </div>
-            ${b.boxPrice > 0 ? `
-            <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Box Supply</span>
-              <span class="price-breakdown-value">£${b.boxPrice.toFixed(2)}</span>
-            </div>` : ''}
+            ${b.boxPrice > 0 && data.boxQuantities ? (() => {
+              const boxParts = [];
+              if (data.boxQuantities.small) boxParts.push(`${data.boxQuantities.small} Small`);
+              if (data.boxQuantities.medium) boxParts.push(`${data.boxQuantities.medium} Medium`);
+              if (data.boxQuantities.large) boxParts.push(`${data.boxQuantities.large} Large`);
+              return `
+              <div class="price-breakdown-row">
+                <span class="price-breakdown-label">Box Supply (${boxParts.join(', ')})</span>
+                <span class="price-breakdown-value">£${b.boxPrice.toFixed(2)}</span>
+              </div>`;
+            })() : ''}
             ${b.assemblyPrice > 0 ? `
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">${data.assemblyService === 'dismantling' ? 'Dismantling' : 'Assembling'} Service</span>
+              <span class="price-breakdown-label">Dismantling/Assembling (${data.assemblyItemCount || '1'} item${(data.assemblyItemCount || '1') !== '1' ? 's' : ''})</span>
               <span class="price-breakdown-value">£${b.assemblyPrice.toFixed(2)}</span>
             </div>` : ''}
             ${b.disposalPrice > 0 ? `
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Disposal (${data.disposalItems === 'custom' ? data.customDisposalCount + ' items' : data.disposalItems + ' item' + (data.disposalItems !== '1' ? 's' : '')})</span>
+              <span class="price-breakdown-label">Disposal (${data.customDisposalCount || '1'} item${(data.customDisposalCount || '1') !== '1' ? 's' : ''})</span>
               <span class="price-breakdown-value">£${b.disposalPrice.toFixed(2)}</span>
             </div>` : ''}
             <div class="price-breakdown-row">
