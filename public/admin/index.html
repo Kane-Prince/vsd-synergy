@@ -170,6 +170,10 @@
       <!-- Stats -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="card">
+          <p class="text-sm text-gray-500 mb-1">Base Hourly Rate</p>
+          <p id="statBaseHourly" class="text-3xl font-bold text-brand">£0</p>
+        </div>
+        <div class="card">
           <p class="text-sm text-gray-500 mb-1">Van Size Options</p>
           <p id="statVanCount" class="text-3xl font-bold text-brand">0</p>
         </div>
@@ -177,14 +181,13 @@
           <p class="text-sm text-gray-500 mb-1">Helper Options</p>
           <p id="statHelperCount" class="text-3xl font-bold text-brand">0</p>
         </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div class="card">
           <p class="text-sm text-gray-500 mb-1">Distance Base Rate</p>
           <p id="statDistanceRate" class="text-3xl font-bold text-brand">£0</p>
         </div>
-      </div>
-
-      <!-- Weekend Surcharge Stat -->
-      <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8 max-w-sm">
         <div class="card">
           <p class="text-sm text-gray-500 mb-1">Weekend Surcharge</p>
           <p id="statWeekendRate" class="text-3xl font-bold text-brand">£0</p>
@@ -293,6 +296,13 @@
         </div>
 
         <div id="pricingEditor" class="space-y-8">
+          <!-- Base Hourly Rate -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Base Hourly Rate</h3>
+            <div id="baseHourlyGroup" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            <p class="text-xs text-gray-400 mt-1">This is the starting price per hour before van size, helpers, stairs, and extras are added.</p>
+          </div>
+
           <!-- Van Size -->
           <div>
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Van Size</h3>
@@ -506,6 +516,7 @@
     // Render pricing editor
     function renderPricingEditor() {
       const groups = {
+        base_hourly: document.getElementById('baseHourlyGroup'),
         van_size: document.getElementById('vanSizeGroup'),
         helpers: document.getElementById('helpersGroup'),
         stairs: document.getElementById('stairsGroup'),
@@ -539,10 +550,12 @@
 
     // Update stats
     function updateStats() {
+      const baseHourlyItem = currentPricing.find(p => p.category === 'base_hourly');
       const vanItems = currentPricing.filter(p => p.category === 'van_size');
       const helperItems = currentPricing.filter(p => p.category === 'helpers');
       const distItem = currentPricing.find(p => p.category === 'distance');
 
+      document.getElementById('statBaseHourly').textContent = baseHourlyItem ? `£${baseHourlyItem.price}` : '£0';
       document.getElementById('statVanCount').textContent = vanItems.length;
       document.getElementById('statHelperCount').textContent = helperItems.length;
       document.getElementById('statDistanceRate').textContent = distItem ? `£${distItem.price}` : '£0';

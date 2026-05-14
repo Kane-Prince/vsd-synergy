@@ -607,6 +607,9 @@ function applyCustomerDiscount(calc) {
 async function calculateRemovalQuote(formData) {
   const pricing = getPricingMap();
 
+  // Base hourly rate
+  const baseHourlyRate = (pricing.base_hourly && pricing.base_hourly.rate) || 0;
+
   // Van size
   const vanPrice = (pricing.van_size && pricing.van_size[formData.vanType]) || 0;
 
@@ -692,7 +695,7 @@ async function calculateRemovalQuote(formData) {
   }
 
   // Totals
-  const hourlyRate = vanPrice + helperPrice + stairsPrice + distancePrice + boxPrice + assemblyPrice + disposalPrice;
+  const hourlyRate = baseHourlyRate + vanPrice + helperPrice + stairsPrice + distancePrice + boxPrice + assemblyPrice + disposalPrice;
   const total = hourlyRate * hours;
 
   return {
@@ -701,6 +704,7 @@ async function calculateRemovalQuote(formData) {
     hours,
     distanceMiles: Math.round(distanceMiles * 10) / 10,
     breakdown: {
+      baseHourlyRate,
       vanPrice,
       helperPrice,
       stairsPrice,

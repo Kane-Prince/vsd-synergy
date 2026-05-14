@@ -167,6 +167,9 @@ function seedPricing() {
   const isFresh = count.count === 0;
 
   const defaults = [
+    // Base hourly rate (removal)
+    { category: 'base_hourly', option_key: 'rate', price: 40, label: 'Base Hourly Rate' },
+
     // Van sizes
     { category: 'van_size', option_key: 'small', price: 30, label: 'Small Van' },
     { category: 'van_size', option_key: 'medium', price: 45, label: 'Medium Van' },
@@ -342,6 +345,13 @@ function runMigrations() {
   if (perItemDisposal) {
     db.prepare("DELETE FROM pricing_config WHERE category = 'disposal' AND option_key = 'per-item'").run();
     console.log('Migration: removed deprecated per-item disposal option');
+  }
+
+  // Add base hourly rate if missing
+  const baseHourly = db.prepare("SELECT id FROM pricing_config WHERE category = 'base_hourly' AND option_key = 'rate'").get();
+  if (!baseHourly) {
+    db.prepare("INSERT INTO pricing_config (category, option_key, price, label) VALUES (?, ?, ?, ?)").run('base_hourly', 'rate', 40, 'Base Hourly Rate');
+    console.log('Migration: added base hourly rate pricing option');
   }
 }
 
