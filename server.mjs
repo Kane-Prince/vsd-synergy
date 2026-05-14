@@ -34,6 +34,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
 
 // ─── SIMPLE IN-MEMORY RATE LIMITER ───
 // Protects against spam/abuse. Limits are generous for normal use.
@@ -107,6 +108,23 @@ async function sendEmail(to, subject, html) {
     return { success: true, messageId: info.messageId };
   } catch (err) {
     console.error('Email send failed:', err.message);
+    return { error: err.message };
+  }
+}
+
+// Send quote data to n8n webhook for workflow automation (email, CRM, etc.)
+async function sendN8nWebhook(event, payload) {
+  if (!N8N_WEBHOOK_URL) return { skipped: true };
+  try {
+    const res = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, timestamp: new Date().toISOString(), ...payload })
+    });
+    if (!res.ok) throw new Error(`Webhook returned ${res.status}`);
+    return { success: true };
+  } catch (err) {
+    console.error('n8n webhook failed:', err.message);
     return { error: err.message };
   }
 }
@@ -975,10 +993,7 @@ app.post('/api/quote/pay',
   }),
   async (req, res) => {
   try {
-    if (!stripe) {
-      return res.status(500).json({ error: 'Stripe not configured' });
-    }
-
+    // STRIPE BYPASSED FOR TESTING — re-enable session creation below when ready
     const { serviceType, formData } = req.body;
     let calc;
 
@@ -1007,9 +1022,8 @@ app.post('/api/quote/pay',
       breakdown: calc.breakdown || null
     });
 
+    /*
     const stripeDesc = buildStripeDescription(serviceType, formData, calc);
-
-    // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
@@ -1019,7 +1033,7 @@ app.post('/api/quote/pay',
             name: serviceType === 'removal' ? 'House/Office Removal' : 'Cleaning Service',
             description: stripeDesc
           },
-          unit_amount: Math.round(calc.total * 100) // pence
+          unit_amount: Math.round(calc.total * 100)
         },
         quantity: 1
       }],
@@ -1031,8 +1045,10 @@ app.post('/api/quote/pay',
         service_type: serviceType
       }
     });
-
     res.json({ success: true, quoteId, checkoutUrl: session.url, ...calc });
+    */
+
+    res.json({ success: true, quoteId, ...calc });
   } catch (err) {
     console.error('Stripe checkout error:', err);
     res.status(500).json({ error: 'Failed to create payment session' });
@@ -1078,6 +1094,33 @@ app.post('/api/quote/verify-payment', async (req, res) => {
           const receiptHtml = buildReceiptHtml(quote, calc);
           await sendEmail(quote.customer_email, `Booking Receipt - VSD Synergy #${quoteId}`, receiptHtml);
           console.log(`Receipt email sent to ${quote.customer_email} for quote #${quoteId}`);
+
+          // Also push to n8n webhook for workflow automation (CRM, Slack, custom email templates)
+          const webhookPayload = {
+            quote: {
+              id: quote.id,
+              service_type: quote.service_type,
+              customer_name: quote.customer_name,
+              customer_email: quote.customer_email,
+              customer_phone: quote.customer_phone,
+              calculated_price: quote.calculated_price,
+              original_price: quote.original_price,
+              hourly_rate: quote.hourly_rate,
+              hours: quote.hours,
+              distance_miles: quote.distance_miles,
+              status: quote.status,
+              created_at: quote.created_at
+            },
+            form_data: formData,
+            breakdown: calc.breakdown || null,
+            time_cost: calc.timeCost || null,
+            flat_extras: calc.flatExtras || null,
+            discount_percentage: calc.discountPercentage || 0,
+            total: calc.total,
+            original_total: calc.originalTotal || calc.total
+          };
+          const n8nResult = await sendN8nWebhook('payment.success', webhookPayload);
+          if (n8nResult.success) console.log(`n8n webhook sent for quote #${quoteId}`);
         } catch (emailErr) {
           console.error('Failed to send receipt email:', emailErr.message);
         }
