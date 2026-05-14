@@ -2145,29 +2145,47 @@
         }
 
         const b = result.breakdown;
+        const timeCost = result.timeCost;
+        const flatExtras = result.flatExtras;
         priceEl.innerHTML = `
           <div class="price-breakdown">
             <div class="price-breakdown-title">Quote Breakdown</div>
+
+            <!-- Time cost -->
             <div class="price-breakdown-row">
               <span class="price-breakdown-label">Base Hourly Rate</span>
               <span class="price-breakdown-value">£${b.baseHourlyRate.toFixed(2)}</span>
             </div>
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Van Size</span>
+              <span class="price-breakdown-label">× Duration</span>
+              <span class="price-breakdown-value">${result.hours} hours</span>
+            </div>
+            <div class="price-breakdown-row" style="border-bottom: 1px solid var(--neutral-200); padding-bottom: 0.75rem; margin-bottom: 0.5rem;">
+              <span class="price-breakdown-label" style="font-weight: 600;">Time Cost</span>
+              <span class="price-breakdown-value" style="font-weight: 600;">£${timeCost.toFixed(2)}</span>
+            </div>
+
+            <!-- Flat extras -->
+            ${b.vanPrice > 0 ? `
+            <div class="price-breakdown-row">
+              <span class="price-breakdown-label">+ Van Size</span>
               <span class="price-breakdown-value">£${b.vanPrice.toFixed(2)}</span>
-            </div>
+            </div>` : ''}
+            ${b.helperPrice > 0 ? `
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Helpers</span>
+              <span class="price-breakdown-label">+ Helpers</span>
               <span class="price-breakdown-value">£${b.helperPrice.toFixed(2)}</span>
-            </div>
+            </div>` : ''}
+            ${b.stairsPrice > 0 ? `
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Stairs</span>
+              <span class="price-breakdown-label">+ Stairs</span>
               <span class="price-breakdown-value">£${b.stairsPrice.toFixed(2)}</span>
-            </div>
+            </div>` : ''}
+            ${b.distancePrice > 0 ? `
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Distance (${result.distanceMiles.toFixed(1)} miles)</span>
+              <span class="price-breakdown-label">+ Distance (${result.distanceMiles.toFixed(1)} miles)</span>
               <span class="price-breakdown-value">£${b.distancePrice.toFixed(2)}</span>
-            </div>
+            </div>` : ''}
             ${b.boxPrice > 0 && data.boxQuantities ? (() => {
               const boxParts = [];
               if (data.boxQuantities.small) boxParts.push(`${data.boxQuantities.small} Small`);
@@ -2175,35 +2193,30 @@
               if (data.boxQuantities.large) boxParts.push(`${data.boxQuantities.large} Large`);
               return `
               <div class="price-breakdown-row">
-                <span class="price-breakdown-label">Box Supply (${boxParts.join(', ')})</span>
+                <span class="price-breakdown-label">+ Box Supply (${boxParts.join(', ')})</span>
                 <span class="price-breakdown-value">£${b.boxPrice.toFixed(2)}</span>
               </div>`;
             })() : ''}
             ${b.assemblyPrice > 0 ? `
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Dismantling/Assembling (${data.assemblyItemCount || '1'} item${(data.assemblyItemCount || '1') !== '1' ? 's' : ''})</span>
+              <span class="price-breakdown-label">+ Dismantling/Assembling (${data.assemblyItemCount || '1'} item${(data.assemblyItemCount || '1') !== '1' ? 's' : ''})</span>
               <span class="price-breakdown-value">£${b.assemblyPrice.toFixed(2)}</span>
             </div>` : ''}
             ${b.disposalPrice > 0 ? `
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Disposal (${data.customDisposalCount || '1'} item${(data.customDisposalCount || '1') !== '1' ? 's' : ''})</span>
+              <span class="price-breakdown-label">+ Disposal (${data.customDisposalCount || '1'} item${(data.customDisposalCount || '1') !== '1' ? 's' : ''})</span>
               <span class="price-breakdown-value">£${b.disposalPrice.toFixed(2)}</span>
             </div>` : ''}
-            <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Hourly Rate</span>
-              <span class="price-breakdown-value">£${result.hourlyRate.toFixed(2)}</span>
-            </div>
-            <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Duration</span>
-              <span class="price-breakdown-value">${result.hours} hours</span>
-            </div>
+
+            ${flatExtras > 0 ? `
+            <div class="price-breakdown-row" style="border-bottom: 1px solid var(--neutral-200); padding-bottom: 0.75rem; margin-bottom: 0.5rem;">
+              <span class="price-breakdown-label" style="font-weight: 600;">Flat Extras</span>
+              <span class="price-breakdown-value" style="font-weight: 600;">£${flatExtras.toFixed(2)}</span>
+            </div>` : ''}
+
             ${result.discountPercentage > 0 ? `
-            <div class="price-breakdown-row" style="border-top: 1px dashed var(--neutral-200); padding-top: 0.75rem; margin-top: 0.5rem;">
-              <span class="price-breakdown-label">Original Price</span>
-              <span class="price-breakdown-value" style="text-decoration: line-through; color: var(--neutral-500);">£${result.originalTotal.toFixed(2)}</span>
-            </div>
             <div class="price-breakdown-row">
-              <span class="price-breakdown-label">Promo Discount</span>
+              <span class="price-breakdown-label" style="color: #16a34a;">Promo Discount</span>
               <span class="price-breakdown-value" style="color: #16a34a; font-weight: 700;">-${result.discountPercentage}%</span>
             </div>
             ` : ''}

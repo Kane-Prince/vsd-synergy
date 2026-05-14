@@ -694,13 +694,15 @@ async function calculateRemovalQuote(formData) {
     }
   }
 
-  // Totals
-  const hourlyRate = baseHourlyRate + vanPrice + helperPrice + stairsPrice + distancePrice + boxPrice + assemblyPrice + disposalPrice;
-  const total = hourlyRate * hours;
+  // Totals — base rate is multiplied by hours; everything else is a flat add-on
+  const timeCost = baseHourlyRate * hours;
+  const flatExtras = vanPrice + helperPrice + stairsPrice + distancePrice + boxPrice + assemblyPrice + disposalPrice;
+  const total = timeCost + flatExtras;
 
   return {
     total: Math.round(total * 100) / 100,
-    hourlyRate: Math.round(hourlyRate * 100) / 100,
+    timeCost: Math.round(timeCost * 100) / 100,
+    flatExtras: Math.round(flatExtras * 100) / 100,
     hours,
     distanceMiles: Math.round(distanceMiles * 10) / 10,
     breakdown: {
