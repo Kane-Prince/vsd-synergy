@@ -604,6 +604,114 @@ function applyCustomerDiscount(calc) {
   };
 }
 
+// Build a concise Stripe line-item description from form data
+function buildStripeDescription(serviceType, formData, calc) {
+  const parts = [];
+  if (serviceType === 'removal') {
+    parts.push(`${calc.hours} hour${calc.hours !== 1 ? 's' : ''}`);
+    const vanLabels = { small: 'Small Van', medium: 'Medium Van', large: 'Large Van', luton: '3.5t Luton' };
+    if (formData.vanType && vanLabels[formData.vanType]) parts.push(vanLabels[formData.vanType]);
+    const helperLabels = { self: 'Customer loading', '1': 'Driver help', '2': '2 Men', '3': '3 Men' };
+    if (formData.helperType && helperLabels[formData.helperType]) parts.push(helperLabels[formData.helperType]);
+    if (formData.pickupAddress) parts.push(`Pickup: ${formData.pickupAddress}`);
+    if (formData.dropoffAddress) parts.push(`Dropoff: ${formData.dropoffAddress}`);
+  } else {
+    parts.push(`${calc.hours} hour${calc.hours !== 1 ? 's' : ''}`);
+    if (formData.cleaningType) parts.push(formData.cleaningType.replace(/-/g, ' '));
+    if (formData.flatType) parts.push(formData.flatType);
+  }
+  return parts.join(' | ').substring(0, 500);
+}
+
+// Build HTML receipt for customer email
+function buildReceiptHtml(quote, calc) {
+  const formData = JSON.parse(quote.form_data || '{}');
+  const isRemoval = quote.service_type === 'removal';
+  const b = calc ? calc.breakdown : null;
+
+  const formatDate = (str) => {
+    if (!str) return 'N/A';
+    const d = new Date(str + 'T00:00:00');
+    return isNaN(d) ? str : d.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const formatTime = (str) => {
+    if (!str || !str.includes(':')) return str || 'N/A';
+    const [h, m] = str.split(':').map(Number);
+    const p = h >= 12 ? 'PM' : 'AM';
+    const dh = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+    return `${dh}:${m.toString().padStart(2, '0')} ${p}`;
+  };
+
+  let rows = '';
+  if (b) {
+    rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">Base Hourly Rate</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${(b.baseHourlyRate || 0).toFixed(2)}</td></tr>`;
+    if ((b.vanPrice || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">+ Van Size</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${b.vanPrice.toFixed(2)}</td></tr>`;
+    if ((b.helperPrice || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">+ Helpers</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${b.helperPrice.toFixed(2)}</td></tr>`;
+    if ((b.stairsPrice || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">+ Stairs</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${b.stairsPrice.toFixed(2)}</td></tr>`;
+    if ((b.distancePrice || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">+ Distance</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${b.distancePrice.toFixed(2)}</td></tr>`;
+    if ((b.boxPrice || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">+ Box Supply</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${b.boxPrice.toFixed(2)}</td></tr>`;
+    if ((b.assemblyPrice || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">+ Dismantling / Assembling</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${b.assemblyPrice.toFixed(2)}</td></tr>`;
+    if ((b.disposalPrice || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">+ Disposal</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${b.disposalPrice.toFixed(2)}</td></tr>`;
+    rows += `<tr><td style="padding:10px;border-bottom:2px solid #ddd;font-weight:700;">Time Cost (Base × ${calc.hours} hours)</td><td style="padding:10px;border-bottom:2px solid #ddd;text-align:right;font-weight:700;">£${(calc.timeCost || 0).toFixed(2)}</td></tr>`;
+    if ((calc.flatExtras || 0) > 0) rows += `<tr><td style="padding:10px;border-bottom:2px solid #ddd;font-weight:700;">Flat Extras</td><td style="padding:10px;border-bottom:2px solid #ddd;text-align:right;font-weight:700;">£${calc.flatExtras.toFixed(2)}</td></tr>`;
+  }
+
+  let discountRow = '';
+  if ((calc?.discountPercentage || 0) > 0) {
+    discountRow = `<tr><td style="padding:10px;color:#16a34a;font-weight:600;">Promo Discount</td><td style="padding:10px;text-align:right;color:#16a34a;font-weight:700;">-${calc.discountPercentage}%</td></tr>`;
+  }
+
+  const detailRows = isRemoval
+    ? `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Pickup Address</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.pickupAddress || 'N/A'}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Dropoff Address</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.dropoffAddress || 'N/A'}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Move Date</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatDate(formData.moveDate)}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Time Slot</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatTime(formData.selectedTimeSlot)}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Duration</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.hours || calc?.hours || 'N/A'} hours</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Van Size</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.vanType || 'N/A'}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Helpers</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.helperType || 'N/A'}</td></tr>`
+    : `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Address</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.houseAddress || 'N/A'}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Cleaning Date</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatDate(formData.cleaningDate)}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Time Slot</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatTime(formData.selectedTimeSlot)}</td></tr>
+       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Duration</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.hours || calc?.hours || 'N/A'} hours</td></tr>`;
+
+  const total = calc ? calc.total : (quote.calculated_price || 0);
+  const original = calc ? calc.originalTotal : (quote.original_price || total);
+
+  return `<html><body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;">
+    <div style="background:linear-gradient(135deg,#3080E8 0%,#1e5fb8 100%);padding:24px 20px;text-align:center;border-radius:12px 12px 0 0;">
+      <h2 style="color:#fff;margin:0;font-family:Roboto,sans-serif;">Booking Receipt</h2>
+      <p style="color:rgba(255,255,255,0.85);margin:4px 0 0;">VSD Synergy Limited</p>
+    </div>
+    <div style="background:#fff;padding:24px 20px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;">
+      <p>Hi ${quote.customer_name || 'there'},</p>
+      <p>Thank you for your booking. Here is your receipt with full details:</p>
+
+      <h3 style="color:#3080E8;font-size:16px;margin-top:24px;">Booking Details</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Reference</td><td style="padding:8px;border-bottom:1px solid #eee;">#${quote.id}</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Service</td><td style="padding:8px;border-bottom:1px solid #eee;">${isRemoval ? 'House/Office Removal' : 'Cleaning Service'}</td></tr>
+        ${detailRows}
+        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Customer Name</td><td style="padding:8px;border-bottom:1px solid #eee;">${quote.customer_name || 'N/A'}</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Phone</td><td style="padding:8px;border-bottom:1px solid #eee;">${quote.customer_phone || 'N/A'}</td></tr>
+        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Email</td><td style="padding:8px;border-bottom:1px solid #eee;">${quote.customer_email || 'N/A'}</td></tr>
+      </table>
+
+      <h3 style="color:#3080E8;font-size:16px;margin-top:24px;">Price Breakdown</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        ${rows}
+        ${discountRow}
+        <tr><td style="padding:12px;font-size:18px;font-weight:700;background:#f0f9ff;">Total Paid</td><td style="padding:12px;font-size:18px;font-weight:700;text-align:right;background:#f0f9ff;">£${total.toFixed(2)}</td></tr>
+      </table>
+
+      <p style="margin-top:24px;font-size:13px;color:#64748b;">
+        If you have any questions, contact us at <a href="mailto:info@vsdsynergy.com">info@vsdsynergy.com</a> or call +44 2033557811.
+      </p>
+      <p style="font-size:12px;color:#94a3b8;margin-top:16px;">VSD Synergy Limited · 33 Hungerdown Chingford, London, E4 6QJ</p>
+    </div>
+  </body></html>`;
+}
+
 async function calculateRemovalQuote(formData) {
   const pricing = getPricingMap();
 
@@ -888,14 +996,18 @@ app.post('/api/quote/pay',
       serviceType,
       formData,
       calculatedPrice: calc.total,
+      originalPrice: calc.originalTotal || calc.total,
       hourlyRate: calc.hourlyRate,
       hours: calc.hours,
       distanceMiles: calc.distanceMiles || null,
       customerName: formData.fullName || null,
       customerEmail: formData.email || null,
       customerPhone: formData.phone || null,
-      additionalNotes: formData.additionalNotes || null
+      additionalNotes: formData.additionalNotes || null,
+      breakdown: calc.breakdown || null
     });
+
+    const stripeDesc = buildStripeDescription(serviceType, formData, calc);
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -905,7 +1017,7 @@ app.post('/api/quote/pay',
           currency: 'gbp',
           product_data: {
             name: serviceType === 'removal' ? 'House/Office Removal' : 'Cleaning Service',
-            description: `Quote #${quoteId}`
+            description: stripeDesc
           },
           unit_amount: Math.round(calc.total * 100) // pence
         },
@@ -948,6 +1060,29 @@ app.post('/api/quote/verify-payment', async (req, res) => {
 
     if (session.payment_status === 'paid') {
       updateQuoteStatus(quoteId, 'paid');
+
+      // Send receipt email to customer
+      const quote = getQuoteById(quoteId);
+      if (quote && quote.customer_email) {
+        try {
+          // Re-calculate breakdown for the email (pricing may have changed)
+          const formData = JSON.parse(quote.form_data || '{}');
+          let calc;
+          if (quote.service_type === 'removal') {
+            calc = await calculateRemovalQuote(formData);
+          } else {
+            calc = await calculateCleaningQuote(formData);
+          }
+          calc = applyCustomerDiscount(calc);
+
+          const receiptHtml = buildReceiptHtml(quote, calc);
+          await sendEmail(quote.customer_email, `Booking Receipt - VSD Synergy #${quoteId}`, receiptHtml);
+          console.log(`Receipt email sent to ${quote.customer_email} for quote #${quoteId}`);
+        } catch (emailErr) {
+          console.error('Failed to send receipt email:', emailErr.message);
+        }
+      }
+
       res.json({ success: true, status: 'paid' });
     } else {
       res.json({ success: false, status: session.payment_status });

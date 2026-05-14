@@ -27,6 +27,7 @@
       <h1 id="status-title" class="font-roboto text-2xl font-bold text-gray-800 mb-3">Payment Successful!</h1>
       <p id="status-message" class="text-gray-600 mb-6 leading-relaxed">
         Thank you for your payment. We've received your booking and will contact you shortly to confirm the details.
+        A detailed receipt has been sent to your email.
       </p>
       <div id="verification-status" class="hidden bg-gray-50 rounded-lg p-3 mb-4 text-sm text-gray-500"></div>
       <div class="bg-gray-50 rounded-lg p-4 mb-6 text-sm text-gray-500">
@@ -60,7 +61,7 @@
           const result = await res.json();
 
           if (result.success && result.status === 'paid') {
-            statusEl.innerHTML = '<span class="text-green-600 font-semibold">Quote marked as paid.</span>';
+            statusEl.innerHTML = '<span class="text-green-600 font-semibold">Payment confirmed. A detailed receipt has been sent to your email.</span>';
           } else if (result.status) {
             statusEl.innerHTML = '<span class="text-yellow-600 font-semibold">Payment status: ' + result.status + '</span>';
           } else {

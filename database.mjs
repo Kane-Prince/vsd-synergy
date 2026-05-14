@@ -353,6 +353,20 @@ function runMigrations() {
     db.prepare("INSERT INTO pricing_config (category, option_key, price, label) VALUES (?, ?, ?, ?)").run('base_hourly', 'rate', 40, 'Base Hourly Rate');
     console.log('Migration: added base hourly rate pricing option');
   }
+
+  // Add breakdown JSON column to quotes if missing
+  const hasBreakdown = columns.some(c => c.name === 'breakdown');
+  if (!hasBreakdown) {
+    db.exec('ALTER TABLE quotes ADD COLUMN breakdown TEXT');
+    console.log('Migration: added breakdown column to quotes');
+  }
+
+  // Add original_price column to quotes if missing
+  const hasOriginalPrice = columns.some(c => c.name === 'original_price');
+  if (!hasOriginalPrice) {
+    db.exec('ALTER TABLE quotes ADD COLUMN original_price REAL');
+    console.log('Migration: added original_price column to quotes');
+  }
 }
 
 runMigrations();
@@ -440,11 +454,11 @@ export function getPricingMap() {
   return map;
 }
 
-export function createQuote({ serviceType, formData, calculatedPrice, hourlyRate, hours, distanceMiles, customerName, customerEmail, customerPhone, additionalNotes }) {
+export function createQuote({ serviceType, formData, calculatedPrice, originalPrice, hourlyRate, hours, distanceMiles, customerName, customerEmail, customerPhone, additionalNotes, breakdown }) {
   const result = db.prepare(`
-    INSERT INTO quotes (service_type, form_data, calculated_price, hourly_rate, hours, distance_miles, customer_name, customer_email, customer_phone, additional_notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(serviceType, JSON.stringify(formData), calculatedPrice, hourlyRate, hours, distanceMiles, customerName, customerEmail, customerPhone, additionalNotes || null);
+    INSERT INTO quotes (service_type, form_data, calculated_price, original_price, hourly_rate, hours, distance_miles, customer_name, customer_email, customer_phone, additional_notes, breakdown)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(serviceType, JSON.stringify(formData), calculatedPrice, originalPrice || null, hourlyRate, hours, distanceMiles, customerName, customerEmail, customerPhone, additionalNotes || null, breakdown ? JSON.stringify(breakdown) : null);
   return result.lastInsertRowid;
 }
 
