@@ -233,7 +233,12 @@
 
       <!-- Quotes List -->
       <div class="card">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Assigned Quotes</h2>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Assigned Quotes</h2>
+          <button onclick="exportAllQuotesToCsv()" class="px-3 py-1.5 text-sm font-medium text-brand bg-white border border-brand rounded hover:bg-brand/5">
+            Export to CSV
+          </button>
+        </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm responsive-table">
             <thead>
@@ -549,6 +554,108 @@
     function goToPage(page) {
       if (page >= 1 && page <= totalPages) {
         loadQuotes(page);
+      }
+    }
+
+    // Export all quotes to CSV
+    async function exportAllQuotesToCsv() {
+      try {
+        const res = await fetch('/api/quotes?page=1&limit=10000');
+        const data = await res.json();
+        const quotes = data.quotes || [];
+        if (quotes.length === 0) {
+          alert('No quotes to export');
+          return;
+        }
+
+        const headers = [
+          'ID', 'Customer Name', 'Email', 'Phone', 'Service Type', 'Status',
+          'Calculated Price', 'Original Price', 'Hours', 'Distance (miles)', 'Created At',
+          'Pickup Address', 'Dropoff Address', 'House Address', 'Move/Cleaning Date',
+          'Time Slot', 'Van Type', 'Helpers', 'Vertical Transport', 'Stairs Details',
+          'Box Supply', 'Dismantling / Assembling', 'Disposal', 'Additional Notes'
+        ];
+
+        const escapeCsv = (val) => {
+          if (val == null) return '';
+          const str = String(val).replace(/"/g, '""');
+          if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            return `"${str}"`;
+          }
+          return str;
+        };
+
+        const rows = quotes.map(q => {
+          let formData = {};
+          try { formData = JSON.parse(q.form_data || '{}'); } catch (e) {}
+
+          const isRemoval = q.service_type === 'removal';
+          let stairs = '';
+          if (formData.verticalTransport === 'stairs' && formData.stairsDetails) {
+            const parts = [];
+            if (formData.stairsDetails.pickup?.floorRange) parts.push(`Pickup: ${formData.stairsDetails.pickup.floorRange}`);
+            if (formData.stairsDetails.dropoff?.floorRange) parts.push(`Dropoff: ${formData.stairsDetails.dropoff.floorRange}`);
+            stairs = parts.join('; ');
+          } else if (formData.verticalTransport === 'lift') {
+            stairs = 'Lift';
+          }
+
+          let boxes = '';
+          if (formData.materialSupply === 'yes' && formData.boxSize) {
+            const b = formData.boxSize;
+            const parts = [];
+            if (parseInt(b.small, 10) > 0) parts.push(`${b.small} Small`);
+            if (parseInt(b.medium, 10) > 0) parts.push(`${b.medium} Medium`);
+            if (parseInt(b.large, 10) > 0) parts.push(`${b.large} Large`);
+            boxes = parts.length ? parts.join(', ') + ' Box(es)' : 'Yes';
+          } else if (formData.materialSupply === 'no') {
+            boxes = 'None';
+          }
+
+          let assembly = '';
+          if (formData.assemblyService === 'yes') {
+            assembly = (parseInt(formData.assemblyItemCount, 10) || 1) + ' Item(s)';
+          } else if (formData.assemblyService === 'no') {
+            assembly = 'None';
+          }
+
+          let disposal = '';
+          if (formData.disposalItems === 'yes') {
+            disposal = (parseInt(formData.customDisposalCount, 10) || 1) + ' Item(s)';
+          } else if (formData.disposalItems === 'no') {
+            disposal = 'None';
+          }
+
+          return [
+            q.id, q.customer_name, q.customer_email, q.customer_phone,
+            q.service_type, q.status,
+            q.calculated_price, q.original_price, q.hours, q.distance_miles,
+            q.created_at,
+            isRemoval ? (formData.pickupAddress || '') : '',
+            isRemoval ? (formData.dropoffAddress || '') : '',
+            !isRemoval ? (formData.houseAddress || '') : '',
+            isRemoval ? (formData.moveDate || '') : (formData.cleaningDate || ''),
+            formData.selectedTimeSlot || '',
+            isRemoval ? (formData.vanType || '') : '',
+            isRemoval ? (formData.helperType || '') : '',
+            formData.verticalTransport || '',
+            stairs, boxes, assembly, disposal,
+            formData.additionalNotes || ''
+          ].map(escapeCsv).join(',');
+        });
+
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `vsd_synergy_quotes_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        console.error('Export failed:', err);
+        alert('Failed to export quotes. Please try again.');
       }
     }
 
