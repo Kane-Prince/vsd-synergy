@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Stripe from 'stripe';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import {
   getAdminByUsername,
   getAllPricing,
@@ -30,6 +30,10 @@ import {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Public logo URL for email receipts (base64 images are blocked by most email clients)
+const WEBSITE_URL = process.env.WEBSITE_URL || 'https://manandvanvsdsynergy.uk';
+const LOGO_URL = `${WEBSITE_URL}/brand_assets/bp.jpeg`;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -80,32 +84,30 @@ const stripe = stripeSecretKey && stripeSecretKey !== 'your_stripe_restricted_ke
   ? new Stripe(stripeSecretKey)
   : null;
 
-// Email transport (nodemailer)
-const smtpHost = process.env.SMTP_HOST;
-const smtpPort = parseInt(process.env.SMTP_PORT || '587', 10);
-const smtpUser = process.env.SMTP_USER;
-const smtpPass = process.env.SMTP_PASS;
-const fromEmail = process.env.FROM_EMAIL || 'noreply@vsdsynergy.co.uk';
-
-const emailTransporter = (smtpHost && smtpUser && smtpPass)
-  ? nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465,
-      auth: { user: smtpUser, pass: smtpPass }
-    })
-  : null;
+// Resend email setup
+const resendApiKey = process.env.RESEND_API_KEY;
+const fromEmail = process.env.FROM_EMAIL || 'noreply@manandvanvsdsynergy.uk';
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 async function sendEmail(to, subject, html) {
-  if (!emailTransporter) {
+  if (!resend) {
     console.log('[EMAIL FALLBACK] To:', to, 'Subject:', subject);
     console.log('[EMAIL FALLBACK] Body:', html.replace(/\s+/g, ' ').substring(0, 500));
     return { fallback: true };
   }
   try {
-    const info = await emailTransporter.sendMail({ from: `"VSD Synergy" <${fromEmail}>`, to, subject, html });
-    console.log('Email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const { data, error } = await resend.emails.send({
+      from: `VSD Synergy <${fromEmail}>`,
+      to,
+      subject,
+      html
+    });
+    if (error) {
+      console.error('Email send failed:', error.message);
+      return { error: error.message };
+    }
+    console.log('Email sent:', data?.id);
+    return { success: true, messageId: data?.id };
   } catch (err) {
     console.error('Email send failed:', err.message);
     return { error: err.message };
@@ -661,6 +663,85 @@ function buildReceiptHtml(quote, calc) {
     return `${dh}:${m.toString().padStart(2, '0')} ${p}`;
   };
 
+  const formatFloorRange = (range) => {
+    if (!range || range === 'ground') return 'Ground Floor';
+    if (range === '1-2') return '1st - 2nd Floor';
+    if (range === '3-5') return '3rd - 5th Floor';
+    if (range === '6-10') return '6th - 10th Floor';
+    return range;
+  };
+
+  let detailRows = '';
+  const addRow = (label, value) => {
+    detailRows += `<tr><td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;color:#334155;width:40%;">${label}</td><td style="padding:10px 8px;border-bottom:1px solid #eee;color:#334155;">${value}</td></tr>`;
+  };
+
+  if (isRemoval) {
+    addRow('Pickup Address', formData.pickupAddress || 'N/A');
+    addRow('Dropoff Address', formData.dropoffAddress || 'N/A');
+  } else {
+    addRow('Address', formData.houseAddress || 'N/A');
+  }
+
+  addRow('Service Date', formatDate(isRemoval ? formData.moveDate : formData.cleaningDate));
+  addRow('Time Slot', formatTime(formData.selectedTimeSlot));
+  addRow('Duration', `${formData.hours || calc?.hours || 'N/A'} hours`);
+
+  if (isRemoval) {
+    addRow('Van Size', formData.vanType || 'N/A');
+    addRow('Helpers', formData.helperType || 'N/A');
+
+    const vt = formData.verticalTransport;
+    if (vt === 'lift') {
+      addRow('Vertical Transport', 'Lift (No stairs)');
+    } else if (vt === 'stairs') {
+      let stairsText = 'Stairs';
+      const sd = formData.stairsDetails;
+      if (sd && typeof sd === 'object') {
+        const parts = [];
+        if (sd.pickup && sd.pickup.floorRange) parts.push(`Pickup: ${formatFloorRange(sd.pickup.floorRange)}`);
+        if (sd.dropoff && sd.dropoff.floorRange) parts.push(`Dropoff: ${formatFloorRange(sd.dropoff.floorRange)}`);
+        if (parts.length) stairsText += ` (${parts.join(', ')})`;
+      }
+      addRow('Vertical Transport', stairsText);
+    } else {
+      addRow('Vertical Transport', formData.verticalTransport || 'N/A');
+    }
+
+    if (formData.materialSupply === 'yes') {
+      const box = formData.boxSize || {};
+      const boxParts = [];
+      if (box.small && parseInt(box.small, 10) > 0) boxParts.push(`${box.small} Small`);
+      if (box.medium && parseInt(box.medium, 10) > 0) boxParts.push(`${box.medium} Medium`);
+      if (box.large && parseInt(box.large, 10) > 0) boxParts.push(`${box.large} Large`);
+      addRow('Box Supply', boxParts.length ? boxParts.join(', ') + ' Box(es)' : 'Yes');
+    } else {
+      addRow('Box Supply', 'None');
+    }
+
+    if (formData.assemblyService === 'yes') {
+      const count = parseInt(formData.assemblyItemCount, 10) || 1;
+      addRow('Dismantling / Assembling', `${count} Item${count > 1 ? 's' : ''}`);
+    } else {
+      addRow('Dismantling / Assembling', 'None');
+    }
+
+    if (formData.disposalItems === 'yes') {
+      const count = parseInt(formData.customDisposalCount, 10) || 1;
+      addRow('Disposal', `${count} Item${count > 1 ? 's' : ''}`);
+    } else {
+      addRow('Disposal', 'None');
+    }
+
+    if (formData.additionalNotes) {
+      addRow('Additional Notes', formData.additionalNotes);
+    }
+  }
+
+  addRow('Customer Name', quote.customer_name || formData.name || 'N/A');
+  addRow('Email', quote.customer_email || formData.email || 'N/A');
+  addRow('Phone', quote.customer_phone || formData.phone || 'N/A');
+
   let rows = '';
   if (b) {
     rows += `<tr><td style="padding:10px;border-bottom:1px solid #eee;">Base Hourly Rate</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;">£${(b.baseHourlyRate || 0).toFixed(2)}</td></tr>`;
@@ -680,52 +761,48 @@ function buildReceiptHtml(quote, calc) {
     discountRow = `<tr><td style="padding:10px;color:#16a34a;font-weight:600;">Promo Discount</td><td style="padding:10px;text-align:right;color:#16a34a;font-weight:700;">-${calc.discountPercentage}%</td></tr>`;
   }
 
-  const detailRows = isRemoval
-    ? `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Pickup Address</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.pickupAddress || 'N/A'}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Dropoff Address</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.dropoffAddress || 'N/A'}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Move Date</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatDate(formData.moveDate)}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Time Slot</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatTime(formData.selectedTimeSlot)}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Duration</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.hours || calc?.hours || 'N/A'} hours</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Van Size</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.vanType || 'N/A'}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Helpers</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.helperType || 'N/A'}</td></tr>`
-    : `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Address</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.houseAddress || 'N/A'}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Cleaning Date</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatDate(formData.cleaningDate)}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Time Slot</td><td style="padding:8px;border-bottom:1px solid #eee;">${formatTime(formData.selectedTimeSlot)}</td></tr>
-       <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Duration</td><td style="padding:8px;border-bottom:1px solid #eee;">${formData.hours || calc?.hours || 'N/A'} hours</td></tr>`;
-
   const total = calc ? calc.total : (quote.calculated_price || 0);
-  const original = calc ? calc.originalTotal : (quote.original_price || total);
+  const logoHtml = `<img src="${LOGO_URL}" alt="VSD Synergy" style="max-width:140px;height:auto;border-radius:8px;margin-bottom:12px;">`;
 
-  return `<html><body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;">
-    <div style="background:linear-gradient(135deg,#3080E8 0%,#1e5fb8 100%);padding:24px 20px;text-align:center;border-radius:12px 12px 0 0;">
-      <h2 style="color:#fff;margin:0;font-family:Roboto,sans-serif;">Booking Receipt</h2>
-      <p style="color:rgba(255,255,255,0.85);margin:4px 0 0;">VSD Synergy Limited</p>
-    </div>
-    <div style="background:#fff;padding:24px 20px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;">
-      <p>Hi ${quote.customer_name || 'there'},</p>
-      <p>Thank you for your booking. Here is your receipt with full details:</p>
+  return `<html><body style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#334155;background:#f8fafc;margin:0;padding:20px 0;">
+    <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <!-- Header with Logo -->
+      <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);padding:28px 24px;text-align:center;">
+        ${logoHtml}
+        <h2 style="color:#fff;margin:8px 0 0;font-size:22px;letter-spacing:-0.02em;">Booking Receipt</h2>
+        <p style="color:rgba(255,255,255,0.75);margin:4px 0 0;font-size:14px;">VSD Synergy Limited</p>
+      </div>
 
-      <h3 style="color:#3080E8;font-size:16px;margin-top:24px;">Booking Details</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:14px;">
-        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Reference</td><td style="padding:8px;border-bottom:1px solid #eee;">#${quote.id}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Service</td><td style="padding:8px;border-bottom:1px solid #eee;">${isRemoval ? 'House/Office Removal' : 'Cleaning Service'}</td></tr>
-        ${detailRows}
-        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Customer Name</td><td style="padding:8px;border-bottom:1px solid #eee;">${quote.customer_name || 'N/A'}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Phone</td><td style="padding:8px;border-bottom:1px solid #eee;">${quote.customer_phone || 'N/A'}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;">Email</td><td style="padding:8px;border-bottom:1px solid #eee;">${quote.customer_email || 'N/A'}</td></tr>
-      </table>
+      <!-- Payment Confirmed Banner -->
+      <div style="background:linear-gradient(90deg,#10b981 0%,#059669 100%);padding:14px 24px;text-align:center;">
+        <p style="color:#fff;margin:0;font-size:15px;font-weight:600;">Payment Confirmed</p>
+      </div>
 
-      <h3 style="color:#3080E8;font-size:16px;margin-top:24px;">Price Breakdown</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:14px;">
-        ${rows}
-        ${discountRow}
-        <tr><td style="padding:12px;font-size:18px;font-weight:700;background:#f0f9ff;">Total Paid</td><td style="padding:12px;font-size:18px;font-weight:700;text-align:right;background:#f0f9ff;">£${total.toFixed(2)}</td></tr>
-      </table>
+      <div style="padding:28px 24px;">
+        <p style="margin:0 0 16px;font-size:15px;">Hi ${quote.customer_name || 'there'},</p>
+        <p style="margin:0 0 24px;font-size:15px;color:#475569;">Thank you for your booking. Here is your receipt with full details:</p>
 
-      <p style="margin-top:24px;font-size:13px;color:#64748b;">
-        If you have any questions, contact us at <a href="mailto:info@vsdsynergy.com">info@vsdsynergy.com</a> or call +44 2033557811.
-      </p>
-      <p style="font-size:12px;color:#94a3b8;margin-top:16px;">VSD Synergy Limited · 33 Hungerdown Chingford, London, E4 6QJ</p>
+        <h3 style="color:#0f172a;font-size:16px;margin:0 0 12px;font-weight:700;">Booking Details</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+          <tr><td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;color:#334155;width:40%;">Reference</td><td style="padding:10px 8px;border-bottom:1px solid #eee;color:#334155;">#${quote.id}</td></tr>
+          <tr><td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;color:#334155;width:40%;">Service</td><td style="padding:10px 8px;border-bottom:1px solid #eee;color:#334155;">${isRemoval ? 'House/Office Removal' : 'Cleaning Service'}</td></tr>
+          ${detailRows}
+        </table>
+
+        <h3 style="color:#0f172a;font-size:16px;margin:0 0 12px;font-weight:700;">Price Breakdown</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+          ${rows}
+          ${discountRow}
+          <tr><td style="padding:12px 8px;font-size:18px;font-weight:700;background:#f1f5f9;color:#0f172a;">Total Paid</td><td style="padding:12px 8px;font-size:18px;font-weight:700;text-align:right;background:#f1f5f9;color:#0f172a;">£${total.toFixed(2)}</td></tr>
+        </table>
+
+        <div style="border-top:1px solid #e2e8f0;padding-top:20px;">
+          <p style="margin:0 0 8px;font-size:13px;color:#64748b;">
+            If you have any questions, contact us at <a href="mailto:info@vsdsynergy.com" style="color:#3080E8;text-decoration:none;">info@vsdsynergy.com</a> or call <strong>+44 2033557811</strong>.
+          </p>
+          <p style="margin:0;font-size:12px;color:#94a3b8;">VSD Synergy Limited · 33 Hungerdown Chingford, London, E4 6QJ</p>
+        </div>
+      </div>
     </div>
   </body></html>`;
 }
@@ -993,7 +1070,6 @@ app.post('/api/quote/pay',
   }),
   async (req, res) => {
   try {
-    // STRIPE BYPASSED FOR TESTING — re-enable session creation below when ready
     const { serviceType, formData } = req.body;
     let calc;
 
@@ -1022,7 +1098,6 @@ app.post('/api/quote/pay',
       breakdown: calc.breakdown || null
     });
 
-    /*
     const stripeDesc = buildStripeDescription(serviceType, formData, calc);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -1046,9 +1121,6 @@ app.post('/api/quote/pay',
       }
     });
     res.json({ success: true, quoteId, checkoutUrl: session.url, ...calc });
-    */
-
-    res.json({ success: true, quoteId, ...calc });
   } catch (err) {
     console.error('Stripe checkout error:', err);
     res.status(500).json({ error: 'Failed to create payment session' });
