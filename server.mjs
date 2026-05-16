@@ -1164,8 +1164,12 @@ app.post('/api/quote/verify-payment', async (req, res) => {
           calc = applyCustomerDiscount(calc);
 
           const receiptHtml = buildReceiptHtml(quote, calc);
-          await sendEmail(quote.customer_email, `Booking Receipt - VSD Synergy #${quoteId}`, receiptHtml);
-          console.log(`Receipt email sent to ${quote.customer_email} for quote #${quoteId}`);
+          const emailResult = await sendEmail(quote.customer_email, `Booking Receipt - VSD Synergy #${quoteId}`, receiptHtml);
+          if (emailResult.success) {
+            console.log(`Receipt email sent to ${quote.customer_email} for quote #${quoteId}`);
+          } else {
+            console.error(`Receipt email failed for quote #${quoteId}:`, emailResult.error);
+          }
 
           // Also push to n8n webhook for workflow automation (CRM, Slack, custom email templates)
           const webhookPayload = {
