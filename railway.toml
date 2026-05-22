@@ -1,5 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[nixpacks]
-providers = ["node"]
