@@ -42,19 +42,6 @@ const PORT = process.env.PORT || 3000;
 // Remove X-Powered-By header
 app.disable('x-powered-by');
 
-
-// Canonical redirect: force non-www
-app.use((req, res, next) => {
-  const host = req.headers.host || '';
-  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
-
-  // Redirect www to non-www
-  if (host.startsWith('www.')) {
-    const newHost = host.replace(/^www\./, '');
-    return res.redirect(301, `${protocol}://${newHost}${req.originalUrl}`);
-  }
-  next();
-});
 const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
 
