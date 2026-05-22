@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import compression from 'compression';
 import session from 'express-session';
 import bcrypt from 'bcryptjs';
 import path from 'path';
@@ -37,6 +38,26 @@ const LOGO_URL = `${WEBSITE_URL}/brand_assets/bp.jpeg`;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ─── SEO & PERFORMANCE MIDDLEWARE ───
+// Remove X-Powered-By header
+app.disable('x-powered-by');
+
+// GZip compression
+app.use(compression());
+
+// Canonical redirect: force non-www
+app.use((req, res, next) => {
+  const host = req.headers.host || '';
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+
+  // Redirect www to non-www
+  if (host.startsWith('www.')) {
+    const newHost = host.replace(/^www\./, '');
+    return res.redirect(301, `${protocol}://${newHost}${req.originalUrl}`);
+  }
+  next();
+});
 const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
 
@@ -145,8 +166,17 @@ app.use(session({
   }
 }));
 
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Static files with caching headers for performance
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=0');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
+  }
+}));
 
 // Explicit routes for quote pages (so /quote/removal works without trailing slash)
 app.get('/quote/removal', (req, res) => {
