@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import compression from 'compression';
+import zlib from 'zlib';
 import session from 'express-session';
 import bcrypt from 'bcryptjs';
 import path from 'path';
@@ -43,8 +43,34 @@ const PORT = process.env.PORT || 3000;
 // Remove X-Powered-By header
 app.disable('x-powered-by');
 
-// GZip compression
-app.use(compression());
+// GZip compression using built-in zlib
+app.use((req, res, next) => {
+  const acceptEncoding = req.headers['accept-encoding'] || '';
+  if (!acceptEncoding.includes('gzip')) return next();
+
+  const originalSend = res.send.bind(res);
+  res.send = function (body) {
+    const type = res.get('Content-Type') || '';
+    const isText = /text|json|javascript|xml|css/.test(type);
+    if (!isText || typeof body !== 'string') {
+      return originalSend(body);
+    }
+    const buf = Buffer.from(body, 'utf8');
+    if (buf.length < 1024) {
+      return originalSend(body);
+    }
+    zlib.gzip(buf, { level: zlib.constants.Z_BEST_SPEED }, (err, compressed) => {
+      if (err || !compressed || compressed.length >= buf.length) {
+        return originalSend(body);
+      }
+      res.set('Content-Encoding', 'gzip');
+      res.set('Content-Length', compressed.length);
+      res.removeHeader('etag');
+      return originalSend(compressed);
+    });
+  };
+  next();
+});
 
 // Canonical redirect: force non-www
 app.use((req, res, next) => {
