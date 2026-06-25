@@ -400,6 +400,78 @@
       color: white;
     }
 
+    /* Article list rows */
+    .article-row {
+      transition: background-color 0.25s ease;
+    }
+    .article-link {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.4rem 1.75rem;
+      color: #1f2937;
+      text-decoration: none;
+      position: relative;
+    }
+    .article-link:hover {
+      background: linear-gradient(90deg, rgba(48, 128, 232, 0.04) 0%, rgba(48, 128, 232, 0.08) 100%);
+    }
+    .article-link:focus-visible {
+      outline: 2px solid var(--brand-primary);
+      outline-offset: -2px;
+      background: rgba(48, 128, 232, 0.06);
+    }
+    .article-index {
+      font-family: var(--font-lato);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--brand-primary);
+      background: rgba(48, 128, 232, 0.1);
+      padding: 0.3rem 0.55rem;
+      border-radius: 6px;
+      flex-shrink: 0;
+      min-width: 2.4rem;
+      text-align: center;
+    }
+    .article-title {
+      font-family: var(--font-lato);
+      font-size: 1.125rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #1f2937;
+      flex: 1;
+      transition: color 0.25s ease;
+    }
+    .article-link:hover .article-title {
+      color: var(--brand-primary);
+    }
+    .article-arrow {
+      color: #9ca3af;
+      flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s ease;
+    }
+    .article-link:hover .article-arrow {
+      color: var(--brand-primary);
+      transform: translateX(4px);
+    }
+    .article-row-hidden {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    }
+    .article-row-visible {
+      max-height: 200px;
+      opacity: 1;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    }
+    @media (max-width: 640px) {
+      .article-link { padding: 1.1rem 1.1rem; gap: 0.85rem; }
+      .article-title { font-size: 1rem; }
+      .article-index { font-size: 0.72rem; min-width: 2rem; }
+    }
+
     /* Step connector */
     .step-connector {
       position: relative;
@@ -1127,6 +1199,7 @@
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-8">
           <a href="#services" class="nav-link">Services</a>
+          <a href="#articles" class="nav-link">Articles</a>
           <a href="#how-it-works" class="nav-link">How It Works</a>
           <a href="#why-choose-us" class="nav-link">Why Choose Us</a>
           <a href="#reviews" class="nav-link">Reviews</a>
@@ -1145,6 +1218,7 @@
       <!-- Mobile Navigation -->
       <div id="mobileMenu" class="mobile-menu md:hidden">
         <a href="#services" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Services</a>
+        <a href="#articles" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Articles</a>
         <a href="#how-it-works" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">How It Works</a>
         <a href="#why-choose-us" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Why Choose Us</a>
         <a href="#reviews" class="block py-2 px-4 text-gray-600 hover:bg-gray-50 rounded-md">Reviews</a>
@@ -1353,6 +1427,74 @@
               These extras are available as add-ons when you book your removal quote.
             </p>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Useful Articles Section -->
+  <section id="articles" class="py-24 relative overflow-hidden" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);">
+    <div class="absolute inset-0 opacity-50 pointer-events-none" style="background: radial-gradient(circle at 15% 20%, rgba(48, 128, 232, 0.04) 0%, transparent 45%), radial-gradient(circle at 85% 80%, rgba(255, 107, 53, 0.03) 0%, transparent 45%);"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl mx-auto mb-10">
+        <h2 class="type-h2 mb-3" style="color: var(--brand-primary); font-size: clamp(1.9rem, 3.5vw, 2.4rem); letter-spacing: -0.01em;">Useful Articles</h2>
+        <p class="type-body text-gray-600 text-lg">
+          Practical guides and insights on moving, settling in, and making informed decisions across the UK.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <div class="rounded-2xl overflow-hidden shadow-xl" style="background: #ffffff; border: 1px solid rgba(48, 128, 232, 0.08);">
+          <ul id="articlesList" class="divide-y divide-gray-100">
+            <li class="article-row">
+              <a href="/articles/factors-affect-areas-uk.html" class="article-link group">
+                <span class="article-title">What Factors Affect the Areas People Live in the UK</span>
+                <span class="article-arrow">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+            </li>
+            <li class="article-row">
+              <a href="/articles/factors-influence-moving-house-uk.html" class="article-link group">
+                <span class="article-title">The Factors That Influence People's Choices When Moving House in the UK</span>
+                <span class="article-arrow">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+            </li>
+            <li class="article-row">
+              <a href="/articles/commute-time-where-britons-live.html" class="article-link group">
+                <span class="article-title">Why Commute Time Still Decides Where Britons Choose to Live</span>
+                <span class="article-arrow">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+            </li>
+            <li class="article-row">
+              <a href="/articles/school-catchment-family-moves-uk.html" class="article-link group">
+                <span class="article-title">How School Catchment Areas Influence Family Moves in the UK</span>
+                <span class="article-arrow">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+            </li>
+            <li class="article-row">
+              <a href="/articles/remote-work-effect-where-people-live.html" class="article-link group">
+                <span class="article-title">The Rise of Remote Work and Its Effect on Where People Live</span>
+                <span class="article-arrow">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div id="articlesCta" class="text-center mt-10" style="display: none;">
+          <button id="articlesToggle" type="button" class="inline-flex items-center gap-2 px-7 py-3 rounded-full font-bold transition-all duration-300" style="background: rgba(48, 128, 232, 0.08); color: var(--brand-primary); border: 2px solid rgba(48, 128, 232, 0.2);" onmouseover="this.style.background='rgba(48,128,232,0.15)'; this.style.borderColor='var(--brand-primary)';" onmouseout="this.style.background='rgba(48, 128, 232, 0.08)'; this.style.borderColor='rgba(48, 128, 232, 0.2)';">
+            <span id="articlesToggleLabel">See more articles</span>
+            <svg id="articlesToggleIcon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -2117,6 +2259,40 @@
         document.body.style.overflow = '';
       }
     });
+
+    // Useful Articles - show more / show less
+    (function () {
+      const VISIBLE_COUNT = 5;
+      const list = document.getElementById('articlesList');
+      const cta = document.getElementById('articlesCta');
+      const toggleBtn = document.getElementById('articlesToggle');
+      const toggleLabel = document.getElementById('articlesToggleLabel');
+      const toggleIcon = document.getElementById('articlesToggleIcon');
+      if (!list || !cta || !toggleBtn) return;
+
+      const rows = Array.from(list.querySelectorAll('.article-row'));
+      if (rows.length <= VISIBLE_COUNT) return;
+
+      rows.forEach((row, idx) => {
+        if (idx >= VISIBLE_COUNT) {
+          row.classList.add('article-row-hidden');
+        }
+      });
+
+      cta.style.display = '';
+      let expanded = false;
+      toggleBtn.addEventListener('click', () => {
+        expanded = !expanded;
+        rows.forEach((row, idx) => {
+          if (idx >= VISIBLE_COUNT) {
+            row.classList.toggle('article-row-hidden', !expanded);
+            row.classList.toggle('article-row-visible', expanded);
+          }
+        });
+        toggleLabel.textContent = expanded ? 'See fewer articles' : 'See more articles';
+        toggleIcon.style.transform = expanded ? 'rotate(180deg)' : 'rotate(0deg)';
+      });
+    })();
   </script>
 </body>
 </html>
