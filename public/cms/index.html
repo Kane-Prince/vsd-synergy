@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Article Manager · VSD Synergy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-roboto: 'Roboto', sans-serif;
+      --font-lato: 'Lato', sans-serif;
+      --brand-primary: #3080E8;
+      --brand-primary-dark: #1e5fb8;
+      --brand-navy: #0F4080;
+      --brand-deep: #082A5C;
+      --ink: #1F2937;
+      --paper: #F6F8FC;
+      --line: rgba(15, 64, 128, 0.12);
+      --coral: #FF6B35;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-lato); color: var(--ink); margin: 0; }
+
+    .font-display { font-family: var(--font-roboto); }
+
+    /* Focus rings everywhere */
+    .focusable:focus-visible, input:focus-visible, textarea:focus-visible,
+    [contenteditable]:focus-visible, button:focus-visible, a:focus-visible {
+      outline: 2px solid var(--brand-primary);
+      outline-offset: 2px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: var(--font-lato); font-weight: 700; font-size: 0.9rem;
+      padding: 0.55rem 1.15rem; border-radius: 0.7rem;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      cursor: pointer; border: 1px solid transparent;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(48, 128, 232, 0.28), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 20px rgba(48, 128, 232, 0.36); transform: translateY(-1px); }
+    .btn-ghost {
+      background: #fff; color: var(--brand-navy); border-color: var(--line);
+      box-shadow: 0 1px 2px rgba(15, 64, 128, 0.06);
+    }
+    .btn-ghost:hover { background: #EFF5FE; border-color: rgba(15, 64, 128, 0.22); }
+    .btn-danger-ghost {
+      background: #fff; color: var(--coral); border-color: rgba(255, 107, 53, 0.35);
+    }
+    .btn-danger-ghost:hover { background: #FFF3EE; border-color: rgba(255, 107, 53, 0.6); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Gate ── */
+    .gate-bg {
+      background:
+        radial-gradient(ellipse 90% 60% at 20% 0%, rgba(48, 128, 232, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 55% at 94% 104%, rgba(255, 107, 53, 0.13) 0%, transparent 55%),
+        radial-gradient(ellipse 120% 90% at 50% 50%, rgba(30, 95, 184, 0.18) 0%, transparent 70%),
+        linear-gradient(160deg, var(--brand-deep) 0%, #05193B 70%, #041534 100%);
+    }
+    .grain::after {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+    }
+    .gate-card {
+      background: #FFFFFF;
+      box-shadow: 0 30px 60px -18px rgba(3, 15, 38, 0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+    .gate-input {
+      width: 100%; font-family: var(--font-lato); font-size: 1rem;
+      padding: 0.7rem 0.95rem; border-radius: 0.7rem;
+      border: 1px solid var(--line); background: #FBFCFE; color: var(--ink);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .gate-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.18); outline: none; }
+
+    /* ── App surfaces: base → elevated → floating ── */
+    .surface-list { background: #fff; border: 1px solid var(--line); border-radius: 1rem; box-shadow: 0 8px 24px -14px rgba(15, 64, 128, 0.18); }
+    .surface-bar  { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    .surface-float { box-shadow: 0 14px 34px -12px rgba(15, 64, 128, 0.28); background: #fff; }
+
+    .row-link { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: center; padding: 1rem 1.2rem; transition: background-color 0.15s ease; }
+    .row-link:hover { background: #F4F8FE; }
+    .row-link + .row-link { border-top: 1px solid rgba(15, 64, 128, 0.08); }
+
+    /* ── Editor ── */
+    .field-label { font-size: 0.8rem; font-weight: 700; color: var(--brand-navy); font-family: var(--font-roboto); }
+    .field-input, .field-textarea {
+      width: 100%; font-family: var(--font-lato); font-size: 1rem; line-height: 1.6;
+      padding: 0.7rem 0.9rem; border-radius: 0.7rem;
+      border: 1px solid var(--line); background: #fff; color: var(--ink);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field-input:focus, .field-textarea:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(48, 128, 232, 0.15); outline: none; }
+
+    .tbar-btn {
+      min-width: 2rem; height: 2rem; padding: 0 0.5rem; border-radius: 0.5rem;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;
+      font-size: 0.8rem; font-weight: 700; font-family: var(--font-lato);
+      color: var(--brand-navy); background: transparent; border: none; cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+    .tbar-btn:hover { background: rgba(48, 128, 232, 0.12); }
+    .tbar-btn:active { background: rgba(48, 128, 232, 0.22); }
+    .tbar-sep { width: 1px; height: 1.4rem; background: var(--line); margin: 0 0.35rem; }
+
+    #editorBody { min-height: 340px; }
+    #editorBody:empty::before {
+      content: attr(data-placeholder); color: #9CA3AF; pointer-events: none;
+    }
+    #editorBody img { max-width: 100%; border-radius: 0.75rem; margin: 0.5rem 0; }
+    #editorBody a { color: var(--brand-primary-dark); text-decoration: underline; }
+    #editorBody h2 { font-family: var(--font-roboto); font-weight: 500; font-size: 1.45rem; margin: 1.6rem 0 0.7rem; letter-spacing: -0.01em; }
+    #editorBody h3 { font-family: var(--font-lato); font-weight: 700; font-size: 1.15rem; margin: 1.2rem 0 0.5rem; }
+    #editorBody p { margin-bottom: 1rem; }
+    #editorBody ul, #editorBody ol { margin: 0 0 1rem 1.4rem; }
+    #editorBody ul { list-style: disc; }
+    #editorBody ol { list-style: decimal; }
+    #editorBody li { margin-bottom: 0.35rem; }
+
+    .editor-html {
+      width: 100%; min-height: 340px; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 0.82rem; line-height: 1.7; padding: 1rem;
+      border: 1px solid var(--line); border-radius: 0 0 0.75rem 0.75rem; background: #FBFCFE;
+      white-space: pre-wrap; resize: vertical;
+    }
+
+    .drop-zone { border: 1.5px dashed rgba(15, 64, 128, 0.25); border-radius: 0.75rem; transition: border-color 0.15s ease, background-color 0.15s ease; }
+    .drop-zone:hover, .drop-zone.over { border-color: var(--brand-primary); background: #F4F8FE; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px);
+      opacity: 0; pointer-events: none;
+      background: var(--brand-deep); color: #fff; font-family: var(--font-lato); font-weight: 500;
+      padding: 0.7rem 1.3rem; border-radius: 0.7rem; font-size: 0.9rem;
+      box-shadow: 0 12px 30px -8px rgba(3, 15, 38, 0.5);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 60; max-width: min(90vw, 30rem); text-align: center;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.error { background: #7A2E12; }
+
+    .danger-text { color: var(--coral); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+    @media (max-width: 640px) {
+      .row-link { grid-template-columns: 1fr; }
+      .row-actions { justify-self: end; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- ════ GATE ════ -->
+  <div id="viewGate" class="gate-bg grain" style="display:none;">
+    <div class="min-h-screen flex items-center justify-center px-4">
+      <div class="gate-card w-full max-w-sm rounded-2xl p-8" style="border-radius:1.25rem;">
+        <div class="text-center mb-7">
+          <div class="font-display font-bold" style="color: var(--brand-primary); font-size: 1.15rem;">VSD Synergy</div>
+          <h1 class="font-display font-medium text-gray-900 mt-1" style="font-size: 1.5rem; letter-spacing: -0.02em;">Article Manager</h1>
+          <p class="text-gray-500 text-sm mt-1.5">Sign in to publish and edit articles.</p>
+        </div>
+        <form id="loginForm">
+          <input type="hidden" name="gotcha" value="">
+          <label for="cmsPassword" class="field-label block mb-1.5">Password</label>
+          <input id="cmsPassword" type="password" class="gate-input mb-4" autocomplete="current-password" required>
+          <button id="loginBtn" type="submit" class="btn btn-primary w-full justify-center" style="padding: 0.7rem;">Sign in</button>
+          <p id="loginError" class="danger-text text-sm mt-3 text-center" style="display:none;"></p>
+        </form>
+      </div>
+      <p class="fixed bottom-5 left-0 right-0 text-center text-xs" style="color: rgba(255,255,255,0.45);">
+        Private area &mdash; www.manandvanvsdsynergy.uk
+      </p>
+    </div>
+  </div>
+
+  <!-- ════ APP ════ -->
+  <div id="viewApp" style="display:none;" class="min-h-screen" data-paper>
+    <header class="surface-bar sticky top-0 z-40">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+        <div class="flex items-baseline gap-2.5 min-w-0">
+          <span class="font-display font-bold whitespace-nowrap" style="color: var(--brand-primary); font-size: 1.05rem;">VSD Synergy</span>
+          <span class="text-gray-400 hidden sm:inline">&middot;</span>
+          <span class="font-display text-sm font-medium hidden sm:inline whitespace-nowrap" style="color: var(--brand-navy);" id="barTitle">Article Manager</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="/" target="_blank" rel="noopener" class="btn btn-ghost whitespace-nowrap" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">View site</a>
+          <button id="logoutBtn" class="btn btn-ghost whitespace-nowrap" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+
+      <!-- ── List view ── -->
+      <section id="viewList">
+        <div class="flex items-end justify-between gap-4 mb-6 flex-wrap">
+          <div>
+            <h1 class="font-display font-medium text-gray-900" style="font-size: 1.6rem; letter-spacing: -0.02em;">Articles</h1>
+            <p class="text-gray-500 text-sm mt-1" id="articlesSubtitle">Loading&hellip;</p>
+          </div>
+          <button id="newArticleBtn" class="btn btn-primary">
+            <svg style="width:1rem;height:1rem;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+            New article
+          </button>
+        </div>
+
+        <div class="surface-list overflow-hidden">
+          <div id="listContents"></div>
+          <div id="listEmpty" style="display:none;" class="px-6 py-14 text-center">
+            <p class="font-display text-gray-800 font-medium mb-1">No articles yet</p>
+            <p class="text-gray-500 text-sm mb-5">Write your first article and it goes live straight away.</p>
+            <button class="btn btn-primary" data-new-article>Create your first article</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Editor view ── -->
+      <section id="viewEditor" style="display:none;">
+        <div class="mb-6">
+          <button id="backToList" class="btn btn-ghost" style="padding: 0.4rem 0.85rem; font-size: 0.82rem; margin-bottom: 1rem;">
+            <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Back to articles
+          </button>
+          <h1 class="font-display font-medium text-gray-900" style="font-size: 1.6rem; letter-spacing: -0.02em;" id="editorHeading">New article</h1>
+        </div>
+
+        <form id="editorForm" class="grid gap-6">
+          <div class="grid gap-6" style="grid-template-columns: minmax(0,1fr);">
+            <div class="surface-list p-6">
+              <div class="mb-5">
+                <label for="efTitle" class="field-label block mb-1.5">Title</label>
+                <input id="efTitle" class="field-input" placeholder="e.g. How to Save Money on Every House Move" maxlength="200">
+                <p class="text-sm danger-text mt-1.5" id="titleError" style="display:none;">Give the article a title.</p>
+              </div>
+
+              <div class="mb-5">
+                <label for="efSlug" class="field-label block mb-1.5">Address</label>
+                <div class="text-xs text-gray-500 mb-1.5">Readers will see this in the browser bar. Lowercase letters, numbers and dashes.</div>
+                <div class="flex items-stretch rounded-xl overflow-hidden" style="border: 1px solid var(--line);">
+                  <span class="flex items-center px-3 text-xs text-gray-500 whitespace-nowrap" style="background:#F2F6FD; font-family:ui-monospace,Menlo,monospace;">/articles/</span>
+                  <input id="efSlug" class="field-input" style="border:none; border-radius:0; font-family:ui-monospace,Menlo,monospace; font-size:0.9rem;" placeholder="how-to-save-money">
+                </div>
+                <p class="text-sm danger-text mt-1.5" id="slugError" style="display:none;"></p>
+              </div>
+
+              <div>
+                <div class="flex items-baseline justify-between mb-1.5">
+                  <label for="efDescription" class="field-label">Search description</label>
+                  <span class="text-xs" id="descCount" style="color:#9CA3AF;">0 / 155</span>
+                </div>
+                <div class="text-xs text-gray-500 mb-1.5">Shown in Google results and under the headline on the article page.</div>
+                <textarea id="efDescription" rows="2" class="field-textarea" maxlength="500" style="resize:vertical;"></textarea>
+              </div>
+            </div>
+
+            <div class="surface-list p-6">
+              <div class="field-label mb-1.5">Header image</div>
+              <div class="text-xs text-gray-500 mb-3">Appears at the top of the article, below the headline.</div>
+
+              <div id="heroPreview" class="mb-4" style="display:none;">
+                <div class="rounded-xl overflow-hidden" style="border: 1px solid var(--line);">
+                  <img id="heroPreviewImg" alt="" style="width:100%; max-height:220px; object-fit:cover; display:block;">
+                </div>
+                <button type="button" id="heroRemove" class="btn btn-danger-ghost mt-2.5" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;">Remove image</button>
+              </div>
+
+              <div class="drop-zone p-5 text-center" id="heroDrop">
+                <p class="text-sm text-gray-600 mb-2">Drop an image here, or</p>
+                <div class="flex items-center justify-center gap-2.5 flex-wrap">
+                  <button type="button" id="heroUploadBtn" class="btn btn-ghost">Choose a file</button>
+                  <span class="text-xs text-gray-400">or</span>
+                  <button type="button" id="heroUrlBtn" class="btn btn-ghost">Paste image link</button>
+                </div>
+                <input type="file" id="heroFile" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" style="display:none;">
+                <p class="text-xs mt-3 text-gray-400" id="heroStatus">PNG, JPEG or WebP &middot; up to 10MB</p>
+              </div>
+            </div>
+
+            <div class="surface-list overflow-hidden">
+              <div class="px-3 pt-3 pb-2 flex items-center gap-1 flex-wrap" style="border-bottom: 1px solid rgba(15, 64, 128, 0.08);">
+                <button type="button" class="tbar-btn" data-cmd="formatBlock" data-val="h2" title="Section heading">H2</button>
+                <button type="button" class="tbar-btn" data-cmd="formatBlock" data-val="h3" title="Sub-heading">H3</button>
+                <span class="tbar-sep"></span>
+                <button type="button" class="tbar-btn" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+                <button type="button" class="tbar-btn" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+                <span class="tbar-sep"></span>
+                <button type="button" class="tbar-btn" data-cmd="insertUnorderedList" title="Bullet list">&bull; List</button>
+                <button type="button" class="tbar-btn" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+                <span class="tbar-sep"></span>
+                <button type="button" class="tbar-btn" data-cmd="createLink" title="Add link">Link</button>
+                <button type="button" class="tbar-btn" id="bodyImageBtn" title="Insert image">Image</button>
+                <span class="tbar-sep"></span>
+                <button type="button" class="tbar-btn" data-cmd="removeFormat" title="Clear formatting">Clear</button>
+                <span class="tbar-sep"></span>
+                <button type="button" class="tbar-btn" id="htmlToggleBtn" title="Edit the page code directly">&lt;/&gt; HTML</button>
+                <input type="file" id="bodyImageFile" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" style="display:none;">
+              </div>
+              <div id="editorBody" contenteditable="true" spellcheck="true" class="px-6 py-5 text-gray-800" style="font-size:1.05rem; line-height:1.75;" data-placeholder="Start writing the article&hellip;"></div>
+              <textarea id="editorHtml" style="display:none;"></textarea>
+              <div class="px-6 pb-4 text-xs text-gray-400" id="editorHint" style="border-top: 1px solid rgba(15, 64, 128, 0.06); padding-top: 0.7rem;">
+                Paste text from anywhere &mdash; formatting is kept. HTML mode is for pasting pre-formatted code.
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="mt-6 flex items-center justify-between gap-3 flex-wrap sticky bottom-0 py-3" style="background: linear-gradient(to top, rgba(246,248,252,1) 75%, rgba(246,248,252,0.9) 85%, transparent);">
+          <div class="flex items-center gap-2 text-sm">
+            <span id="saveDot" style="width:0.55rem;height:0.55rem;border-radius:9999px;background:#D1D5DB;display:inline-block;"></span>
+            <span id="saveStatus" style="color:#6B7280;">New article &mdash; not saved yet</span>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <button type="button" id="previewBtn" class="btn btn-ghost">Preview</button>
+            <button type="button" id="deleteBtn" class="btn btn-danger-ghost">Delete&hellip;</button>
+            <button type="button" id="saveBtn" class="btn btn-primary">Save &amp; publish</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var state = {
+    article: null,      // loaded article row (null = new)
+    currentSlug: null,  // slug of the last saved version (for preview)
+    heroImageUrl: '',
+    dirty: false,
+    slugEditedManually: false
+  };
+
+  // ─── helpers ───
+  var $ = function (id) { return document.getElementById(id); };
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function slugify(text) {
+    return String(text || '').toLowerCase().trim()
+      .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')
+      .slice(0, 80).replace(/^-+|-+$/g, '');
+  }
+
+  function formatDate(sql) {
+    if (!sql) return '—';
+    var d = new Date(String(sql).replace(' ', 'T') + 'Z');
+    if (isNaN(d)) return String(sql);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  var toastTimer = null;
+  function toast(message, isError) {
+    var el = $('toast');
+    el.textContent = message;
+    el.classList.toggle('error', !!isError);
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, isError ? 5000 : 2600);
+  }
+
+  function setDirty(dirty) {
+    state.dirty = dirty;
+    $('saveDot').style.background = dirty ? '#FF6B35' : '#22C55E';
+    if (state.article) {
+      $('saveStatus').textContent = dirty ? 'Unsaved changes' : 'All changes published';
+    }
+  }
+
+  function showView(view) {
+    $('viewGate').style.display = view === 'gate' ? '' : 'none';
+    $('viewApp').style.display = view === 'gate' ? 'none' : '';
+    $('viewList').style.display = view === 'list' ? '' : 'none';
+    $('viewEditor').style.display = view === 'editor' ? '' : 'none';
+    window.scrollTo(0, 0);
+  }
+
+  // ─── auth ───
+  $('logoutBtn').addEventListener('click', function () {
+    fetch('/api/cms/logout', { method: 'POST' }).finally(function () {
+      state.article = null;
+      showView('gate');
+      $('cmsPassword').value = '';
+    });
+  });
+
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    $('loginError').style.display = 'none';
+    var btn = $('loginBtn');
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    fetch('/api/cms/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: $('cmsPassword').value })
+    }).then(function (r) {
+      if (r.ok) { return loadList().then(function () { showView('list'); }); }
+      return r.json().catch(function () { return {}; }).then(function (body) {
+        throw new Error(body.error || 'Incorrect password.');
+      });
+    }).catch(function (err) {
+      $('loginError').textContent = err.message;
+      $('loginError').style.display = '';
+    }).finally(function () {
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
+    });
+  });
+
+  // ─── list ───
+  function loadList() {
+    return fetch('/api/cms/articles').then(function (r) {
+      if (r.status === 401) throw new Error('auth');
+      return r.json();
+    }).then(function (data) {
+      renderList(data.articles || []);
+    }).catch(function (err) {
+      if (err.message === 'auth') { showView('gate'); return; }
+      toast('Could not load articles. Refresh to try again.', true);
+    });
+  }
+
+  function renderList(articles) {
+    var host = $('listContents');
+    $('articlesSubtitle').textContent = (articles.length === 1 ? '1 article' : articles.length + ' articles')
+      + ' — listed in the order they appear on the site';
+    $('listEmpty').style.display = articles.length ? 'none' : '';
+    host.innerHTML = articles.map(function (a) {
+      return ''
+        + '<div class="row-link" data-id="' + a.id + '">'
+        + '  <div class="min-w-0">'
+        + '    <div class="font-medium text-gray-900 truncate" style="font-size:1.02rem;">' + escapeHtml(a.title) + '</div>'
+        + '    <div class="text-xs mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5" style="color:#8CA0BB;">'
+        + '      <span style="font-family:ui-monospace,Menlo,monospace;">/articles/' + escapeHtml(a.slug) + '</span>'
+        + '      <span>&middot;</span><span>Updated ' + formatDate(a.updated_at) + '</span>'
+        + '    </div>'
+        + '  </div>'
+        + '  <div class="row-actions flex items-center gap-1.5">'
+        + '    <a href="/articles/' + escapeHtml(a.slug) + '" target="_blank" rel="noopener" class="tbar-btn" style="height:auto;padding:0.4rem 0.7rem;" title="Open the article">View</a>'
+        + '    <button type="button" class="tbar-btn" style="height:auto;padding:0.4rem 0.7rem;" data-action="edit" title="Edit this article">Edit</button>'
+        + '  </div>'
+        + '</div>';
+    }).join('');
+    showView('list');
+  }
+
+  $('listContents').addEventListener('click', function (e) {
+    var editBtn = e.target.closest('[data-action="edit"]');
+    if (!editBtn) return;
+    var row = editBtn.closest('[data-id]');
+    openEditor(parseInt(row.getAttribute('data-id'), 10));
+  });
+
+  function startNew() {
+    state.article = null;
+    state.currentSlug = null;
+    state.heroImageUrl = '';
+    state.slugEditedManually = false;
+    $('editorHeading').textContent = 'New article';
+    $('saveStatus').textContent = 'New article — not saved yet';
+    $('saveDot').style.background = '#D1D5DB';
+    $('efTitle').value = '';
+    $('efSlug').value = '';
+    $('efDescription').value = '';
+    updateDescCount();
+    $('editorBody').innerHTML = '';
+    $('editorHtml').value = '';
+    setHeroImage('');
+    setDirty(false);
+    $('deleteBtn').style.display = 'none';
+    showView('editor');
+    $('efTitle').focus();
+  }
+
+  function openEditor(id) {
+    fetch('/api/cms/articles/' + id).then(function (r) { return r.json(); }).then(function (data) {
+      state.article = data.article;
+      state.currentSlug = data.article.slug;
+      state.slugEditedManually = true; // existing article: don't auto-rewrite the slug
+      $('editorHeading').textContent = 'Edit article';
+      $('saveStatus').textContent = 'All changes published';
+      $('efTitle').value = data.article.title;
+      $('efSlug').value = data.article.slug;
+      $('efDescription').value = data.article.description || '';
+      updateDescCount();
+      $('editorBody').innerHTML = data.article.body_html || '';
+      $('editorHtml').value = data.article.body_html || '';
+      if (htmlMode) toggleHtmlMode();
+      setHeroImage(data.article.hero_image_url || '');
+      setDirty(false);
+      $('deleteBtn').style.display = '';
+      showView('editor');
+    }).catch(function () {
+      toast('Could not open that article.', true);
+    });
+  }
+
+  $('newArticleBtn').addEventListener('click', startNew);
+  $('backToList').addEventListener('click', function () {
+    if (state.dirty && !window.confirm('Discard unsaved changes?')) return;
+    loadList();
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-new-article]')) startNew();
+  });
+
+  // ─── editor fields ───
+  var titlePlaceholderForSlug = true;
+  $('efTitle').addEventListener('input', function () {
+    if (!state.slugEditedManually) $('efSlug').value = slugify($('efTitle').value);
+    setDirty(true);
+  });
+  $('efSlug').addEventListener('input', function () {
+    state.slugEditedManually = true;
+    if (!slugify($('efSlug').value)) state.slugEditedManually = false;
+    setDirty(true);
+  });
+  $('efDescription').addEventListener('input', function () {
+    updateDescCount();
+    setDirty(true);
+  });
+
+  function updateDescCount() {
+    var len = $('efDescription').value.length;
+    var el = $('descCount');
+    el.textContent = len + ' / 155';
+    el.style.color = len > 160 ? '#FF6B35' : '#9CA3AF';
+  }
+
+  // ─── hero image ───
+  function setHeroImage(url) {
+    state.heroImageUrl = url || '';
+    $('heroPreview').style.display = url ? '' : 'none';
+    $('heroPreviewImg').src = url || '';
+    $('heroStatus').textContent = url ? 'Image saved with the article' : 'PNG, JPEG or WebP · up to 10MB';
+    if (url) setDirty(true);
+  }
+
+  function uploadImage(file, cb) {
+    if (!file || !/^image\//.test(file.type)) { toast('Please choose an image file.', true); return; }
+    if (file.size > 10 * 1024 * 1024) { toast('Image is over 10MB — please use a smaller file.', true); return; }
+    var statusEl = $('heroStatus');
+    var label = statusEl.textContent;
+    statusEl.textContent = 'Uploading image…';
+    var reader = new FileReader();
+    reader.onload = function () {
+      fetch('/api/cms/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUrl: reader.result, filename: file.name })
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        if (data.error) { statusEl.textContent = label; toast(data.error, true); return; }
+        cb(data.url);
+      }).catch(function () {
+        statusEl.textContent = label;
+        toast('Upload failed — check your connection and try again.', true);
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  $('heroUploadBtn').addEventListener('click', function () { $('heroFile').click(); });
+  $('heroFile').addEventListener('change', function () {
+    var file = this.files[0];
+    this.value = '';
+    if (file) uploadImage(file, setHeroImage);
+  });
+  $('heroUrlBtn').addEventListener('click', function () {
+    var url = window.prompt('Paste the image address (URL):', 'https://');
+    if (url && /^https?:\/\/|^\//.test(url.trim())) setHeroImage(url.trim());
+    else if (url) toast('That does not look like an image link.', true);
+  });
+  $('heroRemove').addEventListener('click', function () { setHeroImage(''); $('heroStatus').textContent = 'PNG, JPEG or WebP · up to 10MB'; });
+
+  var drop = $('heroDrop');
+  ['dragover', 'dragenter'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); });
+  });
+  drop.addEventListener('drop', function (e) {
+    var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) uploadImage(file, setHeroImage);
+  });
+
+  // ─── rich text ───
+  var bodyImageFile = $('bodyImageFile');
+  $('bodyImageBtn').addEventListener('click', function () { bodyImageFile.click(); });
+  bodyImageFile.addEventListener('change', function () {
+    var file = this.files[0];
+    this.value = '';
+    if (!file) return;
+    var statusEl = $('editorHint');
+    var label = statusEl.textContent;
+    statusEl.textContent = 'Uploading image…';
+    var reader = new FileReader();
+    reader.onload = function () {
+      fetch('/api/cms/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUrl: reader.result, filename: file.name })
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        statusEl.textContent = label;
+        if (data.error) { toast(data.error, true); return; }
+        insertHtmlAtCursor('<img src="' + escapeHtml(data.url) + '" alt="">');
+        setDirty(true);
+      }).catch(function () {
+        statusEl.textContent = label;
+        toast('Upload failed — check your connection and try again.', true);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function insertHtmlAtCursor(html) {
+    $('editorBody').focus();
+    document.execCommand('insertHTML', false, html);
+  }
+
+  var htmlMode = false;
+  function toggleHtmlMode() {
+    if (!htmlMode) {
+      $('editorHtml').value = $('editorBody').innerHTML;
+      $('editorBody').style.display = 'none';
+      $('editorHtml').style.display = '';
+      $('editorHtml').focus();
+      htmlMode = true;
+    } else {
+      if ($('editorHtml').value.trim()) $('editorBody').innerHTML = $('editorHtml').value;
+      $('editorHtml').style.display = 'none';
+      $('editorBody').style.display = '';
+      htmlMode = false;
+    }
+  }
+  $('htmlToggleBtn').addEventListener('click', toggleHtmlMode);
+  $('editorHtml').addEventListener('input', function () { setDirty(true); });
+
+  document.querySelectorAll('.tbar-btn[data-cmd]').forEach(function (btn) {
+    btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    btn.addEventListener('click', function () {
+      var cmd = btn.getAttribute('data-cmd');
+      if (cmd === 'createLink') {
+        var url = window.prompt('Link this text to (web address):', 'https://');
+        if (url && /^https?:\/\//.test(url.trim())) document.execCommand('createLink', false, url.trim());
+        else if (url) toast('Links must start with https://', true);
+        return;
+      }
+      document.execCommand(cmd, false, btn.getAttribute('data-val') || null);
+      setDirty(true);
+    });
+  });
+
+  $('editorBody').addEventListener('input', function () {
+    if (!htmlMode) { $('editorHtml').value = $('editorBody').innerHTML; setDirty(true); }
+  });
+
+  // ─── save / preview / delete ───
+  function collectPayload() {
+    var body = htmlMode ? $('editorHtml').value : $('editorBody').innerHTML;
+    return {
+      title: $('efTitle').value.trim(),
+      slug: $('efSlug').value,
+      description: $('efDescription').value.trim(),
+      heroImageUrl: state.heroImageUrl,
+      bodyHtml: body
+    };
+  }
+
+  $('saveBtn').addEventListener('click', function () {
+    var payload = collectPayload();
+    if (!payload.title) { $('titleError').style.display = ''; $('efTitle').focus(); return; }
+    if (!slugify(payload.slug)) { $('slugError').textContent = 'The address cannot be empty.'; $('slugError').style.display = ''; $('efSlug').focus(); return; }
+    payload.slug = slugify(payload.slug);
+
+    var btn = $('saveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    var isNew = !state.article;
+    var url = isNew ? '/api/cms/articles' : '/api/cms/articles/' + state.article.id;
+    fetch(url, {
+      method: isNew ? 'POST' : 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); }).then(function (res) {
+      if (!res.ok) { toast(res.body.error || 'Could not save. Try again.', true); return; }
+      state.article = res.body.article;
+      state.currentSlug = res.body.article.slug;
+      $('editorHeading').textContent = 'Edit article';
+      $('deleteBtn').style.display = '';
+      $('efSlug').value = res.body.article.slug;
+      setDirty(false);
+      toast(isNew ? 'Published. The article is live on the site.' : 'Changes are live on the site.');
+    }).catch(function () {
+      toast('Could not save — check your connection and try again.', true);
+    }).finally(function () {
+      btn.disabled = false;
+      btn.textContent = 'Save & publish';
+    });
+  });
+
+  $('previewBtn').addEventListener('click', function () {
+    var slug = state.currentSlug || slugify($('efSlug').value);
+    if (!slug) { toast('Give the article a title and address first.', true); return; }
+    if (state.dirty) toast('Preview shows the last saved version — save first for newest changes.');
+    window.open('/articles/' + encodeURIComponent(slug), '_blank', 'noopener');
+  });
+
+  $('deleteBtn').addEventListener('click', function () {
+    if (!state.article) return;
+    var t = $('efTitle').value || 'this article';
+    if (!window.confirm('Delete "' + t + '"? It will be removed from the site straight away. This cannot be undone.')) return;
+    fetch('/api/cms/articles/' + state.article.id, { method: 'DELETE' }).then(function (r) {
+      if (!r.ok) throw new Error();
+      toast('Deleted. It is no longer on the site.');
+      state.article = null;
+      loadList();
+    }).catch(function () { toast('Could not delete. Try again.', true); });
+  });
+
+  // ─── unsaved changes guard ───
+  window.addEventListener('beforeunload', function (e) {
+    if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  // ─── boot ───
+  fetch('/api/cms/session').then(function (r) { return r.json(); }).then(function (data) {
+    if (data.authenticated) { loadList(); }
+    else showView('gate');
+  }).catch(function () { showView('gate'); });
+})();
+</script>
+</body>
+</html>

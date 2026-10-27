@@ -3,6 +3,8 @@ import express from 'express';
 import session from 'express-session';
 import bcrypt from 'bcryptjs';
 import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
@@ -25,7 +27,18 @@ import {
   getAllDrivers,
   createDriver,
   getQuoteById,
-  updateQuoteStatus
+  updateQuoteStatus,
+  listPublishedArticles,
+  listArticles,
+  getArticleBySlug,
+  getArticleById,
+  slugExists,
+  createArticle,
+  updateArticle,
+  deleteArticle,
+  createMedia,
+  getMedia,
+  importStaticArticles
 } from './database.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -149,6 +162,335 @@ app.use(session({
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
+
+// ─── CMS: ARTICLE MANAGER ───
+// Private article editor at /cms. Stores articles in SQLite so changes go live
+// without a redeploy. The homepage article list and article pages are rendered
+// server-side from the database (SEO still sees full HTML).
+
+const CMS_PASSWORD = process.env.CMS_PASSWORD || 'vsd-cms';
+const CANONICAL_BASE = process.env.WEBSITE_URL || 'https://www.manandvanvsdsynergy.uk';
+if (!process.env.CMS_PASSWORD) {
+  console.warn('[CMS] CMS_PASSWORD is not set — using the default password "vsd-cms". Set CMS_PASSWORD in your environment before going live.');
+}
+
+function safeEqual(a, b) {
+  const bufA = Buffer.from(String(a));
+  const bufB = Buffer.from(String(b));
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+
+function escapeHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function requireCmsAuth(req, res, next) {
+  if (req.session && req.session.cmsAuth) return next();
+  res.status(401).json({ error: 'Not signed in. Please sign in again.' });
+}
+
+// Article page shell — mirrors the markup and styles of the original article files
+function renderArticlePage(article) {
+  const title = escapeHtml(article.title);
+  const description = escapeHtml(article.description || '');
+  const hero = article.hero_image_url
+    ? `<figure class="mb-10">
+        <img src="${escapeHtml(article.hero_image_url)}" alt="${title}" class="article-hero" loading="lazy">
+      </figure>`
+    : '';
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} | VSD Synergy</title>
+  <link rel="canonical" href="${CANONICAL_BASE}/articles/${escapeHtml(article.slug)}">
+  <meta name="description" content="${description}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-roboto: 'Roboto', sans-serif;
+      --font-lato: 'Lato', sans-serif;
+      --brand-primary: #3080E8;
+      --brand-primary-light: #5a9aef;
+      --brand-primary-dark: #1e5fb8;
+      --brand-primary-darker: #0f4080;
+      --accent-coral: #FF6B35;
+      --accent-coral-dark: #E55A2B;
+    }
+    body { font-family: var(--font-lato); color: #1f2937; }
+    .type-h1 { font-family: var(--font-roboto); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; }
+    .type-body { font-family: var(--font-lato); font-size: 1.0625rem; font-weight: 400; line-height: 1.75; }
+    .nav-link { position: relative; color: #374151; font-weight: 500; }
+    .nav-link:hover { color: var(--brand-primary); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+      color: white; font-family: var(--font-lato); font-weight: 700;
+      padding: 0.6rem 1.4rem; border-radius: 9999px;
+      box-shadow: 0 4px 14px rgba(48, 128, 232, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(48, 128, 232, 0.4); }
+    .article-prose p { margin-bottom: 1.25rem; }
+    .article-prose p:last-child { margin-bottom: 0; }
+    .article-prose h2 { margin-top: 2.5rem; margin-bottom: 1rem; color: #111827; }
+    .article-prose h3 { margin-top: 2rem; margin-bottom: 0.75rem; color: #111827; }
+    .article-prose ul { margin: 1.25rem 0 1.5rem 1.5rem; list-style: disc; }
+    .article-prose li { margin-bottom: 0.5rem; }
+    .article-hero {
+      width: 100%; height: auto; max-height: 460px; object-fit: cover;
+      border-radius: 1rem; box-shadow: 0 18px 40px -12px rgba(15, 64, 128, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-white">
+
+  <header class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <a href="/" class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="font-family: var(--font-roboto); color: var(--brand-primary);">VSD Synergy</span>
+        </a>
+        <nav class="hidden md:flex items-center space-x-7">
+          <a href="/#services" class="nav-link">Services</a>
+          <a href="/#articles" class="nav-link" style="color: var(--brand-primary);">Articles</a>
+          <a href="/#contact" class="nav-link">Contact</a>
+          <a href="/#quote" class="btn-primary">Get a Quote</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="bg-gray-50 border-b border-gray-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <nav class="text-sm text-gray-500" style="font-family: var(--font-lato);">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span class="mx-2">/</span>
+        <a href="/#articles" class="hover:text-blue-600">Useful Articles</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-700">${title}</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-16">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <header class="mb-10">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase" style="background: rgba(48, 128, 232, 0.1); color: var(--brand-primary);">Useful Articles</span>
+          <span class="text-sm text-gray-500" style="font-family: var(--font-lato);">VSD Synergy</span>
+        </div>
+        <h1 class="type-h1 text-gray-900 mb-5">${title}</h1>
+        ${article.description
+          ? `<p class="type-body text-gray-600 text-lg">${description}</p>`
+          : ''}
+      </header>
+
+      ${hero}
+
+      <div class="article-prose type-body text-gray-800">
+${article.body_html || ''}
+      </div>
+
+      <div class="mt-16 pt-8 border-t border-gray-200">
+        <a href="/#articles" class="inline-flex items-center gap-2 font-semibold" style="color: var(--brand-primary); font-family: var(--font-lato);">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Back to all articles
+        </a>
+      </div>
+
+      <aside class="mt-12 rounded-2xl p-8 text-white" style="background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);">
+        <h3 class="text-2xl font-bold mb-3" style="font-family: var(--font-lato);">Planning a move?</h3>
+        <p class="mb-6 opacity-95" style="font-family: var(--font-lato);">Get a quick, transparent quote for your removal or cleaning.</p>
+        <a href="/#quote" class="inline-block bg-white px-6 py-3 rounded-full font-bold" style="color: var(--brand-primary); font-family: var(--font-lato);">Get a Quote</a>
+      </aside>
+    </div>
+  </article>
+
+  <footer class="bg-gray-900 text-gray-300 py-10 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm" style="font-family: var(--font-lato);">
+      &copy; 2026 VSD Synergy Limited. All rights reserved.
+    </div>
+  </footer>
+
+</body>
+</html>`;
+}
+
+// Basic sanitisation for authored body HTML (single trusted admin, but keeps
+// the site safe from pasted blobs that happen to contain scripts or trackers)
+function sanitizeArticleBody(html) {
+  return String(html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<(script|iframe|object|embed)[^>]*\/?>/gi, '')
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, '')
+    .replace(/javascript:/gi, '');
+}
+
+function slugify(text) {
+  return String(text || '').toLowerCase().trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-').replace(/-+/g, '-')
+    .slice(0, 80)
+    .replace(/^-+|-+$/g, '');
+}
+
+function validateArticleInput(body) {
+  const title = String(body.title || '').trim();
+  const slug = slugify(body.slug || body.title);
+  if (!title) return { error: 'Title is required.' };
+  if (!slug) return { error: 'URL slug is required.' };
+  if (title.length > 200) return { error: 'Title is too long (max 200 characters).' };
+  const description = String(body.description || '').trim().slice(0, 500);
+  const heroImageUrl = String(body.heroImageUrl || '').trim().slice(0, 2000);
+  const bodyHtml = sanitizeArticleBody(body.bodyHtml);
+  return { title, slug, description, heroImageUrl, bodyHtml };
+}
+
+// ─── CMS routes: live pages rendered from the database ───
+
+// Must be registered BEFORE express.static so it takes precedence over index.html
+app.get('/', (req, res) => {
+  try {
+    const fsMod = fs;
+    let html = fsMod.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+    const articles = listPublishedArticles();
+    const rows = articles.map(a => `
+            <li class="article-row">
+              <a href="/articles/${escapeHtml(a.slug)}" class="article-link group">
+                <span class="article-title">${escapeHtml(a.title)}</span>
+                <span class="article-arrow">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+            </li>`).join('');
+    html = html.replace(/(<ul id="articlesList"[^>]*>)[\s\S]*?(<\/ul>)/, `$1${rows}\n          $2`);
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    res.send(html);
+  } catch (err) {
+    console.error('Homepage render error:', err);
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
+});
+
+app.get('/articles/:slug', (req, res, next) => {
+  const article = getArticleBySlug(req.params.slug);
+  if (article && article.body_html) {
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    return res.send(renderArticlePage(article));
+  }
+  // Fall back to the original static file if the DB has no body for this slug
+  next();
+});
+
+app.get('/cms', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'cms', 'index.html'));
+});
+
+app.get('/media/:id', (req, res) => {
+  const media = getMedia(parseInt(req.params.id, 10) || 0);
+  if (!media) return res.status(404).send('Not found');
+  res.setHeader('Content-Type', media.mime || 'application/octet-stream');
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  res.send(Buffer.from(media.data));
+});
+
+// ─── CMS API (all require the CMS password via a signed-in session) ───
+
+app.use('/api/cms', express.json({ limit: '15mb' }));
+
+app.post('/api/cms/login', rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 10,
+  keyGenerator: (req) => `login-cms-${req.ip}`,
+  message: 'Too many sign-in attempts. Please try again in a few minutes.'
+}), (req, res) => {
+  const password = String(req.body.password || '');
+  if (safeEqual(password, CMS_PASSWORD)) {
+    req.session.cmsAuth = true;
+    return res.json({ success: true });
+  }
+  res.status(401).json({ error: 'Incorrect password.' });
+});
+
+app.post('/api/cms/logout', (req, res) => {
+  req.session.cmsAuth = false;
+  res.json({ success: true });
+});
+
+app.get('/api/cms/session', (req, res) => {
+  res.json({ authenticated: !!(req.session && req.session.cmsAuth) });
+});
+
+app.get('/api/cms/articles', requireCmsAuth, (req, res) => {
+  res.json({ articles: listArticles() });
+});
+
+app.get('/api/cms/articles/:id', requireCmsAuth, (req, res) => {
+  const article = getArticleById(parseInt(req.params.id, 10) || 0);
+  if (!article) return res.status(404).json({ error: 'Article not found.' });
+  res.json({ article });
+});
+
+app.post('/api/cms/articles', requireCmsAuth, (req, res) => {
+  const parsed = validateArticleInput(req.body);
+  if (parsed.error) return res.status(400).json({ error: parsed.error });
+  if (slugExists(parsed.slug)) return res.status(409).json({ error: 'That URL slug is already used by another article.' });
+  const article = createArticle(parsed);
+  res.status(201).json({ article, url: `/articles/${article.slug}` });
+});
+
+app.put('/api/cms/articles/:id', requireCmsAuth, (req, res) => {
+  const id = parseInt(req.params.id, 10) || 0;
+  const existing = getArticleById(id);
+  if (!existing) return res.status(404).json({ error: 'Article not found.' });
+  const parsed = validateArticleInput(req.body);
+  if (parsed.error) return res.status(400).json({ error: parsed.error });
+  if (slugExists(parsed.slug, id)) return res.status(409).json({ error: 'That URL slug is already used by another article.' });
+  const article = updateArticle(id, parsed);
+  res.json({ article, url: `/articles/${article.slug}` });
+});
+
+app.delete('/api/cms/articles/:id', requireCmsAuth, (req, res) => {
+  const result = deleteArticle(parseInt(req.params.id, 10) || 0);
+  res.json({ deleted: result.changes > 0 });
+});
+
+app.post('/api/cms/media', requireCmsAuth, (req, res) => {
+  const dataUrl = String(req.body.dataUrl || '');
+  const match = dataUrl.match(/^data:(image\/(?:png|jpeg|jpg|webp|gif|avif));base64,([A-Za-z0-9+/=\s]+)$/);
+  if (!match) return res.status(400).json({ error: 'Please upload a PNG, JPEG, WebP, GIF or AVIF image.' });
+  const base64 = match[2].replace(/\s/g, '');
+  const buffer = Buffer.from(base64, 'base64');
+  if (buffer.length > 10 * 1024 * 1024) {
+    return res.status(413).json({ error: 'Image is larger than 10MB. Please upload a smaller file.' });
+  }
+  const id = createMedia({ filename: String(req.body.filename || 'image'), mime: match[1], data: buffer });
+  res.status(201).json({ url: `/media/${id}` });
+});
+
+// One-time import of the existing static article files into the database.
+// Position follows the current curated order shown on the homepage.
+function seedArticles() {
+  try {
+    const indexHtml = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+    const listMatch = indexHtml.match(/<ul id="articlesList"[\s\S]*?<\/ul>/);
+    const orderedSlugs = listMatch
+      ? [...listMatch[0].matchAll(/\/articles\/([a-z0-9-]+)\.html/g)].map(m => m[1])
+      : [];
+    importStaticArticles(path.join(__dirname, 'public', 'articles'), orderedSlugs);
+  } catch (err) {
+    console.error('[ARTICLES] Seed import failed:', err.message);
+  }
+}
+seedArticles();
 
 // Static files with caching headers for performance
 app.use(express.static(path.join(__dirname, 'public'), {

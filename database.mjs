@@ -140,6 +140,27 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(quote_id, driver_id)
   );
+
+  CREATE TABLE IF NOT EXISTS articles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    hero_image_url TEXT,
+    body_html TEXT,
+    source TEXT DEFAULT 'db',
+    position INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS media (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    filename TEXT,
+    mime TEXT NOT NULL,
+    data BLOB NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Seed admin if none exists
@@ -553,6 +574,125 @@ export function getQuoteById(id) {
 
 export function updateQuoteStatus(id, status) {
   return db.prepare('UPDATE quotes SET status = ? WHERE id = ?').run(status, id);
+}
+
+// ─── ARTICLES (CMS) ───
+
+export function listArticles() {
+  return db.prepare(`
+    SELECT id, slug, title, description, hero_image_url,
+           (body_html IS NOT NULL) AS has_body, source, position, created_at, updated_at
+    FROM articles ORDER BY position ASC, updated_at DESC
+  `).all();
+}
+
+export function listPublishedArticles() {
+  return db.prepare(`
+    SELECT slug, title FROM articles ORDER BY position ASC, updated_at DESC
+  `).all();
+}
+
+export function getArticleBySlug(slug) {
+  return db.prepare('SELECT * FROM articles WHERE slug = ?').get(slug);
+}
+
+export function getArticleById(id) {
+  return db.prepare('SELECT * FROM articles WHERE id = ?').get(id);
+}
+
+export function slugExists(slug, excludeId = null) {
+  if (excludeId === null) {
+    return !!db.prepare('SELECT id FROM articles WHERE slug = ?').get(slug);
+  }
+  return !!db.prepare('SELECT id FROM articles WHERE slug = ? AND id != ?').get(slug, excludeId);
+}
+
+export function createArticle({ slug, title, description, heroImageUrl, bodyHtml }) {
+  // New articles go to the top of the homepage list
+  const top = db.prepare('SELECT MIN(position) AS min FROM articles').get();
+  const position = (top && top.min !== null ? top.min : 1) - 1;
+  const result = db.prepare(`
+    INSERT INTO articles (slug, title, description, hero_image_url, body_html, source, position)
+    VALUES (?, ?, ?, ?, ?, 'db', ?)
+  `).run(slug, title, description || null, heroImageUrl || null, bodyHtml || null, position);
+  return getArticleById(result.lastInsertRowid);
+}
+
+export function updateArticle(id, { slug, title, description, heroImageUrl, bodyHtml }) {
+  db.prepare(`
+    UPDATE articles
+    SET slug = ?, title = ?, description = ?, hero_image_url = ?, body_html = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(slug, title, description || null, heroImageUrl || null, bodyHtml || null, id);
+  return getArticleById(id);
+}
+
+export function deleteArticle(id) {
+  return db.prepare('DELETE FROM articles WHERE id = ?').run(id);
+}
+
+export function createMedia({ filename, mime, data }) {
+  const result = db.prepare('INSERT INTO media (filename, mime, data) VALUES (?, ?, ?)')
+    .run(filename || 'image', mime, data);
+  return result.lastInsertRowid;
+}
+
+export function getMedia(id) {
+  return db.prepare('SELECT * FROM media WHERE id = ?').get(id);
+}
+
+// ─── ONE-TIME IMPORT OF THE STATIC ARTICLE FILES ───
+/**
+ * Imports title, description, hero image and body from public/articles/*.html
+ * into the articles table. Runs once per database (tracked in settings), so the
+ * CMS becomes the single source of truth while the original files stay on disk
+ * as untouched backups.
+ */
+export function importStaticArticles(articlesDir, orderedSlugs) {
+  const already = getSetting('articles_imported');
+  if (already) return;
+
+  const rows = [];
+  for (const file of fs.existsSync(articlesDir) ? fs.readdirSync(articlesDir) : []) {
+    const match = file.match(/^([a-z0-9-]+)\.html$/);
+    if (!match) continue;
+    const slug = match[1];
+    const html = fs.readFileSync(path.join(articlesDir, file), 'utf8');
+
+    const title = (html.match(/<h1 class="type-h1[^"]*"[^>]*>([\s\S]*?)<\/h1>/) || [])[1]
+      || (html.match(/<span class="article-title">([\s\S]*?)<\/span>/) || [])[1];
+    const description = (html.match(/<p class="type-body text-gray-600 text-lg">\s*([\s\S]*?)\s*<\/p>/) || [])[1];
+    const hero = (html.match(/<img src="(\/articles\/[^"]+|https?:\/\/[^"]+)"/) || [])[1];
+
+    let body = null;
+    const proseOpen = html.indexOf('<div class="article-prose');
+    if (proseOpen !== -1) {
+      const after = proseOpen + html.slice(proseOpen).indexOf('>') + 1;
+      const trailing = html.search(/<\/div>\s*<div class="mt-16/);
+      if (trailing !== -1) body = html.slice(after, trailing).trim();
+    }
+
+    if (!title || !body) {
+      console.warn(`[ARTICLES] Could not fully parse ${file} (title or body missing) — skipping import, static file stays live.`);
+      continue;
+    }
+    rows.push({ slug, title: title.trim(), description: description ? description.trim() : null, hero: hero || null, body });
+  }
+
+  // Homepage position follows the current curated order in index.html where known
+  const order = orderedSlugs && orderedSlugs.length ? orderedSlugs : rows.map(r => r.slug);
+  const pos = new Map(order.map((slug, i) => [slug, i + 1]));
+
+  const insert = db.prepare(`
+    INSERT INTO articles (slug, title, description, hero_image_url, body_html, source, position)
+    VALUES (?, ?, ?, ?, ?, 'seed', ?)
+  `);
+  for (const row of rows) {
+    if (db.prepare('SELECT id FROM articles WHERE slug = ?').get(row.slug)) continue;
+    insert.run(row.slug, row.title, row.description, row.hero, row.body, pos.get(row.slug) ?? 999);
+  }
+  updateSetting('articles_imported', String(new Date().toISOString()));
+  console.log('[ARTICLES] Imported', rows.length, 'existing article files into the database.');
 }
 
 export default db;
