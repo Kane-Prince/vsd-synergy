@@ -546,6 +546,13 @@
   }
 
   // ─── hero image ───
+  function uploadErrorText(r) {
+    if (r.status === 413) return 'That image is too large to upload — please use a smaller file.';
+    if (r.status === 401) return 'Your session has expired — refresh the page and sign in again.';
+    if (r.status >= 500) return 'The server could not save the image. Please try again.';
+    return 'Upload failed — please try again.';
+  }
+
   function setHeroImage(url) {
     state.heroImageUrl = url || '';
     $('heroPreview').style.display = url ? '' : 'none';
@@ -566,9 +573,12 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dataUrl: reader.result, filename: file.name })
-      }).then(function (r) { return r.json(); }).then(function (data) {
-        if (data.error) { statusEl.textContent = label; toast(data.error, true); return; }
-        cb(data.url);
+      }).then(function (r) {
+        if (!r.ok) { statusEl.textContent = label; toast(uploadErrorText(r), true); return; }
+        return r.json().then(function (data) {
+          if (data.error) { statusEl.textContent = label; toast(data.error, true); return; }
+          cb(data.url);
+        });
       }).catch(function () {
         statusEl.textContent = label;
         toast('Upload failed — check your connection and try again.', true);
@@ -618,11 +628,14 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dataUrl: reader.result, filename: file.name })
-      }).then(function (r) { return r.json(); }).then(function (data) {
+      }).then(function (r) {
         statusEl.textContent = label;
-        if (data.error) { toast(data.error, true); return; }
-        insertHtmlAtCursor('<img src="' + escapeHtml(data.url) + '" alt="">');
-        setDirty(true);
+        if (!r.ok) { toast(uploadErrorText(r), true); return; }
+        return r.json().then(function (data) {
+          if (data.error) { toast(data.error, true); return; }
+          insertHtmlAtCursor('<img src="' + escapeHtml(data.url) + '" alt="">');
+          setDirty(true);
+        });
       }).catch(function () {
         statusEl.textContent = label;
         toast('Upload failed — check your connection and try again.', true);

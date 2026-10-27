@@ -150,7 +150,9 @@ async function sendN8nWebhook(event, payload) {
 }
 
 // Middleware
-app.use(express.json());
+// 15MB so CMS image uploads (base64 in JSON) fit — file uploads are still
+// capped at 10MB by the media endpoint itself
+app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'default-secret-change-me',
@@ -403,8 +405,7 @@ app.get('/media/:id', (req, res) => {
 });
 
 // ─── CMS API (all require the CMS password via a signed-in session) ───
-
-app.use('/api/cms', express.json({ limit: '15mb' }));
+// (request bodies are already parsed by the global 15MB JSON parser above)
 
 app.post('/api/cms/login', rateLimit({
   windowMs: 10 * 60 * 1000,
